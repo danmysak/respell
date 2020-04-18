@@ -13,18 +13,15 @@ export const correctionTypes = {
 };
 
 export class RuleApplication {
-  type;
-  replacement;
-  descriptions;
-  get formattedDescriptions() {
-    return this.descriptions.map(s => s.replace(/(§) /g, '$1&nbsp;'));
-  };
-
   constructor(type, replacement, description) {
     this.type = type;
     this.replacement = replacement;
     this.descriptions = Array.isArray(description) ? description : [description];
   }
+
+  get formattedDescriptions() {
+    return this.descriptions.map(s => s.replace(/(§) /g, '$1&nbsp;'));
+  };
 
   static merge(a, b) {
     if (a === null || b === null) {
