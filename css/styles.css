@@ -1,0 +1,444 @@
+:root {
+    --column-gap: 24px;
+    --page-vertical-padding: 18px;
+    --left-width: 187px;
+    --center-width-ratio: 530fr;
+    --right-width-ratio: 187fr;
+    --main-padding: 18px;
+    --middle-line-horizontal-margin: 4px;
+    --main-font-size: 14px;
+    --text-font-size: 16px;
+    --correction-font-size: 18px;
+    --subcaption-font-size: 12px;
+    --line-height: 1.25;
+    --tooltip-width: 300px;
+    --tooltip-margin: 10px; /* Number of pixels between the tooltip's border and the edges of the page */
+    --tooltip-top-margin: 4px; /* Gap between the text being corrected and the tooltip */
+    --tooltip-border-width: 3px;
+    --info-margin: 32px;
+
+    --blue: 49, 117, 185;
+    --text-color: #2A2A2A;
+    --background-text-color: #BBBBBB;
+    --mistake-color: #B83F31;
+    --improvement-color: #579B2D;
+    --unsure-color: black;
+    --line-color: black;
+
+    --correction-transition-duration: 0.3s;
+}
+
+html {
+    margin: 0;
+    font-family: "Times New Roman", Times, serif;
+    font-size: var(--main-font-size);
+    line-height: var(--line-height);
+    background-color: #F3F0E4;
+    color: var(--text-color);
+    padding-bottom: 0; /* This is required for the tooltip scripts to expand the page height correctly when needed */
+    min-width: calc(var(--tooltip-width) + 2 * var(--tooltip-margin));
+}
+
+body {
+    display: grid;
+    grid-column-gap: var(--column-gap);
+    padding: var(--page-vertical-padding) var(--column-gap);
+    grid-template-columns: var(--left-width) var(--center-width-ratio) var(--right-width-ratio);
+    grid-template-rows: min-content min-content 1fr;
+    grid-template-areas:
+            ".    heading      heading"
+            "info instructions .      "
+            "info input        stats  ";
+}
+
+h1, h2, h3, p {
+    margin-top: 0;
+}
+
+h1, .instructions, .info, .stats {
+    padding: 0 var(--main-padding);
+}
+
+.info {
+    padding-right: 0;
+}
+
+a {
+    color: rgb(var(--blue));
+}
+
+a.quoted {
+    text-decoration: none;
+}
+
+a:visited {
+    color: #8A68AC;
+}
+
+a:hover {
+    color: #B93F31;
+}
+
+h1, h3 {
+    color: #64595F;
+    font-weight: normal;
+}
+
+h1 {
+    font-size: 24px;
+}
+
+h3 {
+    font-size: var(--subcaption-font-size);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    overflow: hidden;
+    white-space: nowrap;
+    margin-bottom: 18px;
+    --middle-line-left-width: 28px;
+}
+
+h3::before, h3::after {
+    content: "";
+    display: inline-block;
+    height: 1px;
+    vertical-align: middle;
+    position: relative;
+    top: -1px;
+    background-color: var(--line-color);
+    opacity: 0.1;
+}
+
+h3::before {
+    width: var(--middle-line-left-width);
+    margin-right: var(--middle-line-horizontal-margin);
+}
+
+h3::after {
+    width: 100%;
+    margin-left: var(--middle-line-horizontal-margin);
+}
+
+.instructions h2, .info h2, main h2 {
+    display: none;
+}
+
+t-t {
+    transition: color var(--correction-transition-duration);
+    position: relative;
+}
+
+.correction {
+    color: var(--correction-color);
+}
+
+.input .correction {
+    cursor: pointer;
+}
+
+.correction-mistake {
+    --correction-color: var(--mistake-color);
+}
+
+.correction-improvement {
+    --correction-color: var(--improvement-color);
+}
+
+.correction-unsure {
+    --correction-color: var(--unsure-color);
+}
+
+t-t:not(.correction) {
+    --correction-color: rgba(255, 255, 255, 0);
+}
+
+.correction::after, .cursor-around::after {
+    /* We don't want to simply attach ::after to all tokens as this really slows things down */
+    content: "";
+    display: block;
+    position: absolute;
+    background-color: var(--correction-color);
+    transition: background-color var(--correction-transition-duration);
+
+    left: 0;
+    height: 3px;
+    bottom: -1px;
+    width: 100%;
+    -webkit-mask-image: url('../img/wavy-line.svg');
+    mask-image: url('../img/wavy-line.svg');
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: repeat-x;
+    mask-repeat: repeat-x;
+}
+
+.info h3 {
+    margin-left: calc(var(--main-padding) * -1);
+}
+
+.info article:not(:last-child) {
+    margin-bottom: var(--info-margin);
+}
+
+header {
+    display: contents;
+}
+
+h1 {
+    grid-area: heading;
+}
+
+.info {
+    grid-area: info;
+    margin-top: calc(var(--main-font-size) - var(--subcaption-font-size));
+}
+
+.instructions {
+    grid-area: instructions;
+}
+
+main {
+    display: contents;
+}
+
+.input {
+    grid-area: input;
+    min-width: 0; /* This is to prevent the input from expanding the grid when it contains a very long word */
+    padding: var(--main-padding);
+    outline: none;
+    font-size: var(--text-font-size);
+    z-index: 3;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+}
+
+.input p:empty {
+    height: calc(var(--text-font-size) * var(--line-height));
+}
+
+.input.correcting, .input.correcting .correction:not(.correction-current) {
+    color: var(--background-text-color);
+}
+
+.input.correcting .correction:not(.correction-current)::after {
+    background-color: var(--background-text-color);
+}
+
+cursor-position {
+    display: inline;
+    width: 0;
+}
+
+.input-bg {
+    grid-area: 3 / 2 / 4 / 4;
+    z-index: 1;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 0 3px rgba(var(--shadow-color), var(--shadow-opacity)),
+                0 0 1px rgba(var(--shadow-color), calc(var(--shadow-opacity) * 2 / 3));
+    transition: box-shadow 0.15s;
+    --shadow-color: 0, 0, 0;
+    --shadow-opacity: 0.15;
+}
+
+.input:focus ~ .input-bg {
+    --shadow-color: var(--blue);
+    --shadow-opacity: 0.6;
+}
+
+.stats {
+    grid-area: stats;
+    z-index: 2;
+}
+
+.stats-container {
+    position: sticky;
+    top: 0;
+    padding-top: calc(var(--main-padding) + var(--text-font-size) - var(--subcaption-font-size));
+}
+
+.stats h3 {
+    --middle-line-left-width: calc(var(--main-padding) - var(--middle-line-horizontal-margin));
+    margin-left: calc(0px - var(--main-padding));
+}
+
+.stats-raw {
+    color: #645B60;
+    margin-top: calc(var(--main-font-size) * 1.5);
+}
+
+.stats-extra {
+    margin-left: 8px;
+    display: inline-block;
+    color: var(--background-text-color);
+}
+
+.stats dt {
+    display: none;
+}
+
+.stats dd {
+    margin: 0 0 4px 0;
+}
+
+.stats-mistake strong {
+    color: var(--mistake-color);
+}
+
+.stats-improvement strong {
+    color: var(--improvement-color);
+}
+
+.stats-unsure strong {
+    color: var(--unsure-color);
+}
+
+.stats-irrelevant {
+    color: var(--background-text-color);
+}
+
+token-tooltip {
+    cursor: default;
+    box-sizing: border-box;
+    position: absolute;
+    top: calc(100% + var(--tooltip-top-margin));
+    left: calc(0px - var(--tooltip-width));
+    right: calc(0px - var(--tooltip-width));
+    width: var(--tooltip-width);
+    margin: auto;
+    color: var(--text-color);
+    background-color: #FAFAF8;
+    border: var(--tooltip-border-width) solid #BEA2AE;
+    border-radius: 15px;
+    padding: 8px 12px;
+    z-index: 1;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    --tooltip-horizontal-shift: 0;
+    transform: translateX(var(--tooltip-horizontal-shift));
+}
+
+token-tooltip.animated {
+    animation: token-tooltip-fade-in var(--correction-transition-duration) forwards;
+}
+
+token-tooltip::before {
+    content: "";
+    display: block;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(0px - var(--tooltip-border-width) - var(--tooltip-top-margin));
+    height: var(--tooltip-top-margin);
+    background-color: rgba(255, 255, 255, 0);
+}
+
+token-replacement {
+    display: block;
+    text-align: center;
+    margin-bottom: 16px;
+}
+
+token-replacement-old {
+    color: var(--background-text-color);
+}
+
+token-replacement-old::after {
+    display: inline-block;
+    color: var(--text-color);
+}
+
+token-descriptions {
+    font-style: italic;
+}
+
+token-description {
+    display: block;
+    margin-top: 8px;
+}
+
+.correction-mistake token-replacement-old {
+    text-decoration: line-through;
+}
+
+.correction-unsure token-replacement-old {
+    display: none
+}
+
+.correction-improvement token-replacement-old::after {
+    content: "\00A0\02194\0020"; /* Left-right arrow surrounded by a non-breaking and regular spaces */
+}
+
+.correction-mistake token-replacement-old::after {
+    content: "\00A0\02192\0020"; /* Right arrow surrounded by a non-breaking and regular spaces */
+}
+
+token-replacement-new {
+    color: var(--improvement-color);
+    font-weight: bold;
+    font-size: var(--correction-font-size);
+}
+
+.correction-unsure token-replacement-new {
+    color: var(--unsure-color);
+}
+
+.correction-unsure token-replacement-new::after {
+    content: "?";
+    display: inline-block;
+    opacity: 0.3;
+    margin-left: 2px;
+}
+
+@keyframes token-tooltip-fade-in {
+    from {
+        opacity: 0;
+        transform: translate(var(--tooltip-horizontal-shift), 4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate(var(--tooltip-horizontal-shift), 0);
+    }
+}
+
+@media (max-width: 959px) {
+    :root {
+        --column-gap: 10px;
+    }
+
+    body {
+        grid-template-columns: auto;
+        grid-template-rows: auto;
+        grid-template-areas:
+                "heading"
+                "instructions"
+                "input"
+                "stats"
+                "info";
+    }
+
+    .input-bg {
+        grid-area: 3 / 1 / 5 / 2;
+    }
+
+    .stats-container {
+        position: static;
+        padding-top: 0;
+    }
+
+    .stats h3 {
+        margin-right: calc(0px - var(--main-padding));
+    }
+
+    .info {
+        margin-top: var(--info-margin);
+    }
+
+    .info h3 {
+        --middle-line-left-width: calc(var(--main-padding) - var(--middle-line-horizontal-margin));
+    }
+
+    .info p {
+        padding-right: var(--main-padding);
+    }
+}
