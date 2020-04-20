@@ -39,6 +39,9 @@ export class TokenChain {
     this.containers = containers;
     this.extractor = extractor;
     this.currentIndex = -1;
+    this.currentToken = null;
+    this.previousToken = null;
+    this.nextToken = null;
   }
 
   hasMore() {
@@ -47,35 +50,69 @@ export class TokenChain {
 
   next() {
     this.currentIndex++;
+    this.currentContainer = this.computeCurrentContainer();
+    this.currentToken = this.computeCurrentToken();
+    this.previousToken = this.computePreviousToken();
+    this.nextToken = this.computeNextToken();
   }
 
-  getContainerAt(index) {
+  computeContainerAt(index) {
     return this.containers[index];
   }
 
-  getCurrentContainer() {
-    return this.getContainerAt(this.currentIndex);
+  computeCurrentContainer() {
+    return this.computeContainerAt(this.currentIndex);
   }
 
-  getTokenAt(index) {
-    return this.extractor(this.getContainerAt(index));
+  getCurrentContainer() {
+    return this.currentContainer;
+  }
+
+  computeTokenAt(index) {
+    return this.extractor(this.computeContainerAt(index));
+  }
+
+  computeCurrentToken() {
+    return this.computeTokenAt(this.currentIndex);
   }
 
   getCurrentToken() {
-    return this.getTokenAt(this.currentIndex);
+    return this.currentToken;
   }
 
-  getPreviousToken(canBeWhitespace = false) {
+  computePreviousToken() {
     let current = this.currentIndex;
     while (true) {
       current--;
       if (current < 0) {
         return null;
       }
-      const token = this.getTokenAt(current);
-      if (canBeWhitespace || !isWhitespace(token)) {
+      const token = this.computeTokenAt(current);
+      if (!isWhitespace(token)) {
         return token;
       }
     }
+  }
+
+  getPreviousToken() {
+    return this.previousToken;
+  }
+
+  computeNextToken() {
+    let current = this.currentIndex;
+    while (true) {
+      current++;
+      if (current === this.containers.length) {
+        return null;
+      }
+      const token = this.computeTokenAt(current);
+      if (!isWhitespace(token)) {
+        return token;
+      }
+    }
+  }
+
+  getNextToken() {
+    return this.nextToken;
   }
 }
