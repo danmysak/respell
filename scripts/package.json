@@ -1,0 +1,12 @@
+{
+  "name": "respell",
+  "version": "0.0.1",
+  "description": "",
+  "main": "web/main.js",
+  "scripts": {
+    "test": "node tests/rules.js"
+  },
+  "author": "Danylo Mysak",
+  "license": "MIT",
+  "type": "module"
+}

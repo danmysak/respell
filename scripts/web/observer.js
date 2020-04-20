@@ -1,6 +1,7 @@
 import {normalize, normalizeCursorClasses} from "./normalizer.js";
-import {spellcheck, correctionTypes} from "../spellcheck/spellchecker.js";
+import {spellcheck} from "./spellchecker.js";
 import {tooltipTag} from "./corrector.js";
+import {updateCorrectionStats, updateSpellingStats, getCorrectionLabels, getSpellingLabels} from "../spelling/stats.js";
 
 let observer = null;
 let container = null;
@@ -8,75 +9,37 @@ let statsContainer = null;
 let isPasting = false;
 let plannedMutationStackSize = 0;
 
-const numberTypes = {
-  ZERO: 0,
-  ONE: 1,
-  FEW: 2,
-  MANY: 3
-};
-
-function getNumberType(number) {
-  if (number === 0) {
-    return numberTypes.ZERO;
-  }
-  const lastTwo = number % 100;
-  if (lastTwo >= 10 && lastTwo < 20) {
-    return numberTypes.MANY;
-  }
-  const last = number % 10;
-  if (last === 1) {
-    return numberTypes.ONE;
-  }
-  if (last >= 2 && last <= 4) {
-    return numberTypes.FEW;
-  }
-  return numberTypes.MANY;
-}
-
-function updateStats(stats) {
+function renderStats() {
   const irrelevantClass = 'stats-irrelevant';
-  const correctionTemplates = {
-    [correctionTypes.MISTAKE]: ['жодної помилки', 'помилка', 'помилки', 'помилок'],
-    [correctionTypes.IMPROVEMENT]: ['жодної пропозиції', 'пропозиція', 'пропозиції', 'пропозицій'],
-    [correctionTypes.UNSURE]: ['жодного припущення', 'припущення', 'припущення', 'припущень']
-  };
-  const rawTemplates = {
-    'paragraphs': ['жодного абзацу', 'абзац', 'абзаци', 'абзаців'],
-    'sentences': ['жодного речення', 'речення', 'речення', 'речень'],
-    'words': ['жодного слова', 'слово', 'слова', 'слів'],
-    'characters': ['жодного символу', 'символ', 'символи', 'символів']
-  };
-  const updateWithTemplates = (templates, stats, includeAverages = false) => {
-    let lastValue = null;
-    let lastUnit = null;
-    Object.keys(templates).forEach((type) => {
+  const render = (labels) => {
+    for (const type of Object.getOwnPropertyNames(labels)) {
+      const label = labels[type];
       const element = statsContainer.querySelector(`.stats-${type}`);
-      const value = stats[type];
-      const valueType = getNumberType(value);
       const html = [];
-      html.push(`${value > 0 ? `<strong>${value}</strong>&nbsp;` : ''}${templates[type][valueType]}`);
-      if (includeAverages && value > 0 && lastValue !== null && lastValue > 1) {
-        const average = (value / lastValue).toFixed(1).replace('.', ',');
-        html.push(`<aside class="stats-extra">~${average}/${lastUnit}</aside>`);
+      html.push(label.text.replace(/{(.*)}/, '<strong>$1</strong>'));
+      if (label.extra) {
+        html.push(`<aside class="stats-extra">${label.extra}</aside>`);
       }
       element.innerHTML = html.join('');
-      if (valueType === numberTypes.ZERO) {
+      if (label.zero) {
         element.classList.add(irrelevantClass);
       } else {
         element.classList.remove(irrelevantClass);
       }
-      lastValue = value;
-      lastUnit = templates[type][numberTypes.ONE];
-    });
+    }
   };
-  updateWithTemplates(correctionTemplates, stats.corrections);
-  updateWithTemplates(rawTemplates, stats.raw, true);
+  render(getCorrectionLabels());
+  render(getSpellingLabels());
 }
 
 function contentsChanged() {
   normalize(container, [tooltipTag], isPasting);
-  const stats = spellcheck(container);
-  updateStats(stats);
+  const tokenSets = [...container.children]
+    .map((paragraph) => [...paragraph.children].map((child) => child.textContent));
+  updateSpellingStats(tokenSets);
+  const applicationSets = spellcheck(container);
+  updateCorrectionStats(applicationSets);
+  renderStats();
   observer.takeRecords();
 }
 

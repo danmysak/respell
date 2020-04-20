@@ -1,4 +1,6 @@
-export const cursorPlaceholder = '__CURSOR__'; // Must be text that can be part of a token
+import {requestIntraToken} from "../spelling/tokenizer.js";
+
+const cursorPlaceholder = requestIntraToken();
 
 function setCursor(node, offset) {
   const range = document.createRange();

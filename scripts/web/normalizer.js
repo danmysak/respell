@@ -1,5 +1,5 @@
 import {serializeCursor, restoreCursor, getRangeIfCollapsedAndInside} from "./cursor.js";
-import {tokenize} from "../spellcheck/tokenizer.js";
+import {tokenize} from "../spelling/tokenizer.js";
 
 const tokenTag = 'T-T';
 const cursorClass = 'cursor-around';
@@ -10,7 +10,7 @@ function isTokenTag(node) {
 
 function isTokenTagWithText(node, text = null) {
   return isTokenTag(node) && (text === null || node.textContent === text) &&
-      [...node.childNodes].every(childNode => childNode.nodeType === Node.TEXT_NODE); // Text nodes can be split
+      [...node.childNodes].every((childNode) => childNode.nodeType === Node.TEXT_NODE); // Text nodes can be split
 }
 
 function paragraphize(inputElement, extraTagsToRemove) {
@@ -31,7 +31,7 @@ function paragraphize(inputElement, extraTagsToRemove) {
       node.remove();
     } else {
       const isParagraph = node.tagName === paragraphTag;
-      if (!isParagraph || ![...node.childNodes].every(childNode => isTokenTagWithText(childNode))) {
+      if (!isParagraph || ![...node.childNodes].every((childNode) => isTokenTagWithText(childNode))) {
         if (node.hasChildNodes()) {
           nextNode = node.firstChild;
           do {
@@ -116,11 +116,11 @@ export function normalizeCursorClasses(inputElement) {
     if (!range) {
       return [];
     }
-    const token = [range.startContainer, range.startContainer.parentElement].find(candidate => isTokenTag(candidate));
+    const token = [range.startContainer, range.startContainer.parentElement].find((candidate) => isTokenTag(candidate));
     if (!token) {
       return [];
     }
-    return [token, token.previousElementSibling, token.nextElementSibling].filter(element => element !== null);
+    return [token, token.previousElementSibling, token.nextElementSibling].filter((element) => element !== null);
   };
   const cursorElements = getCursorElements();
   for (const element of [...inputElement.querySelectorAll(`.${cursorClass}`)]) {
@@ -128,7 +128,7 @@ export function normalizeCursorClasses(inputElement) {
       element.classList.remove(cursorClass);
     }
   }
-  cursorElements.forEach(element => {
+  cursorElements.forEach((element) => {
     element.classList.add(cursorClass);
   });
 }

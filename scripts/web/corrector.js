@@ -1,4 +1,4 @@
-import {getTokenRuleApplication, findNextCorrection} from "../spellcheck/spellchecker.js";
+import {getTokenRuleApplication, findNextCorrection} from "./spellchecker.js";
 import {startPlannedMutation, endPlannedMutation} from "./observer.js";
 
 export const tooltipTag = 'TOKEN-TOOLTIP';
