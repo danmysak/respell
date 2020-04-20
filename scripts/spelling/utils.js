@@ -28,9 +28,12 @@ export function createWordRule(description) {
     return currentItems;
   };
   const transformMask = (mask) => {
-    const normalized = mask
+    const stem = Array.isArray(mask) ? mask[0] : mask;
+    const endings = (Array.isArray(mask) ? mask[1] : null) || [];
+    const normalized = stem
       .replace(/(^|\))(.*?)(\(|$)/g, '$1($2)$3') // We intersperse some extra groups with the existing ones, which
         // gives us the ability to later calculate at which positions all the groups are located in a given match
+      .replace(/$/, endings.length > 0 ? `(${endings.join('|')})` : '')
       .replace(/[а-яґєії]/g, (c) => `[${c}${c.toUpperCase()}]`) // For "abc", we also want to match Abc or ABC
       .replace(/['’]/g, "['’]")
       .replace(/[*]/g, '.*');
@@ -64,7 +67,7 @@ export function createWordRule(description) {
           const replacement = token.replace(mask, (match, ...rest) => {
             const groups = rest.slice(0, -2); // The last two parameters are the offset and the string
             return groups.map((group, index) => {
-              if (index % 2 === 0) { // This is one of the extra groups
+              if (index % 2 === 0 || index === groups.length - 1) { // This is either one of the extra groups or endings
                 return group;
               } else { // This is one of the actual groups
                 return group === group.toUpperCase() ? item.replacement.toUpperCase() : item.replacement;
