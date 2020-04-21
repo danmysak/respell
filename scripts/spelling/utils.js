@@ -4,6 +4,23 @@ export function parenthesizeFirst(list) {
   return list.map((item) => `(${item[0]})${item.slice(1)}`);
 }
 
+export function canBeSentenceBoundary(isExisting, token) {
+  return !isExisting || token.match(/[.?!]/);
+}
+
+export function getConsonants(includeSoftSign) {
+  return ["б", "в", "г", "ґ", "д", "ж", "з", "й", "к", "л", "м", "н",
+          "п", "р", "с", "т", "ф", "х", "ц", "ч", "ш", "щ", ...(includeSoftSign ? ["ь"] : [])];
+}
+
+export function getVowels(includeIotified) {
+  return ["а", "е", "и", "і", "о", "у", ...(includeIotified ? ["є", "ї", "ю", "я"] : [])];
+}
+
+export function getSibilants(includeSoftened) {
+  return ["ж", "з", "с", "ц", "ч", "ш", "щ", ...(includeSoftened ? ["зь", "сь", "ць"] : [])];
+}
+
 export function createWordRule(description) {
   const flattenDescription = (description, extraOptions = {}, currentItems = []) => {
     if (Array.isArray(description)) {
@@ -57,27 +74,28 @@ export function createWordRule(description) {
       if (!matchingMask) {
         continue;
       }
-      const previousToken = chain.getPreviousToken();
-      const nextToken = chain.getNextToken();
-      if (item.previousMatches) {
-        if (!previousToken || !item.previousMatches.some((mask) => previousToken.match(mask))) {
-          continue;
+      const inspectAdjacent = (adjacentToken, adjacentMatches, adjacentCallback) => {
+        if (adjacentMatches) {
+          if (!adjacentToken || !adjacentMatches.some((mask) => adjacentToken.match(mask))) {
+            return false;
+          }
         }
-      }
-      if (item.previousCallback) {
-        if (!previousToken || !item.previousCallback(previousToken)) {
-          continue;
+        if (adjacentCallback) {
+          if (adjacentCallback.length > 1) { // The signature is (isExisting, tokenOrNull)
+            if (!adjacentCallback(adjacentToken !== null, adjacentToken)) {
+              return false;
+            }
+          } else { // The signature is (token)
+            if (!adjacentToken || !adjacentCallback(adjacentToken)) {
+              return false;
+            }
+          }
         }
-      }
-      if (item.nextMatches) {
-        if (!nextToken || !item.nextMatches.some((mask) => nextToken.match(mask))) {
-          continue;
-        }
-      }
-      if (item.nextCallback) {
-        if (!nextToken || !item.nextCallback(nextToken)) {
-          continue;
-        }
+        return true;
+      };
+      if (!inspectAdjacent(chain.getPreviousToken(), item.previousMatches, item.previousCallback) ||
+          !inspectAdjacent(chain.getNextToken(), item.nextMatches, item.nextCallback)) {
+        continue;
       }
       const replacement = token.replace(matchingMask, (match, ...rest) => {
         const groups = rest.slice(0, -2); // The last two parameters are the offset and the string
@@ -87,7 +105,11 @@ export function createWordRule(description) {
             return group;
           } else {
             // This is one of the actual groups
-            return group === group.toUpperCase() ? item.replacement.toUpperCase() : item.replacement;
+            if (item.replacement.toLowerCase() === item.replacement) {
+              return group === group.toUpperCase() ? item.replacement.toUpperCase() : item.replacement;
+            } else {
+              return item.replacement;
+            }
           }
         }).join('');
       });
