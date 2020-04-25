@@ -24,6 +24,7 @@
     --improvement-color: #579B2D;
     --unsure-color: black;
     --line-color: black;
+    --tooltip-border-color: #BEA2AE;
 
     --correction-transition-duration: 0.3s;
 }
@@ -308,7 +309,7 @@ token-tooltip {
     margin: auto;
     color: var(--text-color);
     background-color: #FAFAF8;
-    border: var(--tooltip-border-width) solid #BEA2AE;
+    border: var(--tooltip-border-width) solid var(--tooltip-border-color);
     border-radius: 15px;
     padding: 8px 12px;
     z-index: 1;
@@ -345,6 +346,17 @@ token-replacement-old {
 token-replacement-old::after {
     display: inline-block;
     color: var(--text-color);
+}
+
+token-extra-change::after {
+    content: "Ця зміна може вимагати додаткових граматичних правок у тексті";
+    display: block;
+    font-size: smaller;
+    background-color: #F5EDD6;
+    border-radius: 5px;
+    border: 1px dashed var(--tooltip-border-color);
+    padding: 4px 8px;
+    text-align: center;
 }
 
 token-descriptions {
