@@ -220,7 +220,7 @@ const tests = [
   [35, 'віце-прем’єр-міністр', 'віцепрем’єр-міністр', correctionTypes.MISTAKE],
   [35, 'Віце-прем\'єр-міністр', 'Віцепрем\'єр-міністр', correctionTypes.MISTAKE],
   [35, 'Оце економ-клас?', 'Оце економклас?', correctionTypes.MISTAKE],
-  [35, 'Це медаль екс-чемпіона!', 'Це медаль ексчемпіона!', correctionTypes.MISTAKE],
+  [35, 'Це медаль екс-чемпіонки!', 'Це медаль ексчемпіонки!', correctionTypes.MISTAKE],
   [35, 'Пісню виконав фолк-гурт.', 'Пісню виконав фолкгурт.', correctionTypes.MISTAKE],
   [35, 'Штабс-капітанська квартира :-)', 'Штабскапітанська квартира :-)', correctionTypes.MISTAKE],
   [35, 'Усі ходять або в максі-одязі, або в міні-спідницях.', 'Усі ходять або в максіодязі, або в мініспідницях.', [correctionTypes.MISTAKE, correctionTypes.MISTAKE]],
@@ -289,13 +289,24 @@ const tests = [
   [_, 'Слова машин-годин римуються.', 'Слова машин-годин римуються.', _],
   [_, 'Це ліжко - місце твого кота.', 'Це ліжко - місце твого кота.', _],
   [_, 'Тонномилі', 'Тонномилі', _],
+
+  [36, 'Позичила піваркуша паперу.', 'Позичила пів аркуша паперу.', correctionTypes.UNSURE],
+  [36, 'Піввідра пива — в нікуди.', 'Пів відра пива — в нікуди.', correctionTypes.UNSURE],
+  [36, 'ВАШІ ПІВГОДИНИ', 'ВАШІ ПІВ ГОДИНИ', correctionTypes.UNSURE],
+  [36, 'Об’їздити пів-Європи встигнути б.', 'Об’їздити пів Європи встигнути б.', correctionTypes.UNSURE],
+  [36, 'Ого. Пів-Києва на ногах.', 'Ого. Пів Києва на ногах.', correctionTypes.UNSURE],
+  [36, 'З’їм-но пів’яблука.', 'З’їм-но пів яблука.', correctionTypes.UNSURE],
+  [36, 'Пів\'юшки теж вип\'ю.', 'Пів юшки теж вип\'ю.', correctionTypes.UNSURE],
+  [_, 'Пів- на пів.', 'Пів- на пів.', _],
+  [_, 'Узяв півтора півника.', 'Узяв півтора півника.', _],
+  [_, 'Південне сонце, північні хмари', 'Південне сонце, північні хмари', _],
+  [_, 'Святкуємо півріччя!', 'Святкуємо півріччя!', _],
+  [_, 'Півторагодинний МАРАФОН', 'Півторагодинний МАРАФОН', _],
+  [_, 'Півень нюхає півонію :D', 'Півень нюхає півонію :D', _],
+  [_, 'За півонією вже вибудувалися півнячі черги!', 'За півонією вже вибудувалися півнячі черги!', _],
 ];
 
-let succeeded = 0;
-let failed = 0;
-
-tests.forEach(([sections, text, corrected, types, extraChange]) => {
-  extraChange = extraChange || false;
+function processText(text) {
   const tokens = tokenize(text);
   const replaced = [];
   const chain = new TokenChain(tokens);
@@ -314,31 +325,52 @@ tests.forEach(([sections, text, corrected, types, extraChange]) => {
       encounteredDescriptions.push(...application.descriptions);
     }
   }
-  const final = replaced.join('');
-  const errors = [];
-  if (final !== corrected) {
-    errors.push(`Results differ: "${final}" instead of expected "${corrected}"`);
-  }
-  if (encounteredExtraChange !== extraChange) {
-    errors.push(`Extra change is ${encounteredExtraChange ? 'required' : 'not required'}, but expected otherwise`);
-  }
-  const expectedTypes = (Array.isArray(types) ? types : [types]).join(',');
-  const actualTypes = encounteredTypes.join(',');
-  if (actualTypes !== expectedTypes) {
-    errors.push(`Types differ: "${actualTypes}" instead of expected "${expectedTypes}"`);
-  }
-  const actualDescriptions = encounteredDescriptions.join('; ');
-  (Array.isArray(sections) ? sections : [sections]).forEach((section) => {
-    if (!actualDescriptions.match(new RegExp(`§\\s*${section}(?!\d)`))) {
-      errors.push(`Section "${section}" not found in descriptions "${actualDescriptions}"`);
+  return {
+    processed: replaced.join(''),
+    encounteredTypes,
+    encounteredDescriptions,
+    encounteredExtraChange
+  };
+}
+
+function test(tests) {
+  let succeeded = 0;
+  let failed = 0;
+
+  tests.forEach(([sections, text, corrected, types, extraChange]) => {
+    extraChange = extraChange || false;
+    const {processed, encounteredTypes, encounteredDescriptions, encounteredExtraChange} = processText(text);
+    const errors = [];
+    if (processed !== corrected) {
+      errors.push(`Results differ: "${processed}" instead of expected "${corrected}"`);
+    }
+    if (encounteredExtraChange !== extraChange) {
+      errors.push(`Extra change is ${encounteredExtraChange ? 'required' : 'not required'}, but expected otherwise`);
+    }
+    const expectedTypes = (Array.isArray(types) ? types : [types]).join(',');
+    const actualTypes = encounteredTypes.join(',');
+    if (actualTypes !== expectedTypes) {
+      errors.push(`Types differ: "${actualTypes}" instead of expected "${expectedTypes}"`);
+    }
+    const actualDescriptions = encounteredDescriptions.join('; ');
+    (Array.isArray(sections) ? sections : [sections]).forEach((section) => {
+      if (!actualDescriptions.match(new RegExp(`§\\s*${section}(?!\d)`))) {
+        errors.push(`Section "${section}" not found in descriptions "${actualDescriptions}"`);
+      }
+    });
+    const reprocessed = processText(processed).processed;
+    if (reprocessed !== processed) {
+      errors.push(`Second application of the rules returned "${reprocessed}" instead of expected "${processed}"`);
+    }
+    if (errors.length === 0) {
+      succeeded++;
+    } else {
+      console.error(`Test "${text}" failed:`, ...errors);
+      failed++;
     }
   });
-  if (errors.length === 0) {
-    succeeded++;
-  } else {
-    console.error(`Test "${text}" failed:`, ...errors);
-    failed++;
-  }
-});
 
-console.log(`Done running ${tests.length} tests: ${succeeded} succeeded, ${failed} failed`);
+  console.log(`Done running ${tests.length} tests: ${succeeded} succeeded, ${failed} failed`);
+}
+
+test(tests);
