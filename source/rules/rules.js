@@ -9,4 +9,6 @@ import "./code/32.2.js";
 import "./code/32.4.js";
 import "./code/32.11.js";
 import "./code/32.14.js";
-import "./code/35.2.js";
+import "./code/35.2a.js";
+import "./code/35.2b.js";
+import "./code/35.4a.js";
