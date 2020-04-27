@@ -1,5 +1,5 @@
 import {RuleApplication, correctionTypes} from "../spelling/types.js";
-import {registerWordRule} from "../spelling/processor.js";
+import {registerWordRule, registerPunctuationRule, registerWhitespaceRule} from "../spelling/processor.js";
 import {createMaskRule} from "../spelling/masks.js";
 import {createTreeRule} from "../spelling/trees.js";
 import {
@@ -11,13 +11,16 @@ import {
   unpackParadigm,
   combineCorrespondences,
   cases,
-  determineCase
+  determineCase,
+  normalizeCase
 } from "../spelling/utils.js";
 
 export {
   RuleApplication,
   correctionTypes,
   registerWordRule,
+  registerPunctuationRule,
+  registerWhitespaceRule,
   createMaskRule,
   createTreeRule,
   parenthesizeFirst,
@@ -28,5 +31,6 @@ export {
   unpackParadigm,
   combineCorrespondences,
   cases,
-  determineCase
+  determineCase,
+  normalizeCase
 };

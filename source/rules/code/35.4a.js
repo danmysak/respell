@@ -1,8 +1,10 @@
 import {correctionTypes, registerWordRule, createMaskRule} from "../imports.js";
 
 registerWordRule(createMaskRule({
-  matches: ["багат(-)вечір*", "багат(-)вечор*"],
+  matches: [
+    [["багат", "свят"], "(-)", ["вечір*", "вечор*"]]
+  ],
   replacement: "",
   type: correctionTypes.MISTAKE,
-  description: 'Відповідно до § 35 правопису, слово «багатвечір» слід писати разом.'
+  description: 'Відповідно до § 35 правопису, слова «багатвечір» та «Святвечір» слід писати разом.'
 }));
