@@ -1,4 +1,5 @@
-const cases = {
+export const cases = {
+  EMPTY: 'empty',
   LOWER: 'lower',
   CAPITALIZED: 'capitalized',
   UPPER: 'upper',
@@ -38,7 +39,10 @@ function capitalize(string) {
   return string.length === '' ? string : string[0].toUpperCase() + string.slice(1).toLowerCase();
 }
 
-function determineCase(string) {
+export function determineCase(string) {
+  if (string === '') {
+    return cases.EMPTY;
+  }
   if (string === string.toLowerCase()) {
     return cases.LOWER;
   }

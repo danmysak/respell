@@ -1,4 +1,4 @@
-import {correctionTypes} from "../spelling/types.js";
+import {RuleApplication, correctionTypes} from "../spelling/types.js";
 import {registerWordRule} from "../spelling/processor.js";
 import {createMaskRule} from "../spelling/masks.js";
 import {createTreeRule} from "../spelling/trees.js";
@@ -9,10 +9,13 @@ import {
   getVowels,
   getSibilants,
   unpackParadigm,
-  combineCorrespondences
+  combineCorrespondences,
+  cases,
+  determineCase
 } from "../spelling/utils.js";
 
 export {
+  RuleApplication,
   correctionTypes,
   registerWordRule,
   createMaskRule,
@@ -23,5 +26,7 @@ export {
   getVowels,
   getSibilants,
   unpackParadigm,
-  combineCorrespondences
+  combineCorrespondences,
+  cases,
+  determineCase
 };
