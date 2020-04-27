@@ -5,7 +5,7 @@ registerWordRule(createTreeRule(
   combineCorrespondences(
     feminitives.flatMap(
       (group) => group.roots.map(
-        (root) => unpackParadigm(root, group.paradigm, group.masculineSuffix, group.feminineSuffix)
+        (root) => unpackParadigm(group.paradigm, root + group.masculineSuffix, root + group.feminineSuffix)
       )
     )
   ),

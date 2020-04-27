@@ -70,11 +70,11 @@ function applyOrMap(items, callback) {
   return Array.isArray(items) ? items.map(callback) : callback(items);
 }
 
-export function unpackParadigm(root, paradigm, leftSuffix = '', rightSuffix = '') {
+export function unpackParadigm(paradigm, left, right, valueCallback = (string) => string) {
   const unpacked = {};
   for (const leftEnding of Object.keys(paradigm)) {
-    unpacked[`${root}${leftSuffix}${leftEnding}`] =
-      applyOrMap(paradigm[leftEnding], (rightEnding) => `${root}${rightSuffix}${rightEnding}`);
+    unpacked[`${left}${leftEnding}`] =
+      applyOrMap(paradigm[leftEnding], (rightEnding) => valueCallback(`${right}${rightEnding}`, leftEnding));
   }
   return unpacked;
 }
