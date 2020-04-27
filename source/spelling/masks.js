@@ -53,6 +53,11 @@ export function createMaskRule(description) {
       if (!matchingMask) {
         continue;
       }
+      if (item.antiMatches) {
+        if (item.antiMatches.some((antiMask) => token.match(antiMask))) {
+          continue;
+        }
+      }
       const inspectAdjacent = (adjacentToken, adjacentMatches, adjacentCallback) => {
         if (adjacentMatches) {
           if (!adjacentToken || !adjacentMatches.some((mask) => adjacentToken.match(mask))) {
