@@ -10,8 +10,8 @@ export function parenthesizeFirst(list) {
   return list.map((item) => `(${item[0]})${item.slice(1)}`);
 }
 
-export function canBeSentenceBoundary(isExisting, token) {
-  return !isExisting || token.match(/[.?!]/);
+export function canBeSentenceBoundary(token) {
+  return token === null || token.match(/[.?!]/);
 }
 
 export function getConsonants(includeSoftSign) {
@@ -53,6 +53,10 @@ export function determineCase(string) {
     return cases.UPPER;
   }
   return cases.OTHER;
+}
+
+export function isCapitalized(string) {
+  return determineCase(string) === cases.CAPITALIZED;
 }
 
 export function normalizeCase(string, model) {

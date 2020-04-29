@@ -41,11 +41,11 @@ export class RuleApplication {
 export class TokenChain {
   constructor(containers, extractor = (token) => token) {
     this.containers = containers;
-    this.extractor = extractor;
+    this.tokens = containers.map(extractor);
+    this.nonWhitespaceIndices = this.tokens.flatMap((token, index) => isWhitespace(token) ? [] : [index]);
     this.currentIndex = -1;
-    this.currentToken = null;
-    this.previousToken = null;
-    this.nextToken = null;
+    this.closestLeftNonWhitespace = -1;
+    this.closestRightNonWhitespace = 0;
   }
 
   hasMore() {
@@ -53,70 +53,52 @@ export class TokenChain {
   }
 
   next() {
+    if (this.closestRightNonWhitespace < this.nonWhitespaceIndices.length
+      && this.currentIndex === this.nonWhitespaceIndices[this.closestRightNonWhitespace]) {
+      this.closestRightNonWhitespace++;
+    }
     this.currentIndex++;
-    this.currentContainer = this.computeCurrentContainer();
-    this.currentToken = this.computeCurrentToken();
-    this.previousToken = this.computePreviousToken();
-    this.nextToken = this.computeNextToken();
-  }
-
-  computeContainerAt(index) {
-    return this.containers[index];
-  }
-
-  computeCurrentContainer() {
-    return this.computeContainerAt(this.currentIndex);
+    if (this.closestLeftNonWhitespace + 1 < this.nonWhitespaceIndices.length
+      && this.currentIndex === this.nonWhitespaceIndices[this.closestLeftNonWhitespace + 1]) {
+      this.closestLeftNonWhitespace++;
+    }
   }
 
   getCurrentContainer() {
-    return this.currentContainer;
-  }
-
-  computeTokenAt(index) {
-    return this.extractor(this.computeContainerAt(index));
-  }
-
-  computeCurrentToken() {
-    return this.computeTokenAt(this.currentIndex);
+    return this.containers[this.currentIndex];
   }
 
   getCurrentToken() {
-    return this.currentToken;
+    return this.tokens[this.currentIndex];
   }
 
-  computePreviousToken() {
-    let current = this.currentIndex;
-    while (true) {
-      current--;
-      if (current < 0) {
-        return null;
-      }
-      const token = this.computeTokenAt(current);
-      if (!isWhitespace(token)) {
-        return token;
-      }
+  extractFromList(list, index) {
+    return index === null || index < 0 || index >= list.length ? null : list[index];
+  }
+
+  getAnyAdjacentToken(level) {
+    return this.extractFromList(this.tokens, this.currentIndex + level);
+  }
+
+  getNonWhitespaceAdjacentToken(level) {
+    const currentIsWhitespace = this.closestLeftNonWhitespace !== this.closestRightNonWhitespace;
+    if (level === 0) {
+      return currentIsWhitespace ? null : this.getCurrentToken();
     }
+    const shift = currentIsWhitespace ? 1 : 0;
+    return this.extractFromList(this.tokens, this.extractFromList(this.nonWhitespaceIndices,
+      (level > 0 ? this.closestRightNonWhitespace - shift : this.closestLeftNonWhitespace + shift) + level));
   }
 
-  getPreviousToken() {
-    return this.previousToken;
+  getAdjacentToken(level, nonWhitespace) {
+    return nonWhitespace ? this.getNonWhitespaceAdjacentToken(level) : this.getAnyAdjacentToken(level);
   }
 
-  computeNextToken() {
-    let current = this.currentIndex;
-    while (true) {
-      current++;
-      if (current === this.containers.length) {
-        return null;
-      }
-      const token = this.computeTokenAt(current);
-      if (!isWhitespace(token)) {
-        return token;
-      }
-    }
+  getPreviousToken(level = 1, nonWhitespace = true) {
+    return this.getAdjacentToken(-level, nonWhitespace);
   }
 
-  getNextToken() {
-    return this.nextToken;
+  getNextToken(level = 1, nonWhitespace = true) {
+    return this.getAdjacentToken(level, nonWhitespace);
   }
 }

@@ -1,4 +1,4 @@
-import {RuleApplication, correctionTypes, registerWordRule,} from "../imports.js";
+import {RuleApplication, correctionTypes, registerWordRule} from "../imports.js";
 
 const pattern = /^(\d+)(-?)([а-зґє])$/i;
 

@@ -12,6 +12,7 @@ import {
   combineCorrespondences,
   cases,
   determineCase,
+  isCapitalized,
   normalizeCase
 } from "../spelling/utils.js";
 
@@ -32,5 +33,6 @@ export {
   combineCorrespondences,
   cases,
   determineCase,
+  isCapitalized,
   normalizeCase
 };

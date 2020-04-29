@@ -13,6 +13,7 @@ registerWordRule(createMaskRule([{
   replacement: "Із",
   type: correctionTypes.MISTAKE,
   previousCallback: canBeSentenceBoundary,
+  canBeFirst: true,
   nextMatches: [
     [["з", "ц", "ч", "щ"], "*"]
   ],

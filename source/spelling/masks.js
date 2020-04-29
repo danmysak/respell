@@ -58,27 +58,24 @@ export function createMaskRule(description) {
           continue;
         }
       }
-      const inspectAdjacent = (adjacentToken, adjacentMatches, adjacentCallback) => {
+      const inspectAdjacent = (adjacentToken, canBeNull, adjacentMatches, adjacentCallback) => {
+        if (canBeNull === false && !adjacentToken) {
+          return false;
+        }
         if (adjacentMatches) {
           if (!adjacentToken || !adjacentMatches.some((mask) => adjacentToken.match(mask))) {
             return false;
           }
         }
         if (adjacentCallback) {
-          if (adjacentCallback.length > 1) { // The signature is (isExisting, tokenOrNull)
-            if (!adjacentCallback(adjacentToken !== null, adjacentToken)) {
-              return false;
-            }
-          } else { // The signature is (token)
-            if (!adjacentToken || !adjacentCallback(adjacentToken)) {
-              return false;
-            }
+          if ((canBeNull !== true && !adjacentToken) || !adjacentCallback(adjacentToken)) {
+            return false;
           }
         }
         return true;
       };
-      if (!inspectAdjacent(chain.getPreviousToken(), item.previousMatches, item.previousCallback) ||
-        !inspectAdjacent(chain.getNextToken(), item.nextMatches, item.nextCallback)) {
+      if (!inspectAdjacent(chain.getPreviousToken(), item.canBeFirst, item.previousMatches, item.previousCallback) ||
+        !inspectAdjacent(chain.getNextToken(), item.canBeLast, item.nextMatches, item.nextCallback)) {
         continue;
       }
       const replacement = token.replace(matchingMask, (match, ...rest) => {
