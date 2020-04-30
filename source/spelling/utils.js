@@ -35,7 +35,7 @@ export function normalizeApostrophe(string) {
   return string.replace(/'/g, '’');
 }
 
-function capitalize(string) {
+export function capitalize(string) {
   return string.length === '' ? string : string[0].toUpperCase() + string.slice(1).toLowerCase();
 }
 

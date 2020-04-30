@@ -35,9 +35,12 @@ function followTree(tree, string) {
 }
 
 export function createTreeRule(correspondences, correctionType, description,
-                               {requiresExtraChange, lowerCase, fixApostrophe}) {
+                               {callback, requiresExtraChange, lowerCase, fixApostrophe}) {
   const tree = constructTree(correspondences);
-  return (token) => {
+  return (token, chain) => {
+    if (callback && !callback(token, chain)) {
+      return null;
+    }
     let string = token;
     if (lowerCase) {
       string = string.toLowerCase();

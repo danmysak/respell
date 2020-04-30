@@ -13,6 +13,7 @@ import {
   cases,
   determineCase,
   isCapitalized,
+  capitalize,
   normalizeCase
 } from "../spelling/utils.js";
 
@@ -34,5 +35,6 @@ export {
   cases,
   determineCase,
   isCapitalized,
+  capitalize,
   normalizeCase
 };
