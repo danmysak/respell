@@ -144,7 +144,7 @@ const tests = [
   [32, 'угринові', 'угринці', correctionTypes.UNSURE, true], /* угрин-угринка */
   [32, 'Ви, шапсуже, помиляєтеся.', 'Ви, шапсужко, помиляєтеся.', correctionTypes.UNSURE, true], /* шапсуг-шапсужка */
   [32, 'Жерці їдять', 'Жриці їдять', correctionTypes.UNSURE, true], /* жрець-жриця */
-  [32, 'боярине, ну-бо', 'боярине, ну-бо', correctionTypes.UNSURE, true], /* боярин-бояриня */
+  [_, 'боярине, ну-бо', 'боярине, ну-бо', _], /* боярин-бояриня */
   [32, 'У государях', 'У государинях', correctionTypes.UNSURE, true], /* государ-государиня */
   [32, 'Дайте сюди ґазду!', 'Дайте сюди ґаздиню!', correctionTypes.UNSURE, true], /* ґазда-ґаздиня */
   [32, 'Майстрів теж сюди.', 'Майстринь теж сюди.', correctionTypes.UNSURE, true], /* майстер-майстриня */
@@ -379,6 +379,19 @@ const tests = [
   [49, 'РИЧАРДОМ – так його звали', 'РІЧАРДОМ – так його звали', correctionTypes.MISTAKE],
   [49, 'Це все ричардівські штучки!', 'Це все річардівські штучки!', correctionTypes.MISTAKE],
   [_, 'Ричання тигрів', 'Ричання тигрів', _],
+
+  [50, 'Зустрітися на проспекті Дружби народів', 'Зустрітися на проспекті Дружби Народів', correctionTypes.MISTAKE],
+  [50, 'Зупинка «Просп. Дружби народів»', 'Зупинка «Просп. Дружби Народів»', correctionTypes.MISTAKE],
+  [50, 'Вулицю Дружби народів давно вже перейменували', 'Вулицю Дружби Народів давно вже перейменували', correctionTypes.MISTAKE],
+  [50, 'ВУЛ. ДРУЖБИ народів', 'ВУЛ. ДРУЖБИ Народів', correctionTypes.MISTAKE],
+  [50, 'А це — ст. м. «Дружби народів»!', 'А це — ст. м. «Дружби Народів»!', correctionTypes.MISTAKE],
+  [50, 'Метро "Дружби народів" - одна з нещодавніх станцій.', 'Метро "Дружби Народів" - одна з нещодавніх станцій.', correctionTypes.MISTAKE],
+  [50, 'Дружби народів', 'Дружби Народів', correctionTypes.UNSURE],
+  [50, 'Що ж. Дружби народів різняться залежно від народів.', 'Що ж. Дружби Народів різняться залежно від народів.', correctionTypes.UNSURE],
+  [50, 'Від ДРУЖБИ народів нікуди не дітися.', 'Від ДРУЖБИ Народів нікуди не дітися.', correctionTypes.UNSURE],
+  [_, 'Пропоную зробити все для дружби народів!', 'Пропоную зробити все для дружби народів!', _],
+  [_, 'Дружба народів — найцінніше.', 'Дружба народів — найцінніше.', _],
+  [_, 'Дружби народу не уникнути.', 'Дружби народу не уникнути.', _],
 ];
 
 function processText(text) {
@@ -453,9 +466,10 @@ function test(tests) {
         errors.push(`Section "${section}" not found in descriptions "${actualDescriptions}"`);
       }
     });
-    const reprocessed = processText(processed).processed;
-    if (reprocessed !== processed) {
-      errors.push(`Reapplication of the rules returned "${reprocessed}" instead of expected "${processed}"`);
+    const reprocessed = processText(processed);
+    if (reprocessed.encounteredTypes.length > 0) {
+      errors.push(`Reapplication of the rules returned yielded the following corrections: ` +
+        reprocessed.encounteredTypes.join(',') + `; the final text is as follows: "${reprocessed.processed}"`);
     }
     if (errors.length === 0) {
       succeeded++;

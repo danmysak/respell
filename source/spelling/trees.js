@@ -55,6 +55,9 @@ export function createTreeRule(correspondences, correctionType, description,
     if (lowerCase) {
       values = values.map((value) => normalizeCase(value, token));
     }
+    if (values[0] === token) {
+      return null;
+    }
     return new RuleApplication(correctionType, values[0], description, {
       alternatives: values.slice(1),
       requiresExtraChange: requiresExtraChange || false
