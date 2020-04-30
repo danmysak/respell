@@ -1,5 +1,6 @@
 import {getTokenRuleApplication, findNextCorrection} from "./spellchecker.js";
 import {startPlannedMutation, endPlannedMutation} from "./observer.js";
+import {isWhitespace} from "../spelling/tokenizer.js";
 
 export const tooltipTag = 'TOKEN-TOOLTIP';
 const replacementTag = 'TOKEN-REPLACEMENT';
@@ -28,29 +29,20 @@ function removeClasses() {
   currentToken.classList.remove(tokenCorrectingClassName);
 }
 
-function displayTooltip() {
-  const tooltip = document.createElement(tooltipTag);
-  tooltip.setAttribute('contenteditable', 'false');
-  const replacement = document.createElement(replacementTag);
-  const oldToken = document.createElement(`${replacementTag}-OLD`);
-  oldToken.textContent = currentToken.textContent;
-  replacement.append(oldToken);
-  const newToken = document.createElement(`${replacementTag}-NEW`);
-  newToken.textContent = [currentApplication.replacement, ...currentApplication.alternatives].join(' / ');
-  replacement.append(newToken);
-  tooltip.append(replacement);
-  if (currentApplication.requiresExtraChange) {
-    const extraChange = document.createElement(extraChangeTag);
-    tooltip.append(extraChange);
+function getCorrectionPrefixes() {
+  if (currentApplication.removeWhitespaceBefore) {
+    const previous = currentToken.previousElementSibling;
+    if (previous !== null && isWhitespace(previous.textContent) !== null) {
+      const previousNonWhitespace = previous.previousElementSibling;
+      if (previousNonWhitespace !== null) {
+        return [previousNonWhitespace.textContent + ' ', previousNonWhitespace.textContent];
+      }
+    }
   }
-  const descriptions = document.createElement(descriptionsTag);
-  currentApplication.formattedDescriptions.forEach((text) => {
-    const description = document.createElement(descriptionTag);
-    description.innerHTML = text;
-    descriptions.append(description);
-  });
-  tooltip.append(descriptions);
-  currentToken.append(tooltip);
+  return ['', ''];
+}
+
+function fixTooltipPositioning(tooltip) {
   const boundingRect = tooltip.getBoundingClientRect();
   const heightNeeded = window.scrollY + boundingRect.top + tooltip.offsetHeight + tooltipMargin;
   const currentHeight = document.body.offsetHeight + pageBottomPadding; /* We can't just take the value of
@@ -69,6 +61,34 @@ function displayTooltip() {
   }
   tooltip.classList.add('animated'); // We need this class, and must set it exactly now, because otherwise the fade-in
                                      // animation would use an outdated value of the tooltipHorizontalShiftProperty.
+}
+
+function displayTooltip() {
+  const tooltip = document.createElement(tooltipTag);
+  tooltip.setAttribute('contenteditable', 'false');
+  const [oldCorrectionPrefix, newCorrectionPrefix] = getCorrectionPrefixes();
+  const replacement = document.createElement(replacementTag);
+  const oldToken = document.createElement(`${replacementTag}-OLD`);
+  oldToken.textContent = oldCorrectionPrefix + currentToken.textContent;
+  replacement.append(oldToken);
+  const newToken = document.createElement(`${replacementTag}-NEW`);
+  newToken.textContent = [currentApplication.replacement, ...currentApplication.alternatives]
+    .map((replacement) => newCorrectionPrefix + replacement).join(' / ');
+  replacement.append(newToken);
+  tooltip.append(replacement);
+  if (currentApplication.requiresExtraChange) {
+    const extraChange = document.createElement(extraChangeTag);
+    tooltip.append(extraChange);
+  }
+  const descriptions = document.createElement(descriptionsTag);
+  currentApplication.formattedDescriptions.forEach((text) => {
+    const description = document.createElement(descriptionTag);
+    description.innerHTML = text;
+    descriptions.append(description);
+  });
+  tooltip.append(descriptions);
+  currentToken.append(tooltip);
+  fixTooltipPositioning(tooltip);
 }
 
 function removeTooltip() {
@@ -103,6 +123,10 @@ function performReplacement(byKeyboard) {
   const application = currentApplication;
   stopCorrecting();
   token.textContent = application.replacement;
+  if (application.removeWhitespaceBefore && token.previousElementSibling !== null
+    && isWhitespace(token.previousElementSibling.textContent)) {
+    token.previousElementSibling.remove();
+  }
   if (byKeyboard && document.activeElement === token) {
     const correction = findNextCorrection(token);
     if (correction !== null) {

@@ -1,4 +1,5 @@
 import {RuleApplication} from "./types.js";
+import {determineCase, cases} from "./utils.js";
 
 export function createMaskRule(description) {
   const flattenDescription = (description, extraOptions = {}, currentItems = []) => {
@@ -44,8 +45,8 @@ export function createMaskRule(description) {
   })));
   return (token, chain) => {
     for (const item of items) {
-      if (item.optimizationMatches) {
-        if (!item.optimizationMatches.some((mask) => token.match(mask))) {
+      if (item.callback) {
+        if (!item.callback(token, chain)) {
           continue;
         }
       }
@@ -86,7 +87,9 @@ export function createMaskRule(description) {
             return group;
           } else {
             // This is one of the actual groups
-            if (item.replacement.toLowerCase() === item.replacement) {
+            if (determineCase(token) === cases.UPPER) {
+              return item.replacement.toUpperCase();
+            } else if (!item.preserveReplacementCase && item.replacement.toLowerCase() === item.replacement) {
               return group === group.toUpperCase() ? item.replacement.toUpperCase() : item.replacement;
             } else {
               return item.replacement;
@@ -94,7 +97,9 @@ export function createMaskRule(description) {
           }
         }).join('');
       });
-      return new RuleApplication(item.type, replacement, item.description);
+      return new RuleApplication(item.type, replacement, item.description, {
+        removeWhitespaceBefore: item.removeWhitespaceBefore
+      });
     }
     return null;
   };

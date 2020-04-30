@@ -23,6 +23,7 @@ registerWordRule(createMaskRule({
         ["(Г)о(г)", endings], "(Г)озі",
         ["(Г)ул", endings], "(Г)улі",
       ],
+      callback: (token, chain) => !(token.match(/^гог/i) && (chain.getPreviousToken() || '').match(/^ван$/i)),
       type: correctionTypes.UNSURE
     }]
   }]

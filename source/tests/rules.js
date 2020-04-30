@@ -1,5 +1,5 @@
 import {correctionTypes, TokenChain} from "../spelling/types.js";
-import {tokenize} from "../spelling/tokenizer.js";
+import {tokenize, isWhitespace} from "../spelling/tokenizer.js";
 import {processToken} from "../spelling/processor.js";
 import "../rules/rules.js";
 
@@ -342,6 +342,43 @@ const tests = [
   [_, 'Де всі? (Не знаю).', 'Де всі? (Не знаю).', _],
   [_, 'Навіщо?.. (навіщо?!) (Навіщо?..)', 'Навіщо?.. (навіщо?!) (Навіщо?..)', _],
   [_, 'Кожне Слово Цих. Речень Написано З Великої, Або з Малої Літери!', 'Кожне Слово Цих. Речень Написано З Великої, Або з Малої Літери!', _],
+
+  [49, 'Зустрів по дорозі ван Гога.', 'Зустрів по дорозі Ван Гога.', correctionTypes.MISTAKE],
+  [49, 'Так, ван Гог — найкращий.', 'Так, Ван Гог — найкращий.', correctionTypes.MISTAKE],
+  [49, 'Привіт ван ГОГОВІ!', 'Привіт Ван ГОГОВІ!', correctionTypes.MISTAKE],
+  [_, 'Зустрів по дорозі ван Бетховена.', 'Зустрів по дорозі ван Бетховена.', _],
+  [_, 'Тут багато ван', 'Тут багато ван', _],
+  [_, 'Ван Гог', 'Ван Гог', _],
+  [_, 'Це ВАН Гог', 'Це ВАН Гог', _],
+
+  [49, 'Чо Чі-вон', 'Чхве Чхвівон', [correctionTypes.MISTAKE, correctionTypes.MISTAKE]],
+  [49, 'Нічого не зробиш без Чхе Чхи-Вона...', 'Нічого не зробиш без Чхве Чхвівона...', [correctionTypes.MISTAKE, correctionTypes.MISTAKE]],
+  [49, 'Чхво Чи Вон тут ні до чого.', 'Чхве Чхвівон тут ні до чого.', [correctionTypes.MISTAKE, correctionTypes.MISTAKE, correctionTypes.MISTAKE], false, 2],
+  [49, 'Віддати Чхо Чхі Вонові належне', 'Віддати Чхве Чхвівонові належне', [correctionTypes.MISTAKE, correctionTypes.MISTAKE, correctionTypes.MISTAKE]],
+  [49, 'ЧХВИ-ВОНІВСЬКИЙ СПАДОК', 'ЧХВІВОНІВСЬКИЙ СПАДОК', correctionTypes.MISTAKE],
+  [49, 'Його прізвище — Чхві Вон або Чхві-вон.', 'Його прізвище — Чхвівон або Чхвівон.', [correctionTypes.MISTAKE, correctionTypes.MISTAKE]],
+  [49, 'Привіт Чхивону!', 'Привіт Чхвівону!', correctionTypes.MISTAKE],
+  [_, 'Чхво чи Вон тут ні до чого.', 'Чхво чи Вон тут ні до чого.', _],
+  [_, 'І чи Вон, чи Він його звали — не пам’ятаю.', 'І чи Вон, чи Він його звали — не пам’ятаю.', _],
+  [_, 'Чо? Чи чіпав чхання?', 'Чо? Чи чіпав чхання?', _],
+
+  [49, 'Привітаймо Ван Со з ювілеєм!', 'Привітаймо Вансо з ювілеєм!', correctionTypes.MISTAKE],
+  [49, 'Ван-со чи Ван-Со писати неправильно, правильно писати Вансо', 'Вансо чи Вансо писати неправильно, правильно писати Вансо', [correctionTypes.MISTAKE, correctionTypes.MISTAKE]],
+  [49, 'ПАК ВАН СО.', 'ПАК ВАНСО.', correctionTypes.MISTAKE],
+  [_, 'Ван. Со то таке?', 'Ван. Со то таке?', _],
+  [_, 'Ван Сольний концерт дає', 'Ван Сольний концерт дає', _],
+
+  [49, 'Давно нічого не чути про Пан Гі Муна...', 'Давно нічого не чути про Пан Гімуна...', correctionTypes.MISTAKE],
+  [49, 'Гі мун усе бачить.', 'Гімун усе бачить.', correctionTypes.MISTAKE],
+  [49, 'Пан Гі-Мунові з іншими Гі-мунами нічого робити!', 'Пан Гімунові з іншими Гімунами нічого робити!', [correctionTypes.MISTAKE, correctionTypes.MISTAKE]],
+  [49, 'Дуже гарне прізвище Гі-Мун', 'Дуже гарне прізвище Гімун', correctionTypes.MISTAKE],
+  [_, 'Пан Гі все розповів.', 'Пан Гі все розповів.', _],
+  [_, 'Місяць англійською буде мун.', 'Місяць англійською буде мун.', _],
+
+  [49, 'Мала знайомого на ім’я Ричард.', 'Мала знайомого на ім’я Річард.', correctionTypes.MISTAKE],
+  [49, 'РИЧАРДОМ – так його звали', 'РІЧАРДОМ – так його звали', correctionTypes.MISTAKE],
+  [49, 'Це все ричардівські штучки!', 'Це все річардівські штучки!', correctionTypes.MISTAKE],
+  [_, 'Ричання тигрів', 'Ричання тигрів', _],
 ];
 
 function processText(text) {
@@ -357,6 +394,9 @@ function processText(text) {
     if (application === null) {
       replaced.push(chain.getCurrentToken());
     } else {
+      if (application.removeWhitespaceBefore && replaced.length > 0 && isWhitespace(replaced[replaced.length - 1])) {
+        replaced.pop();
+      }
       replaced.push(application.replacement);
       encounteredExtraChange = encounteredExtraChange || application.requiresExtraChange;
       encounteredTypes.push(application.type);
@@ -375,9 +415,26 @@ function test(tests) {
   let succeeded = 0;
   let failed = 0;
 
-  tests.forEach(([sections, text, corrected, types, extraChange]) => {
+  tests.forEach(([sections, text, corrected, types, extraChange, processings]) => {
     extraChange = extraChange || false;
-    const {processed, encounteredTypes, encounteredDescriptions, encounteredExtraChange} = processText(text);
+    processings = processings || 1;
+    let current = text;
+    const encounteredTypes = [];
+    const encounteredDescriptions = [];
+    let encounteredExtraChange = false;
+    for (let i = 0; i < processings; i++) {
+      const {
+        processed: next,
+        encounteredTypes: types,
+        encounteredDescriptions: descriptions,
+        encounteredExtraChange: extraChange
+      } = processText(current);
+      current = next;
+      encounteredTypes.push(...types);
+      encounteredDescriptions.push(...descriptions);
+      encounteredExtraChange = encounteredExtraChange || extraChange;
+    }
+    const processed = current;
     const errors = [];
     if (processed !== corrected) {
       errors.push(`Results differ: "${processed}" instead of expected "${corrected}"`);
@@ -398,7 +455,7 @@ function test(tests) {
     });
     const reprocessed = processText(processed).processed;
     if (reprocessed !== processed) {
-      errors.push(`Second application of the rules returned "${reprocessed}" instead of expected "${processed}"`);
+      errors.push(`Reapplication of the rules returned "${reprocessed}" instead of expected "${processed}"`);
     }
     if (errors.length === 0) {
       succeeded++;

@@ -7,12 +7,17 @@ export const correctionTypes = {
 };
 
 export class RuleApplication {
-  constructor(type, replacement, description, alternatives = [], requiresExtraChange = false) {
+  constructor(type, replacement, description, {
+    alternatives = [],
+    requiresExtraChange = false,
+    removeWhitespaceBefore = false
+  } = {}) {
     this.type = type;
     this.replacement = replacement;
     this.descriptions = Array.isArray(description) ? description : [description];
     this.alternatives = alternatives;
     this.requiresExtraChange = requiresExtraChange;
+    this.removeWhitespaceBefore = removeWhitespaceBefore;
   }
 
   get formattedDescriptions() {
@@ -34,7 +39,12 @@ export class RuleApplication {
     const descriptions = [...a.descriptions, ...b.descriptions];
     const alternatives = [...b.alternatives, ...a.alternatives];
     const requiresExtraChange = a.requiresExtraChange || b.requiresExtraChange;
-    return new RuleApplication(type, replacement, descriptions, alternatives, requiresExtraChange);
+    const removeWhitespaceBefore = a.removeWhitespaceBefore || b.removeWhitespaceBefore;
+    return new RuleApplication(type, replacement, descriptions, {
+      alternatives,
+      requiresExtraChange,
+      removeWhitespaceBefore
+    });
   }
 }
 
