@@ -6,8 +6,8 @@ export const cases = {
   OTHER: 'other'
 };
 
-export function parenthesizeFirst(list) {
-  return list.map((item) => `(${item[0]})${item.slice(1)}`);
+export function parenthesizeFirst(items) {
+  return applyOrMap(items, (item) => `(${item[0]})${item.slice(1)}`);
 }
 
 export function canBeSentenceBoundary(token) {
