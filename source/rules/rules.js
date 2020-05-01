@@ -24,3 +24,4 @@ import "./code/46.js";
 import "./code/49.js";
 import "./code/50.js";
 import "./code/51.js";
+import "./code/52.js";
