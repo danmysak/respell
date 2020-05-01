@@ -1,10 +1,10 @@
 import {RuleApplication, correctionTypes} from "../spelling/types.js";
+import {canBeSentenceBoundary, containsQuotes} from "../spelling/tokenizer.js";
 import {registerWordRule, registerPunctuationRule, registerWhitespaceRule} from "../spelling/processor.js";
 import {createMaskRule} from "../spelling/masks.js";
 import {createTreeRule} from "../spelling/trees.js";
 import {
   parenthesizeFirst,
-  canBeSentenceBoundary,
   getConsonants,
   getVowels,
   getSibilants,
@@ -20,13 +20,14 @@ import {
 export {
   RuleApplication,
   correctionTypes,
+  canBeSentenceBoundary,
+  containsQuotes,
   registerWordRule,
   registerPunctuationRule,
   registerWhitespaceRule,
   createMaskRule,
   createTreeRule,
   parenthesizeFirst,
-  canBeSentenceBoundary,
   getConsonants,
   getVowels,
   getSibilants,

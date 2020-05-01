@@ -1,5 +1,15 @@
 const whitespace = `\\s`;
-const punctuation = `[.…?!,:;–—"«»„“”/(){}[\\]]`;
+
+const sentenceDelimiters = '.…?!';
+const quotes = '"«»„“”';
+const clauseDelimiters = ',:;–—';
+const slashes = '/';
+const brackets = '(){}[]';
+
+const punctuation = `[${sentenceDelimiters}${clauseDelimiters}${quotes}${slashes}${brackets.replace(']', '\\]')}]`;
+
+const sentenceBoundaryPattern = new RegExp(`[${sentenceDelimiters}]`);
+const quotePattern = new RegExp(`[${quotes}]`);
 
 class IntraTokenManager { // This class allows extra data to be injected into text without changing tokenization
   constructor() {
@@ -50,4 +60,12 @@ export function isPunctuation(token) {
 
 export function isWord(token) {
   return !isWhitespace(token) && !isPunctuation(token);
+}
+
+export function canBeSentenceBoundary(token) {
+  return token === null || token.match(sentenceBoundaryPattern);
+}
+
+export function containsQuotes(token) {
+  return token !== null && token.match(quotePattern);
 }

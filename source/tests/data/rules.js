@@ -438,4 +438,16 @@ export const tests = [
   [53, 'верховний Архиєпископ прийшов', 'Верховний Архиєпископ прийшов', correctionTypes.MISTAKE],
   [_, 'Коли патріарх не вселенський, то й із великої літери не пишеться.', 'Коли патріарх не вселенський, то й із великої літери не пишеться.', _],
   [_, 'Говорить верховний головнокомандувач архиєпископів.', 'Говорить верховний головнокомандувач архиєпископів.', _],
+
+  [54, 'Компанія Microsoft випустила нову версію своєї операційної системи Microsoft Windows?', 'Компанія «Microsoft» випустила нову версію своєї операційної системи «Microsoft Windows»?', [correctionTypes.UNSURE, correctionTypes.UNSURE, correctionTypes.UNSURE]],
+  [54, 'General Motors — компанія, що займається виробництвом автомобілів, як і Volkswagen', '«General Motors» — компанія, що займається виробництвом автомобілів, як і «Volkswagen»', [correctionTypes.UNSURE, correctionTypes.UNSURE, correctionTypes.UNSURE]],
+  [54, 'Речення. Some cool name. Ще одне речення. Some cool name згадується ще раз. Нарешті, ще одна згадка Some cool name.', 'Речення. Some cool name. Ще одне речення. «Some cool name» згадується ще раз. Нарешті, ще одна згадка «Some cool name».', [correctionTypes.UNSURE, correctionTypes.UNSURE, correctionTypes.UNSURE, correctionTypes.UNSURE]],
+  [54, 'З доповідями виступили представниці компаній Microsoft, Black-white-blue New Apple і Google!', 'З доповідями виступили представниці компаній «Microsoft», «Black-white-blue New Apple» і «Google»!', [correctionTypes.UNSURE, correctionTypes.UNSURE, correctionTypes.UNSURE, correctionTypes.UNSURE]],
+  [54, 'Це iWatch', 'Це «iWatch»', correctionTypes.UNSURE],
+  [_, 'Компанію з назвою Really Really Long Name система не пропонуватиме виділити лапками.', 'Компанію з назвою Really Really Long Name система не пропонуватиме виділити лапками.', _],
+  [_, 'Так само, як і компанія з Name-мішаної-форми.', 'Так само, як і компанія з Name-мішаної-форми.', _],
+  [_, 'І назви companies та various Other Companies, що починаються з малої літери.', 'І назви companies та various Other Companies, що починаються з малої літери.', _],
+  [_, 'Компанія "Microsoft" випустила нову версію своєї операційної системи “Microsoft Windows”?', 'Компанія "Microsoft" випустила нову версію своєї операційної системи “Microsoft Windows”?', _],
+  [_, 'Різні :-D смайлики :O)', 'Різні :-D смайлики :O)', _],
+  [_, 'Hello. Hello? Hello! Hello... Hello', 'Hello. Hello? Hello! Hello... Hello', _],
 ];
