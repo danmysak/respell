@@ -15,7 +15,8 @@ import {
   determineCase,
   isCapitalized,
   capitalize,
-  normalizeCase
+  normalizeCase,
+  isAfterSentenceBoundary
 } from "../spelling/utils.js";
 
 export {
@@ -42,5 +43,6 @@ export {
   determineCase,
   isCapitalized,
   capitalize,
-  normalizeCase
+  normalizeCase,
+  isAfterSentenceBoundary
 };

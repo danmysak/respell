@@ -1,3 +1,5 @@
+import {canBeSentenceBoundary, isWord} from "./tokenizer.js";
+
 export const cases = {
   EMPTY: 'empty',
   LOWER: 'lower',
@@ -120,4 +122,18 @@ export function combineCorrespondences(list) {
     combined[key] = options.length === 1 ? options[0] : options;
   }
   return combined;
+}
+
+export function isAfterSentenceBoundary(chain) {
+  let level = 1;
+  while (true) {
+    const token = chain.getPreviousToken(level);
+    if (isWord(token)) {
+      return false;
+    }
+    if (canBeSentenceBoundary(token)) {
+      return true;
+    }
+    level++;
+  }
 }

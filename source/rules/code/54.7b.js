@@ -7,10 +7,9 @@ import {
   determineCase,
   cases,
   capitalize,
-  isWord,
   isWhitespace,
   isQuote,
-  canBeSentenceBoundary
+  isAfterSentenceBoundary
 } from "../imports.js";
 import {websites, websiteTypes} from "../data/websites.js";
 
@@ -45,20 +44,6 @@ function findTypeWord(chain, maxDistance) {
   }
 }
 
-function isAfterSentenceBoundary(chain) {
-  let level = 1;
-  while (true) {
-    const token = chain.getPreviousToken(level);
-    if (isWord(token)) {
-      return false;
-    }
-    if (canBeSentenceBoundary(token)) {
-      return true;
-    }
-    level++;
-  }
-}
-
 function determineCapitalization(token, chain, typeWordFound) {
   const tokenCase = determineCase(token);
   if (tokenCase === cases.LOWER) {
@@ -83,26 +68,28 @@ function determineQuotes(token, chain, typeWordFound) {
   }
 }
 
-registerWordRule(createTreeRule(
-  unpackSingleParadigmList(websites, (form) => [form, (token, chain) => {
-    const typeWordFound = findTypeWord(chain, maxTypeDistance);
-    const capitalization = determineCapitalization(token, chain, typeWordFound);
-    const quotes = determineQuotes(token, chain, typeWordFound);
-    if (capitalization === 0 && quotes === 0) {
-      return null;
+function process(token, chain) {
+  const typeWordFound = findTypeWord(chain, maxTypeDistance);
+  const capitalization = determineCapitalization(token, chain, typeWordFound);
+  const quotes = determineQuotes(token, chain, typeWordFound);
+  if (capitalization === 0 && quotes === 0) {
+    return null;
+  }
+  const leftQuote = quotes > 0 ? '«' : '';
+  const rightQuote = quotes > 0 ? '»' : '';
+  const word = capitalization > 0 ? capitalize(token) : (capitalization < 0 ? token.toLowerCase() : token);
+  return new RuleApplication(correctionTypes.UNSURE, `${leftQuote}${word}${rightQuote}`,
+    'Відповідно до § 54 правопису, назви сайтів без родового слова («сайт», «мережа» тощо) слід писати з малої букви; '
+      + 'із родовим словом — з великої літери та в лапках; ужиті як назви юридичних осіб — з великої букви без лапок.',
+    {
+      removePreviousToken: quotes < 0,
+      removeNextToken: quotes < 0
     }
-    const leftQuote = quotes > 0 ? '«' : '';
-    const rightQuote = quotes > 0 ? '»' : '';
-    const word = capitalization > 0 ? capitalize(token) : (capitalization < 0 ? token.toLowerCase() : token);
-    return new RuleApplication(correctionTypes.UNSURE, `${leftQuote}${word}${rightQuote}`,
-      'Відповідно до § 54 правопису, назви сайтів без родового слова («сайт», «мережа» тощо) слід писати з малої '
-      + 'букви; із родовим словом — з великої літери та в лапках; ужиті як назви юридичних осіб — з великої букви '
-      + 'без лапок.',
-      {
-        removePreviousToken: quotes < 0,
-        removeNextToken: quotes < 0
-      });
-  }]), null, null,
+  );
+}
+
+registerWordRule(createTreeRule(
+  unpackSingleParadigmList(websites, (form) => [form, process]), null, null,
   {
     lowerCase: true,
     fixApostrophe: true

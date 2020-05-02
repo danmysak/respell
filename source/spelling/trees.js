@@ -35,7 +35,7 @@ function followTree(tree, string) {
 }
 
 export function createTreeRule(correspondences, correctionType, description,
-                               {callback, requiresExtraChange, lowerCase, fixApostrophe}) {
+                               {callback, mapper, requiresExtraChange, lowerCase, fixApostrophe}) {
   const tree = constructTree(correspondences);
   return (token, chain) => {
     if (callback && !callback(token, chain)) {
@@ -55,13 +55,17 @@ export function createTreeRule(correspondences, correctionType, description,
     if (typeof values[0] === 'function') {
       return values[0](token, chain);
     }
+    if (mapper) {
+      values = values.map((value) => mapper(token, chain, value));
+    }
     if (fixApostrophe) {
       values = values.map((value) => normalizeApostrophe(value));
     }
     if (lowerCase) {
       values = values.map((value) => normalizeCase(value, token));
     }
-    if (values[0] === token) {
+    if (values[0] === (fixApostrophe ? normalizeApostrophe(token) : token)) {
+      // The values should have been previously ordered so that values[0] is the most probable one
       return null;
     }
     return new RuleApplication(correctionType, values[0], description, {
