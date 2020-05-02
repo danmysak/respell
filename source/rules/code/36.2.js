@@ -5,7 +5,7 @@ import {
   unpackDoubleParadigm,
   combineCorrespondences
 } from "../imports.js";
-import {doublyDeclined} from "../data/double-declension.js";
+import {doublyDeclined} from "../data/doubly-declined.js";
 
 registerWordRule(createTreeRule(
   combineCorrespondences(doublyDeclined.map((pair) => unpackDoubleParadigm(
