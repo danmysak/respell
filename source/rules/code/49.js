@@ -1,13 +1,24 @@
 import {correctionTypes, registerWordRule, createMaskRule} from "../imports.js";
 
-registerWordRule(createMaskRule({
+registerWordRule(createMaskRule([{
   matches: ["(в)ан"],
   antiMatches: ["Ван"],
   nextMatches: ["Гог*"],
   replacement: "В",
   type: correctionTypes.MISTAKE,
   description: 'Відповідно до § 49 правопису, обидві частини імені Ван Гога слід писати з великої літери.'
-}));
+}, {
+  matches: ["ва(н-г)огівськ*"], // The selection is so that "Ван-Гогівський" doesn't become "ВанГогівський"
+  replacement: "нг",
+  type: correctionTypes.MISTAKE,
+  description: 'Відповідно до § 49 правопису, ім’я Ван Гога слід писати двома окремими словами, а прикметники, '
+    + 'утворені від цього імені, відповідно, разом.'
+}, {
+  matches: ["Ван(-г)ог*"],
+  replacement: " Г",
+  type: correctionTypes.MISTAKE,
+  description: 'Відповідно до § 49 правопису, ім’я Ван Гога слід писати двома окремими словами, обидва з великої букви.'
+}]));
 
 const chiwonPrefixes = ["Ч(і)", "Ч(хі)", "Ч(и)", "Ч(хи)", "Ч(хви)"];
 
