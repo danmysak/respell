@@ -372,16 +372,16 @@ token-description {
     text-decoration: line-through;
 }
 
-.correction-unsure token-replacement-old {
-    display: none
-}
-
 .correction-improvement token-replacement-old::after {
     content: "\00A0\02194\0020"; /* Left-right arrow surrounded by a non-breaking and regular spaces */
 }
 
-.correction-mistake token-replacement-old::after {
+.correction-mistake token-replacement-old::after, .correction-unsure token-replacement-old::after {
     content: "\00A0\02192\0020"; /* Right arrow surrounded by a non-breaking and regular spaces */
+}
+
+.correction-unsure token-replacement-old::after {
+    color: var(--background-text-color);
 }
 
 token-replacement-new {

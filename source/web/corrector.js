@@ -39,6 +39,22 @@ function getCorrectionPrefixes() {
       }
     }
   }
+  if (currentApplication.removePreviousToken) {
+    const previous = currentToken.previousElementSibling;
+    if (previous !== null) {
+      return [previous.textContent, ''];
+    }
+  }
+  return ['', ''];
+}
+
+function getCorrectionSuffixes() {
+  if (currentApplication.removeNextToken) {
+    const next = currentToken.nextElementSibling;
+    if (next !== null) {
+      return [next.textContent, ''];
+    }
+  }
   return ['', ''];
 }
 
@@ -67,13 +83,14 @@ function displayTooltip() {
   const tooltip = document.createElement(tooltipTag);
   tooltip.setAttribute('contenteditable', 'false');
   const [oldCorrectionPrefix, newCorrectionPrefix] = getCorrectionPrefixes();
+  const [oldCorrectionSuffix, newCorrectionSuffix] = getCorrectionSuffixes();
   const replacement = document.createElement(replacementTag);
   const oldToken = document.createElement(`${replacementTag}-OLD`);
-  oldToken.textContent = oldCorrectionPrefix + currentToken.textContent;
+  oldToken.textContent = oldCorrectionPrefix + currentToken.textContent + oldCorrectionSuffix;
   replacement.append(oldToken);
   const newToken = document.createElement(`${replacementTag}-NEW`);
   newToken.textContent = [currentApplication.replacement, ...currentApplication.alternatives]
-    .map((replacement) => newCorrectionPrefix + replacement).join(' / ');
+    .map((replacement) => newCorrectionPrefix + replacement + newCorrectionSuffix).join(' / ');
   replacement.append(newToken);
   tooltip.append(replacement);
   if (currentApplication.requiresExtraChange) {
@@ -123,9 +140,12 @@ function performReplacement(byKeyboard) {
   const application = currentApplication;
   stopCorrecting();
   token.textContent = application.replacement;
-  if (application.removeWhitespaceBefore && token.previousElementSibling !== null
-    && isWhitespace(token.previousElementSibling.textContent)) {
+  if (token.previousElementSibling !== null && (application.removePreviousToken
+    || (application.removeWhitespaceBefore && isWhitespace(token.previousElementSibling.textContent)))) {
     token.previousElementSibling.remove();
+  }
+  if (token.nextElementSibling !== null && application.removeNextToken) {
+    token.nextElementSibling.remove();
   }
   if (byKeyboard && document.activeElement === token) {
     const correction = findNextCorrection(token);

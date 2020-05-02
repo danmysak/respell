@@ -10,7 +10,9 @@ export class RuleApplication {
   constructor(type, replacement, description, {
     alternatives = [],
     requiresExtraChange = false,
-    removeWhitespaceBefore = false
+    removeWhitespaceBefore = false,
+    removePreviousToken = false,
+    removeNextToken = false
   } = {}) {
     this.type = type;
     this.replacement = replacement;
@@ -18,6 +20,8 @@ export class RuleApplication {
     this.alternatives = alternatives;
     this.requiresExtraChange = requiresExtraChange;
     this.removeWhitespaceBefore = removeWhitespaceBefore;
+    this.removePreviousToken = removePreviousToken;
+    this.removeNextToken = removeNextToken;
   }
 
   get formattedDescriptions() {
@@ -40,10 +44,14 @@ export class RuleApplication {
     const alternatives = [...b.alternatives, ...a.alternatives];
     const requiresExtraChange = a.requiresExtraChange || b.requiresExtraChange;
     const removeWhitespaceBefore = a.removeWhitespaceBefore || b.removeWhitespaceBefore;
+    const removePreviousToken = a.removePreviousToken || b.removePreviousToken;
+    const removeNextToken = a.removeNextToken || b.removeNextToken;
     return new RuleApplication(type, replacement, descriptions, {
       alternatives,
       requiresExtraChange,
-      removeWhitespaceBefore
+      removeWhitespaceBefore,
+      removePreviousToken,
+      removeNextToken
     });
   }
 }

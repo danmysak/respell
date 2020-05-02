@@ -2,7 +2,7 @@ import {
   correctionTypes,
   registerWordRule,
   createTreeRule,
-  combineCorrespondences,
+  unpackSingleParadigmList,
   capitalize,
   canBeSentenceBoundary,
   determineCase,
@@ -11,11 +11,7 @@ import {
 import {greekLetters} from "../data/greek-letters.js";
 
 registerWordRule(createTreeRule(
-  combineCorrespondences(
-    greekLetters.flatMap((group) => group.roots.map((root) => [root, group.paradigm])).map(
-      ([root, paradigm]) => Object.fromEntries(paradigm.map((suffix) => [capitalize(root + suffix), root + suffix]))
-    )
-  ),
+  unpackSingleParadigmList(greekLetters, (form) => [capitalize(form), form]),
   correctionTypes.UNSURE,
   'Відповідно до § 51 правопису, порядкові позначення яскравості зірок (назви грецьких літер) слід писати з малої '
     + 'букви.',

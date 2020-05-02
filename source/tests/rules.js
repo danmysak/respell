@@ -11,14 +11,23 @@ function processText(text) {
   const encounteredTypes = [];
   const encounteredDescriptions = [];
   let encounteredExtraChange = false;
+  let skipNext = false;
   while (chain.hasMore()) {
     chain.next();
+    if (skipNext) {
+      skipNext = false;
+      continue;
+    }
     const application = processToken(chain);
     if (application === null) {
       replaced.push(chain.getCurrentToken());
     } else {
-      if (application.removeWhitespaceBefore && replaced.length > 0 && isWhitespace(replaced[replaced.length - 1])) {
+      if (replaced.length > 0 && (application.removePreviousToken
+        || (application.removeWhitespaceBefore && isWhitespace(replaced[replaced.length - 1])))) {
         replaced.pop();
+      }
+      if (application.removeNextToken) {
+        skipNext = true;
       }
       replaced.push(application.replacement);
       encounteredExtraChange = encounteredExtraChange || application.requiresExtraChange;

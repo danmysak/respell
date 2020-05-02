@@ -1,4 +1,4 @@
-import {RuleApplication, correctionTypes, registerWordRule, canBeSentenceBoundary, containsQuotes} from "../imports.js";
+import {RuleApplication, correctionTypes, registerWordRule, canBeSentenceBoundary, isQuote} from "../imports.js";
 
 const maxLength = 3;
 
@@ -36,7 +36,7 @@ registerWordRule((token, chain) => {
     return null;
   }
   if (isFirst) {
-    if (!canBeInitialPart(token) || containsQuotes(chain.getPreviousToken(1, false))) {
+    if (!canBeInitialPart(token) || isQuote(chain.getPreviousToken(1, false))) {
       return null;
     }
     const [last, following] = navigateUntilNonLatin(chain.getNextToken.bind(chain), maxLength);
@@ -45,7 +45,7 @@ registerWordRule((token, chain) => {
     }
   }
   if (isLast) {
-    if (containsQuotes(chain.getNextToken(1, false))) {
+    if (isQuote(chain.getNextToken(1, false))) {
       return null;
     }
     const [first, preceding] = navigateUntilNonLatin(chain.getPreviousToken.bind(chain), maxLength);

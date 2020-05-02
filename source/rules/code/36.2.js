@@ -1,8 +1,14 @@
-import {correctionTypes, registerWordRule, createTreeRule, unpackParadigm, combineCorrespondences} from "../imports.js";
+import {
+  correctionTypes,
+  registerWordRule,
+  createTreeRule,
+  unpackDoubleParadigm,
+  combineCorrespondences
+} from "../imports.js";
 import {doublyDeclined} from "../data/double-declension.js";
 
 registerWordRule(createTreeRule(
-  combineCorrespondences(doublyDeclined.map((pair) => unpackParadigm(
+  combineCorrespondences(doublyDeclined.map((pair) => unpackDoubleParadigm(
     pair.paradigm, `${pair.before}${pair.beforeSuffix}-${pair.after}`,
     pair.before, (form, afterEnding) => `${form}-${pair.after}${afterEnding}`
   ))),

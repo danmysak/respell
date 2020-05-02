@@ -1,15 +1,17 @@
 const whitespace = `\\s`;
 
-const sentenceDelimiters = '.…?!';
-const quotes = '"«»„“”';
-const clauseDelimiters = ',:;–—';
-const slashes = '/';
-const brackets = '(){}[]';
+const punctuation = {
+  sentenceDelimiters: '.…?!',
+  clauseDelimiters: ',:;–—',
+  quotes: '"«»„“”',
+  slashes: '/',
+  brackets: '(){}[]'
+};
 
-const punctuation = `[${sentenceDelimiters}${clauseDelimiters}${quotes}${slashes}${brackets.replace(']', '\\]')}]`;
+const sentenceBoundaryPattern = new RegExp(`[${punctuation.sentenceDelimiters}]`);
+const quotePattern = new RegExp(`[${punctuation.quotes}]`);
 
-const sentenceBoundaryPattern = new RegExp(`[${sentenceDelimiters}]`);
-const quotePattern = new RegExp(`[${quotes}]`);
+const punctuationPlain = Object.values(punctuation).join('');
 
 class IntraTokenManager { // This class allows extra data to be injected into text without changing tokenization
   constructor() {
@@ -25,10 +27,18 @@ class IntraTokenManager { // This class allows extra data to be injected into te
   }
 
   updateTokenizer() {
-    this.lastTokenizer = new RegExp(`(${[whitespace, punctuation].map((pattern) => {
+    const grouped = [
+      whitespace,
+      `[${punctuation.sentenceDelimiters}]`,
+      `[${punctuation.clauseDelimiters}]`
+    ].map((pattern) => {
       const group = `(?:${[pattern, ...this.intraTokens].join('|')})*`;
       return `(?:${group}${pattern}${group})`;
-    }).join('|')})`);
+    });
+    const individual = [punctuation.quotes, punctuation.slashes, punctuation.brackets].join('').split('').map(
+      (char) => ['[', ']', '(', ')', '{', '}', '\\'].includes(char) ? `\\${char}` : char
+    );
+    this.lastTokenizer = new RegExp(`(${[...grouped, ...individual].join('|')})`);
     this.lastTokenizerLength = this.intraTokens.length;
   }
 
@@ -51,21 +61,21 @@ export function tokenize(text) {
 }
 
 export function isWhitespace(token) {
-  return token.match(/\s/);
+  return token !== null && token.match(/\s/);
+}
+
+export function isQuote(token) {
+  return token !== null && token.match(quotePattern);
 }
 
 export function isPunctuation(token) {
-  return token.length > 0 && punctuation.includes(token[0]);
+  return token !== null && token.length > 0 && punctuationPlain.includes(token[0]);
 }
 
 export function isWord(token) {
-  return !isWhitespace(token) && !isPunctuation(token);
+  return token !== null && !isWhitespace(token) && !isPunctuation(token);
 }
 
 export function canBeSentenceBoundary(token) {
   return token === null || token.match(sentenceBoundaryPattern);
-}
-
-export function containsQuotes(token) {
-  return token !== null && token.match(quotePattern);
 }

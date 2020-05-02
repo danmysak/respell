@@ -28,3 +28,5 @@ import "./code/52.js";
 import "./code/53.js";
 import "./code/54.4.js";
 import "./code/54.5.js";
+import "./code/54.7a.js";
+import "./code/54.7b.js";

@@ -52,6 +52,9 @@ export function createTreeRule(correspondences, correctionType, description,
     if (values === null || values.length === 0) {
       return null;
     }
+    if (typeof values[0] === 'function') {
+      return values[0](token, chain);
+    }
     if (fixApostrophe) {
       values = values.map((value) => normalizeApostrophe(value));
     }

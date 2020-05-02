@@ -1,11 +1,17 @@
-import {correctionTypes, registerWordRule, createTreeRule, unpackParadigm, combineCorrespondences} from "../imports.js";
+import {
+  correctionTypes,
+  registerWordRule,
+  createTreeRule,
+  unpackDoubleParadigm,
+  combineCorrespondences
+} from "../imports.js";
 import {feminitives} from '../data/feminitives.js';
 
 registerWordRule(createTreeRule(
   combineCorrespondences(
     feminitives.flatMap(
       (group) => group.roots.map(
-        (root) => unpackParadigm(group.paradigm, root + group.masculineSuffix, root + group.feminineSuffix)
+        (root) => unpackDoubleParadigm(group.paradigm, root + group.masculineSuffix, root + group.feminineSuffix)
       )
     )
   ),

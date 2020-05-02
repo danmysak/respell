@@ -1,5 +1,5 @@
 import {RuleApplication, correctionTypes} from "../spelling/types.js";
-import {canBeSentenceBoundary, containsQuotes} from "../spelling/tokenizer.js";
+import {isWord, isWhitespace, isPunctuation, isQuote, canBeSentenceBoundary} from "../spelling/tokenizer.js";
 import {registerWordRule, registerPunctuationRule, registerWhitespaceRule} from "../spelling/processor.js";
 import {createMaskRule} from "../spelling/masks.js";
 import {createTreeRule} from "../spelling/trees.js";
@@ -8,7 +8,8 @@ import {
   getConsonants,
   getVowels,
   getSibilants,
-  unpackParadigm,
+  unpackSingleParadigmList,
+  unpackDoubleParadigm,
   combineCorrespondences,
   cases,
   determineCase,
@@ -20,8 +21,11 @@ import {
 export {
   RuleApplication,
   correctionTypes,
+  isWord,
+  isWhitespace,
+  isPunctuation,
+  isQuote,
   canBeSentenceBoundary,
-  containsQuotes,
   registerWordRule,
   registerPunctuationRule,
   registerWhitespaceRule,
@@ -31,7 +35,8 @@ export {
   getConsonants,
   getVowels,
   getSibilants,
-  unpackParadigm,
+  unpackSingleParadigmList,
+  unpackDoubleParadigm,
   combineCorrespondences,
   cases,
   determineCase,
