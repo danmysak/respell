@@ -12,6 +12,6 @@ registerWordRule(createMaskRule({
       .some((level) => (chain.getPreviousToken(level) || '').match(/^(просп|проспект.*|вул|вулиц.*|м|метро)$/i)),
     type: correctionTypes.MISTAKE
   }, {
-    type: correctionTypes.UNSURE
+    type: correctionTypes.UNCERTAIN
   }]
 }));

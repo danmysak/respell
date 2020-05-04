@@ -22,6 +22,6 @@ registerWordRule(createMaskRule({
     type: correctionTypes.IMPROVEMENT
   }, {
     matches: Object.keys(parts).map((key) => [key, ["-"]]),
-    type: correctionTypes.UNSURE
+    type: correctionTypes.UNCERTAIN
   }]
 }));

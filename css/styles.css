@@ -22,7 +22,7 @@
     --background-text-color: #BBBBBB;
     --mistake-color: #B83F31;
     --improvement-color: #579B2D;
-    --unsure-color: black;
+    --uncertain-color: black;
     --line-color: black;
     --tooltip-border-color: #BEA2AE;
 
@@ -145,8 +145,8 @@ t-t {
     --correction-color: var(--improvement-color);
 }
 
-.correction-unsure {
-    --correction-color: var(--unsure-color);
+.correction-uncertain {
+    --correction-color: var(--uncertain-color);
 }
 
 t-t:not(.correction) {
@@ -290,8 +290,8 @@ cursor-position {
     color: var(--improvement-color);
 }
 
-.stats-unsure strong {
-    color: var(--unsure-color);
+.stats-uncertain strong {
+    color: var(--uncertain-color);
 }
 
 .stats-irrelevant {
@@ -376,11 +376,11 @@ token-description {
     content: "\00A0\02194\0020"; /* Left-right arrow surrounded by a non-breaking and regular spaces */
 }
 
-.correction-mistake token-replacement-old::after, .correction-unsure token-replacement-old::after {
+.correction-mistake token-replacement-old::after, .correction-uncertain token-replacement-old::after {
     content: "\00A0\02192\0020"; /* Right arrow surrounded by a non-breaking and regular spaces */
 }
 
-.correction-unsure token-replacement-old::after {
+.correction-uncertain token-replacement-old::after {
     color: var(--background-text-color);
 }
 
@@ -390,11 +390,11 @@ token-replacement-new {
     font-size: var(--correction-font-size);
 }
 
-.correction-unsure token-replacement-new {
-    color: var(--unsure-color);
+.correction-uncertain token-replacement-new {
+    color: var(--uncertain-color);
 }
 
-.correction-unsure token-replacement-new::after {
+.correction-uncertain token-replacement-new::after {
     content: "?";
     display: inline-block;
     opacity: 0.3;

@@ -18,7 +18,7 @@ registerWordRule((token) => {
   if (postfixCase === cases.EMPTY || postfixCase === cases.CAPITALIZED) {
     return null;
   }
-  const correctionType = postfixCase === cases.LOWER ? correctionTypes.MISTAKE : correctionTypes.UNSURE;
+  const correctionType = postfixCase === cases.LOWER ? correctionTypes.MISTAKE : correctionTypes.UNCERTAIN;
   const replacement = token.slice(0, prefix.length) + postfix;
   return new RuleApplication(correctionType, replacement,
     'Відповідно до § 35 правопису, загальні назви з початковими компонентами «арт-», «бліц-», «веб-», «віце-», '

@@ -24,7 +24,7 @@ registerWordRule(createMaskRule({
         ["(Г)ул", endings], "(Г)улі",
       ],
       callback: (token, chain) => !(token.match(/^гог/i) && (chain.getPreviousToken() || '').match(/^ван$/i)),
-      type: correctionTypes.UNSURE
+      type: correctionTypes.UNCERTAIN
     }]
   }]
 }));

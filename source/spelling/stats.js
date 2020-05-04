@@ -9,7 +9,7 @@ const numberTemplate = '{{number}} {text}'; // With a non-breaking space
 const correctionTemplates = {
   [correctionTypes.MISTAKE]: ['жодної помилки', 'помилка', 'помилки', 'помилок'],
   [correctionTypes.IMPROVEMENT]: ['жодної пропозиції', 'пропозиція', 'пропозиції', 'пропозицій'],
-  [correctionTypes.UNSURE]: ['жодного припущення', 'припущення', 'припущення', 'припущень']
+  [correctionTypes.UNCERTAIN]: ['жодного припущення', 'припущення', 'припущення', 'припущень']
 };
 
 const spellingTemplates = {

@@ -21,7 +21,7 @@ function applyRules(tokenChain, rules) {
   let currentApplication = null;
   let currentForm = tokenChain.getCurrentToken();
   for (const rule of rules) {
-    if (currentApplication !== null && currentApplication.type !== correctionTypes.UNSURE) {
+    if (currentApplication !== null && currentApplication.type !== correctionTypes.UNCERTAIN) {
       currentForm = currentApplication.replacement;
     }
     currentApplication = RuleApplication.combine(currentApplication, rule(currentForm, tokenChain));

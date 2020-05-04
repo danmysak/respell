@@ -56,7 +56,7 @@ registerWordRule((token, chain) => {
   if (isFirst && isLast && token.replace(/[^a-z]/ig, '').length <= 1) {
     return null;
   }
-  return new RuleApplication(correctionTypes.UNSURE, `${isFirst ? '«' : ''}${token}${isLast ? '»' : ''}`,
+  return new RuleApplication(correctionTypes.UNCERTAIN, `${isFirst ? '«' : ''}${token}${isLast ? '»' : ''}`,
     'Відповідно до § 54 правопису, назви компаній, написані латинкою, слід брати в лапки.'
   );
 });

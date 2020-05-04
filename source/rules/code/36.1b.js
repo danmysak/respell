@@ -14,7 +14,7 @@ registerWordRule(createMaskRule({
     ]]
   ],
   replacement: " ",
-  type: correctionTypes.UNSURE,
+  type: correctionTypes.UNCERTAIN,
   description: 'Відповідно до § 36 правопису, слово «пів» зі значенням «половина» з наступним іменником (у формі '
     + 'родового відмінка однини) слід писати окремо.'
 }));

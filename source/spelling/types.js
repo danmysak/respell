@@ -3,7 +3,7 @@ import {isWhitespace} from "./tokenizer.js";
 export const correctionTypes = {
   MISTAKE: 'mistake',
   IMPROVEMENT: 'improvement',
-  UNSURE: 'unsure'
+  UNCERTAIN: 'uncertain'
 };
 
 export class RuleApplication {
@@ -32,9 +32,9 @@ export class RuleApplication {
     if (a === null || b === null) {
       return a || b;
     }
-    if (b.type === correctionTypes.UNSURE) {
+    if (b.type === correctionTypes.UNCERTAIN) {
       return a;
-    } else if (a.type === correctionTypes.UNSURE) {
+    } else if (a.type === correctionTypes.UNCERTAIN) {
       return b;
     }
     const type = [a.type, b.type].includes(correctionTypes.MISTAKE)

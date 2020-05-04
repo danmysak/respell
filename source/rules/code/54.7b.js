@@ -78,7 +78,7 @@ function process(token, chain) {
   const leftQuote = quotes > 0 ? '«' : '';
   const rightQuote = quotes > 0 ? '»' : '';
   const word = capitalization > 0 ? capitalize(token) : (capitalization < 0 ? token.toLowerCase() : token);
-  return new RuleApplication(correctionTypes.UNSURE, `${leftQuote}${word}${rightQuote}`,
+  return new RuleApplication(correctionTypes.UNCERTAIN, `${leftQuote}${word}${rightQuote}`,
     'Відповідно до § 54 правопису, назви сайтів без родового слова («сайт», «мережа» тощо) слід писати з малої букви; '
       + 'із родовим словом — з великої літери та в лапках; ужиті як назви юридичних осіб — з великої букви без лапок.',
     {

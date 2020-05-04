@@ -14,7 +14,7 @@ registerWordRule((token, chain) => {
     && !(isPunctuation(chain.getPreviousToken(2)) && canBeSentenceBoundary(chain.getPreviousToken(3)))
     && isCapitalized(token);
 
-  return !applicable ? null : new RuleApplication(correctionTypes.UNSURE, token.toLowerCase(),
+  return !applicable ? null : new RuleApplication(correctionTypes.UNCERTAIN, token.toLowerCase(),
     'Відповідно до § 46 правопису, ремарки та посилання, взяті в дужки, з великої літери слід писати лише в тому разі, '
       + 'якщо дужки стоять за розділовим знаком, що позначає кінець речення.'
   );

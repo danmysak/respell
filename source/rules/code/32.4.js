@@ -15,7 +15,7 @@ registerWordRule(createTreeRule(
       )
     )
   ),
-  correctionTypes.UNSURE,
+  correctionTypes.UNCERTAIN,
   '§ 32 правопису підкреслює можливість ужитку на означення осіб жіночої статі іменників, утворених за допомогою '
     + 'суфіксів «-к-», «-иц-», «-ин-» та «-ес-».',
   {

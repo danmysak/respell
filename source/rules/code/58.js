@@ -10,7 +10,7 @@ import {
 import {brands} from "../data/brands.js";
 
 registerWordRule(createTreeRule(
-  unpackSingleParadigmList(brands, (form) => [form, form]), correctionTypes.UNSURE,
+  unpackSingleParadigmList(brands, (form) => [form, form]), correctionTypes.UNCERTAIN,
   'Відповідно до § 58 правопису, назви індивідуальних машин, літаків та інших виробів — на противагу їхнім маркам або '
     + 'назвам компаній-виробників — слід писати з малої літери (і в лапках).',
   {
