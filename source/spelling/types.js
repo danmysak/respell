@@ -24,10 +24,6 @@ export class RuleApplication {
     this.removeNextToken = removeNextToken;
   }
 
-  get formattedDescriptions() {
-    return this.descriptions.map((description) => description.replace(/(§) /g, '$1 ')); // Using a non-breaking space
-  };
-
   static combine(a, b) {
     if (a === null || b === null) {
       return a || b;

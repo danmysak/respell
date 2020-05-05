@@ -79,6 +79,10 @@ function fixTooltipPositioning(tooltip) {
                                      // animation would use an outdated value of the tooltipHorizontalShiftProperty.
 }
 
+function formatDescription(text) {
+  return text.replace(/(§) /g, '$1&nbsp;').replace(/«-[^»\s]+»/g, '<span class="no-break">$&</span>')
+}
+
 function displayTooltip() {
   const tooltip = document.createElement(tooltipTag);
   tooltip.setAttribute('contenteditable', 'false');
@@ -98,9 +102,9 @@ function displayTooltip() {
     tooltip.append(extraChange);
   }
   const descriptions = document.createElement(descriptionsTag);
-  currentApplication.formattedDescriptions.forEach((text) => {
+  currentApplication.descriptions.forEach((text) => {
     const description = document.createElement(descriptionTag);
-    description.innerHTML = text;
+    description.innerHTML = formatDescription(text);
     descriptions.append(description);
   });
   tooltip.append(descriptions);

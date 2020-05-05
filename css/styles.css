@@ -80,6 +80,10 @@ a:hover {
     color: #B93F31;
 }
 
+.no-break {
+    white-space: nowrap;
+}
+
 h1, h3 {
     color: #64595F;
     font-weight: normal;
