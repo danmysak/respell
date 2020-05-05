@@ -98,7 +98,8 @@ export function createMaskRule(description) {
         }).join('');
       });
       return new RuleApplication(item.type, replacement, item.description, {
-        removeWhitespaceBefore: item.removeWhitespaceBefore
+        removeWhitespaceBefore: item.removeWhitespaceBefore,
+        alternatives: item.alternatives
       });
     }
     return null;

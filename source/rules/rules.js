@@ -33,3 +33,4 @@ import "./code/54.7b.js";
 import "./code/58.js";
 import "./code/67a.js";
 import "./code/67b.js";
+import "./code/82a.js";

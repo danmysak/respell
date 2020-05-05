@@ -2,7 +2,8 @@ import {correctionTypes, registerWordRule, createMaskRule} from "../imports.js";
 
 registerWordRule(createMaskRule({
   matches: ["(й)"],
-  replacement: "та",
+  replacement: "і",
+  alternatives: ["та"],
   type: correctionTypes.MISTAKE,
   previousMatches: [
     ["*", ["й", "я", "ю", "є", "ї"]]
