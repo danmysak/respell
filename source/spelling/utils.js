@@ -30,8 +30,8 @@ export function simplifyApostrophe(string) {
   return string.replace(/’/g, "'");
 }
 
-export function normalizeApostrophe(string) {
-  return string.replace(/'/g, '’');
+export function normalizeApostrophe(string, model) {
+  return model.includes("'") ? simplifyApostrophe(string) : string.replace(/'/g, '’');
 }
 
 export function capitalize(string) {
@@ -87,7 +87,7 @@ export function unpackSingleParadigmList(list, callback) {
   );
 }
 
-export function unpackDoubleParadigm(paradigm, left, right, valueCallback = (string) => string) {
+export function unpackDoubleParadigm(paradigm, left, right = left, valueCallback = (string) => string) {
   const unpacked = {};
   for (const leftEnding of Object.keys(paradigm)) {
     unpacked[`${left}${leftEnding}`] =

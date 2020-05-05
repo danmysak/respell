@@ -115,7 +115,7 @@ export const tests = [
   [32, 'Усе ласіям', 'Усе ласійкам', correctionTypes.UNCERTAIN, true], /* буржуй-буржуйка */
   [32, 'Зі здирщиками не розмовлятиму.', 'Зі здирщицями не розмовлятиму.', correctionTypes.UNCERTAIN, true], /* банщик-банщиця */
   [32, 'без щасливця...', 'без щасливиці...', correctionTypes.UNCERTAIN, true], /* обранець-обраниця */
-  [32, 'Арф\'яру — арфу.', 'Арф’ярці — арфу.', correctionTypes.UNCERTAIN, true], /* дояр-доярка */
+  [32, 'Арф\'яру — арфу, арф’яру — арфу.', 'Арф\'ярці — арфу, арф’ярці — арфу.', [correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN], true], /* дояр-доярка */
   [32, 'Сейшели сейшельцям', 'Сейшели сейшелкам', correctionTypes.UNCERTAIN, true], /* агулець-агулка */
   [32, 'латишеві Латвію', 'латишці Латвію', correctionTypes.UNCERTAIN, true], /* діяч-діячка */
   [32, 'Море шалапутників', 'Море шалапуток', correctionTypes.UNCERTAIN, true], /* шалапутник-шалапутка */
@@ -480,7 +480,7 @@ export const tests = [
   [58, '“Роллс-Ройс” білий, “Роллс-Ройс” синій, “Ролс-Ройс” блакитний та “Роллс-ройс” червоний. “Роллс-ройс” золотистий. “Роллс-Ройс” прозорий.', '“Роллс-ройс” білий, “роллс-ройс” синій, “ролс-ройс” блакитний та “роллс-ройс” червоний. “Роллс-ройс” золотистий. “Роллс-ройс” прозорий.', [correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN]],
   [58, 'Як і „Як“!', 'Як і „як“!', correctionTypes.UNCERTAIN],
   [58, 'Вийшов із «Х’юндая».', 'Вийшов із «х’юндая».', correctionTypes.UNCERTAIN],
-  [58, 'Сіла в "Х\'юндай"!', 'Сіла в "х’юндай"!', correctionTypes.UNCERTAIN],
+  [58, 'Сіла в "Х\'юндай"!', 'Сіла в "х\'юндай"!', correctionTypes.UNCERTAIN],
   [58, 'З «Таврії» відразу по «Аеробусах»?..', 'З «таврії» відразу по «аеробусах»?..', [correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN]],
   [58, 'Літак "Ту" підлетів до "Ауді" по "Майбасі".', 'Літак "ту" підлетів до "ауді" по "майбасі".', [correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN]],
   [_, '"Боїнг" усюди долетить.', '"Боїнг" усюди долетить.', _],

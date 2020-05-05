@@ -59,12 +59,12 @@ export function createTreeRule(correspondences, correctionType, description,
       values = values.map((value) => mapper(token, chain, value));
     }
     if (fixApostrophe) {
-      values = values.map((value) => normalizeApostrophe(value));
+      values = values.map((value) => normalizeApostrophe(value, token));
     }
     if (lowerCase) {
       values = values.map((value) => normalizeCase(value, token));
     }
-    if (values[0] === (fixApostrophe ? normalizeApostrophe(token) : token)) {
+    if (simplifyApostrophe(values[0]) === simplifyApostrophe(token)) {
       // The values should have been previously ordered so that values[0] is the most probable one
       return null;
     }
