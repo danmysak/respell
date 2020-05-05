@@ -320,6 +320,7 @@ token-tooltip {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     --tooltip-horizontal-shift: 0;
     transform: translateX(var(--tooltip-horizontal-shift));
+    outline: none;
 }
 
 token-tooltip.animated {

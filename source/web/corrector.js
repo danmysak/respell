@@ -86,6 +86,7 @@ function formatDescription(text) {
 function displayTooltip() {
   const tooltip = document.createElement(tooltipTag);
   tooltip.setAttribute('contenteditable', 'false');
+  tooltip.tabIndex = -1;
   const [oldCorrectionPrefix, newCorrectionPrefix] = getCorrectionPrefixes();
   const [oldCorrectionSuffix, newCorrectionSuffix] = getCorrectionSuffixes();
   const replacement = document.createElement(replacementTag);
@@ -182,7 +183,9 @@ function onKeyDown(event) {
       stopCorrecting();
       break;
     default:
-      stopCorrecting();
+      if (event.target.tagName !== tooltipTag) { // Allow the user to copy tooltip text with keyboard
+        stopCorrecting();
+      }
       break;
   }
 }
