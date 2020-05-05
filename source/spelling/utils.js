@@ -79,9 +79,12 @@ function applyOrMap(items, callback) {
   return Array.isArray(items) ? items.map(callback) : callback(items);
 }
 
-export function unpackSingleParadigmList(list, callback) {
+export function unpackSingleParadigmList(list, callback, paradigmExtractor = (group) => group.paradigm) {
   return combineCorrespondences(
-    list.flatMap((group) => group.roots.map((root) => [root, group.paradigm])).map(
+    list.flatMap((group) => {
+      const paradigm = paradigmExtractor(group);
+      return paradigm ? group.roots.map((root) => [root, paradigm]) : [];
+    }).map(
       ([root, paradigm]) => Object.fromEntries(paradigm.map((suffix) => callback(root + suffix)))
     )
   );

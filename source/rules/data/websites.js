@@ -5,6 +5,7 @@ export const websites = [{
   ]
 }, {
   paradigm: ["", "а", "ам", "ами", "ах", "е", "и", "і", "ів", "ові", "ом", "у"],
+  masculineGenitiveSuffixes: ["а"],
   roots: [
     "амазон",
     "блогспот", "блоґспот",
@@ -25,6 +26,7 @@ export const websites = [{
   ]
 }, {
   paradigm: ["к", "ка", "кам", "ками", "ках", "ки", "ків", "кові", "ком", "ку", "ці"],
+  masculineGenitiveSuffixes: ["ка"],
   roots: [
     "сле",
     "фейсбу"
@@ -32,11 +34,13 @@ export const websites = [{
 }, {
   paradigm: ["г", "га", "гам", "гами", "гах", "ги", "гів", "гові", "гом", "гу", "зі",
              "ґ", "ґа", "ґам", "ґами", "ґах", "ґи", "ґів", "ґові", "ґом", "ґу"],
+  masculineGenitiveSuffixes: ["га", "ґа"],
   roots: [
     "бін"
   ]
 }, {
   paradigm: ["єві", "єм", "ї", "їв", "й", "ю", "я", "ям", "ями", "ях"],
+  masculineGenitiveSuffixes: ["я"],
   roots: [
     "ібе"
   ]

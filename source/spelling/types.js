@@ -28,10 +28,10 @@ export class RuleApplication {
     if (a === null || b === null) {
       return a || b;
     }
-    if (b.type === correctionTypes.UNCERTAIN) {
-      return a;
-    } else if (a.type === correctionTypes.UNCERTAIN) {
+    if (a.type === correctionTypes.UNCERTAIN) {
       return b;
+    } else if (b.type === correctionTypes.UNCERTAIN) {
+      return a;
     }
     const type = [a.type, b.type].includes(correctionTypes.MISTAKE)
       ? correctionTypes.MISTAKE : correctionTypes.IMPROVEMENT;
