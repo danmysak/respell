@@ -5,6 +5,7 @@ export const cases = {
   LOWER: 'lower',
   CAPITALIZED: 'capitalized',
   UPPER: 'upper',
+  CAMEL: 'camel',
   OTHER: 'other'
 };
 
@@ -50,6 +51,10 @@ export function determineCase(string) {
   if (string === string.toUpperCase()) {
     return cases.UPPER;
   }
+  const parts = string.split('-');
+  if (parts.length > 1 && parts.every((part) => part !== '' && part === capitalize(part))) {
+    return cases.CAMEL;
+  }
   return cases.OTHER;
 }
 
@@ -63,6 +68,8 @@ export function normalizeCase(string, model) {
       return capitalize(string);
     case cases.UPPER:
       return string.toUpperCase();
+    case cases.CAMEL:
+      return string.split('-').map((part) => capitalize(part)).join('-');
     default:
       return string;
   }

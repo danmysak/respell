@@ -15,7 +15,7 @@ registerWordRule((token) => {
   }
   const postfix = token.slice(prefix.length + hyphen.length);
   const postfixCase = determineCase(postfix);
-  if (postfixCase === cases.EMPTY || postfixCase === cases.CAPITALIZED) {
+  if ([cases.EMPTY, cases.CAPITALIZED, cases.CAMEL].includes(postfixCase)) {
     return null;
   }
   const correctionType = postfixCase === cases.LOWER ? correctionTypes.MISTAKE : correctionTypes.UNCERTAIN;
