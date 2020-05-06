@@ -1,6 +1,7 @@
 import {serializeCursor, restoreCursor, getRangeIfCollapsedAndInside} from "./cursor.js";
 import {tokenize} from "../spelling/tokenizer.js";
 
+export const paragraphTag = 'P';
 const tokenTag = 'T-T';
 const cursorClass = 'cursor-around';
 
@@ -14,7 +15,6 @@ function isTokenTagWithText(node, text = null) {
 }
 
 function paragraphize(inputElement, extraTagsToRemove) {
-  const paragraphTag = 'P';
   const paragraphLikeTags = ['DIV', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6'];
   const tagsToRemove = ['STYLE', ...extraTagsToRemove];
   let currentParagraph = null;

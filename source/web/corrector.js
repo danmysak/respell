@@ -127,7 +127,7 @@ function startCorrecting(token, ruleApplication) {
   endPlannedMutation();
 }
 
-function stopCorrecting() {
+export function stopCorrecting() {
   if (!currentToken) {
     return;
   }
