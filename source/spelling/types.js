@@ -6,7 +6,7 @@ export const correctionTypes = {
   UNCERTAIN: 'uncertain'
 };
 
-export class RuleApplication {
+export class Correction {
   constructor(type, replacement, description, {
     alternatives = [],
     requiresExtraChange = false,
@@ -42,7 +42,7 @@ export class RuleApplication {
     const removeWhitespaceBefore = a.removeWhitespaceBefore || b.removeWhitespaceBefore;
     const removePreviousToken = a.removePreviousToken || b.removePreviousToken;
     const removeNextToken = a.removeNextToken || b.removeNextToken;
-    return new RuleApplication(type, replacement, descriptions, {
+    return new Correction(type, replacement, descriptions, {
       alternatives,
       requiresExtraChange,
       removeWhitespaceBefore,

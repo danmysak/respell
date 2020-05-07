@@ -18,21 +18,21 @@ function processText(text) {
       skipNext = false;
       continue;
     }
-    const application = processToken(chain);
-    if (application === null) {
+    const correction = processToken(chain);
+    if (correction === null) {
       replaced.push(chain.getCurrentToken());
     } else {
-      if (replaced.length > 0 && (application.removePreviousToken
-        || (application.removeWhitespaceBefore && isWhitespace(replaced[replaced.length - 1])))) {
+      if (replaced.length > 0 && (correction.removePreviousToken
+        || (correction.removeWhitespaceBefore && isWhitespace(replaced[replaced.length - 1])))) {
         replaced.pop();
       }
-      if (application.removeNextToken) {
+      if (correction.removeNextToken) {
         skipNext = true;
       }
-      replaced.push(application.replacement);
-      encounteredExtraChange = encounteredExtraChange || application.requiresExtraChange;
-      encounteredTypes.push(application.type);
-      encounteredDescriptions.push(...application.descriptions);
+      replaced.push(correction.replacement);
+      encounteredExtraChange = encounteredExtraChange || correction.requiresExtraChange;
+      encounteredTypes.push(correction.type);
+      encounteredDescriptions.push(...correction.descriptions);
     }
   }
   return {
@@ -87,7 +87,7 @@ function test(tests) {
     });
     const reprocessed = processText(processed);
     if (reprocessed.encounteredTypes.length > 0) {
-      errors.push(`Reapplication of the rules returned yielded the following corrections: ` +
+      errors.push(`Reapplication of the rules yielded the following corrections: ` +
         reprocessed.encounteredTypes.join(',') + `; the final text is as follows: "${reprocessed.processed}"`);
     }
     if (errors.length === 0) {

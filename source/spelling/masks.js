@@ -1,4 +1,4 @@
-import {RuleApplication} from "./types.js";
+import {Correction} from "./types.js";
 import {determineCase, cases} from "./utils.js";
 
 export function createMaskRule(description) {
@@ -97,7 +97,7 @@ export function createMaskRule(description) {
           }
         }).join('');
       });
-      return new RuleApplication(item.type, replacement, item.description, {
+      return new Correction(item.type, replacement, item.description, {
         removeWhitespaceBefore: item.removeWhitespaceBefore,
         alternatives: item.alternatives
       });

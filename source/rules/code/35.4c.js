@@ -1,5 +1,5 @@
 import {
-  RuleApplication,
+  Correction,
   correctionTypes,
   registerWordRule,
   getConsonants,
@@ -27,7 +27,7 @@ registerWordRule((token) => {
   if (replacement === token) {
     return null;
   }
-  return new RuleApplication(correctionTypes.MISTAKE, replacement,
+  return new Correction(correctionTypes.MISTAKE, replacement,
     'Відповідно до § 35 правопису, слова з початковим компонентом «боді-»/«боди-» слід писати разом, причому перед '
       + 'голосним вживаємо «боді-», а перед приголосним — «боди-».'
   );

@@ -1,5 +1,5 @@
 import {isWord, isPunctuation, isWhitespace} from "./tokenizer.js";
-import {RuleApplication, correctionTypes} from "./types.js";
+import {Correction, correctionTypes} from "./types.js";
 
 const wordRules = [];
 const punctuationRules = [];
@@ -18,15 +18,15 @@ export function registerWhitespaceRule(rule) {
 }
 
 function applyRules(tokenChain, rules) {
-  let currentApplication = null;
+  let currentCorrection = null;
   let currentForm = tokenChain.getCurrentToken();
   for (const rule of rules) {
-    if (currentApplication !== null && currentApplication.type !== correctionTypes.UNCERTAIN) {
-      currentForm = currentApplication.replacement;
+    if (currentCorrection !== null && currentCorrection.type !== correctionTypes.UNCERTAIN) {
+      currentForm = currentCorrection.replacement;
     }
-    currentApplication = RuleApplication.combine(currentApplication, rule(currentForm, tokenChain));
+    currentCorrection = Correction.combine(currentCorrection, rule(currentForm, tokenChain));
   }
-  return currentApplication;
+  return currentCorrection;
 }
 
 export function processToken(tokenChain) {

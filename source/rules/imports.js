@@ -1,4 +1,4 @@
-import {RuleApplication, correctionTypes} from "../spelling/types.js";
+import {Correction, correctionTypes} from "../spelling/types.js";
 import {isWord, isWhitespace, isPunctuation, isQuote, canBeSentenceBoundary} from "../spelling/tokenizer.js";
 import {registerWordRule, registerPunctuationRule, registerWhitespaceRule} from "../spelling/processor.js";
 import {createMaskRule} from "../spelling/masks.js";
@@ -20,7 +20,7 @@ import {
 } from "../spelling/utils.js";
 
 export {
-  RuleApplication,
+  Correction,
   correctionTypes,
   isWord,
   isWhitespace,

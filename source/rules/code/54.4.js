@@ -1,4 +1,4 @@
-import {RuleApplication, correctionTypes, registerWordRule, canBeSentenceBoundary, isQuote} from "../imports.js";
+import {Correction, correctionTypes, registerWordRule, canBeSentenceBoundary, isQuote} from "../imports.js";
 
 const maxLength = 3;
 
@@ -56,7 +56,7 @@ registerWordRule((token, chain) => {
   if (isFirst && isLast && token.replace(/[^a-z]/ig, '').length <= 1) {
     return null;
   }
-  return new RuleApplication(correctionTypes.UNCERTAIN, `${isFirst ? '«' : ''}${token}${isLast ? '»' : ''}`,
+  return new Correction(correctionTypes.UNCERTAIN, `${isFirst ? '«' : ''}${token}${isLast ? '»' : ''}`,
     'Відповідно до § 54 правопису, назви компаній, написані латинкою, слід брати в лапки.'
   );
 });

@@ -44,12 +44,12 @@ function getNumberType(number) {
   return numberTypes.MANY;
 }
 
-function gatherCumulativeCorrectionStats(applicationSets) {
+function gatherCumulativeCorrectionStats(correctionSets) {
   const correctionStats = Object.fromEntries(Object.values(correctionTypes).map((type) => [type, 0]));
-  for (const set of applicationSets) {
-    for (const application of set) {
-      if (application !== null) {
-        correctionStats[application.type]++;
+  for (const set of correctionSets) {
+    for (const correction of set) {
+      if (correction !== null) {
+        correctionStats[correction.type]++;
       }
     }
   }
@@ -106,8 +106,8 @@ function gatherCumulativeSpellingStats(tokenSets) {
   return cumulativeStats;
 }
 
-export function updateCorrectionStats(applicationSets) {
-  correctionStats = gatherCumulativeCorrectionStats(applicationSets);
+export function updateCorrectionStats(correctionSets) {
+  correctionStats = gatherCumulativeCorrectionStats(correctionSets);
 }
 
 export function updateSpellingStats(tokenSets) {

@@ -1,4 +1,4 @@
-import {RuleApplication, correctionTypes, registerWordRule, cases, determineCase} from "../imports.js";
+import {Correction, correctionTypes, registerWordRule, cases, determineCase} from "../imports.js";
 
 const prefixes = [
   "арт", "бліц", "веб", "віце", "диско", "економ", "екс", "кібер", "контр", "лейб", "максі", "медіа", "міді", "міні",
@@ -20,7 +20,7 @@ registerWordRule((token) => {
   }
   const correctionType = postfixCase === cases.LOWER ? correctionTypes.MISTAKE : correctionTypes.UNCERTAIN;
   const replacement = token.slice(0, prefix.length) + postfix;
-  return new RuleApplication(correctionType, replacement,
+  return new Correction(correctionType, replacement,
     'Відповідно до § 35 правопису, загальні назви з початковими компонентами «арт-», «бліц-», «веб-», «віце-», '
       + '«диско-», «економ-», «екс-», «кібер-», «контр-», «лейб-», «максі-», «медіа-», «міді-», «міні-», «обер-», '
       + '«поп-», «преміум-», «прес-», «топ-», «унтер-», «флеш-», «фолк-»/«фольк-» та «штабс-» слід писати разом.'

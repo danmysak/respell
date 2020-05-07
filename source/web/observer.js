@@ -72,8 +72,8 @@ function contentsChanged() {
   updateSnapshots();
   const tokenSets = getTokenSets();
   updateSpellingStats(tokenSets);
-  const applicationSets = spellcheck(container);
-  updateCorrectionStats(applicationSets);
+  const correctionSets = spellcheck(container);
+  updateCorrectionStats(correctionSets);
   renderStats();
   observer.takeRecords();
 }

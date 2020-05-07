@@ -1,4 +1,4 @@
-import {RuleApplication, correctionTypes, registerWordRule} from "../imports.js";
+import {Correction, correctionTypes, registerWordRule} from "../imports.js";
 
 const pattern = /^(\d+)(-?)([а-зґє])$/i;
 
@@ -12,7 +12,7 @@ registerWordRule((token) => {
   if (replacement === token) {
     return null;
   }
-  return new RuleApplication(correctionTypes.MISTAKE, replacement,
+  return new Correction(correctionTypes.MISTAKE, replacement,
     'Відповідно до § 35 правопису, найменування будинків, корпусів тощо слід писати через дефіс у форматі «10-А».'
   );
 });

@@ -1,6 +1,6 @@
 import {
   correctionTypes,
-  RuleApplication,
+  Correction,
   createMaskRule,
   registerWordRule,
   registerPunctuationRule,
@@ -14,7 +14,7 @@ const right = 'СНІД';
 function createNonWordRule(condition = (token) => true) {
   return (token, chain) => {
     if (condition(token) && chain.getPreviousToken() === left && (chain.getNextToken() || '').startsWith(right)) {
-      return new RuleApplication(correctionTypes.MISTAKE, '-', description);
+      return new Correction(correctionTypes.MISTAKE, '-', description);
     } else {
       return null;
     }

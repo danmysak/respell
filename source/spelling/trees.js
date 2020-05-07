@@ -1,5 +1,5 @@
 import {simplifyApostrophe, normalizeApostrophe, normalizeCase} from "./utils.js";
-import {RuleApplication} from "./types.js";
+import {Correction} from "./types.js";
 
 const leaf = Symbol('leaf');
 
@@ -68,7 +68,7 @@ export function createTreeRule(correspondences, correctionType, description,
       // The values should have been previously ordered so that values[0] is the most probable one
       return null;
     }
-    return new RuleApplication(correctionType, values[0], description, {
+    return new Correction(correctionType, values[0], description, {
       alternatives: values.slice(1),
       requiresExtraChange: requiresExtraChange || false
     });

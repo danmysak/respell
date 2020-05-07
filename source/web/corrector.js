@@ -1,4 +1,4 @@
-import {getTokenRuleApplication, findNextCorrection} from "./spellchecker.js";
+import {getTokenCorrection, findNextCorrection} from "./spellchecker.js";
 import {startPlannedMutation, endPlannedMutation} from "./observer.js";
 import {isWhitespace} from "../spelling/tokenizer.js";
 
@@ -15,7 +15,7 @@ const tooltipMarginProperty = '--tooltip-margin';
 
 let container = null;
 let currentToken = null;
-let currentApplication = null;
+let currentCorrection = null;
 let pageBottomPadding = 0;
 const tooltipMargin = parseFloat(window.getComputedStyle(document.body).getPropertyValue(tooltipMarginProperty));
 
@@ -30,7 +30,7 @@ function removeClasses() {
 }
 
 function getCorrectionPrefixes() {
-  if (currentApplication.removeWhitespaceBefore) {
+  if (currentCorrection.removeWhitespaceBefore) {
     const previous = currentToken.previousElementSibling;
     if (previous !== null && isWhitespace(previous.textContent) !== null) {
       const previousNonWhitespace = previous.previousElementSibling;
@@ -39,7 +39,7 @@ function getCorrectionPrefixes() {
       }
     }
   }
-  if (currentApplication.removePreviousToken) {
+  if (currentCorrection.removePreviousToken) {
     const previous = currentToken.previousElementSibling;
     if (previous !== null) {
       return [previous.textContent, ''];
@@ -49,7 +49,7 @@ function getCorrectionPrefixes() {
 }
 
 function getCorrectionSuffixes() {
-  if (currentApplication.removeNextToken) {
+  if (currentCorrection.removeNextToken) {
     const next = currentToken.nextElementSibling;
     if (next !== null) {
       return [next.textContent, ''];
@@ -94,16 +94,16 @@ function displayTooltip() {
   oldToken.textContent = oldCorrectionPrefix + currentToken.textContent + oldCorrectionSuffix;
   replacement.append(oldToken);
   const newToken = document.createElement(`${replacementTag}-NEW`);
-  newToken.textContent = [currentApplication.replacement, ...currentApplication.alternatives]
+  newToken.textContent = [currentCorrection.replacement, ...currentCorrection.alternatives]
     .map((replacement) => newCorrectionPrefix + replacement + newCorrectionSuffix).join(' / ');
   replacement.append(newToken);
   tooltip.append(replacement);
-  if (currentApplication.requiresExtraChange) {
+  if (currentCorrection.requiresExtraChange) {
     const extraChange = document.createElement(extraChangeTag);
     tooltip.append(extraChange);
   }
   const descriptions = document.createElement(descriptionsTag);
-  currentApplication.descriptions.forEach((text) => {
+  currentCorrection.descriptions.forEach((text) => {
     const description = document.createElement(descriptionTag);
     description.innerHTML = formatDescription(text);
     descriptions.append(description);
@@ -117,9 +117,9 @@ function removeTooltip() {
   currentToken.querySelector(tooltipTag).remove();
 }
 
-function startCorrecting(token, ruleApplication) {
+function startCorrecting(token, correction) {
   currentToken = token;
-  currentApplication = ruleApplication;
+  currentCorrection = correction;
   startPlannedMutation();
   addClasses();
   displayTooltip();
@@ -137,19 +137,19 @@ export function stopCorrecting() {
   removeClasses();
   endPlannedMutation();
   currentToken = null;
-  currentApplication = null;
+  currentCorrection = null;
 }
 
 function performReplacement(byKeyboard) {
   const token = currentToken;
-  const application = currentApplication;
+  const correction = currentCorrection;
   stopCorrecting();
-  token.textContent = application.replacement;
-  if (token.previousElementSibling !== null && (application.removePreviousToken
-    || (application.removeWhitespaceBefore && isWhitespace(token.previousElementSibling.textContent)))) {
+  token.textContent = correction.replacement;
+  if (token.previousElementSibling !== null && (correction.removePreviousToken
+    || (correction.removeWhitespaceBefore && isWhitespace(token.previousElementSibling.textContent)))) {
     token.previousElementSibling.remove();
   }
-  if (token.nextElementSibling !== null && application.removeNextToken) {
+  if (token.nextElementSibling !== null && correction.removeNextToken) {
     token.nextElementSibling.remove();
   }
   if (byKeyboard && document.activeElement === token) {
@@ -206,8 +206,8 @@ function detachEvents() {
 
 function considerCorrecting(event) {
   const element = event.target;
-  const application = getTokenRuleApplication(element);
-  if (application === null) {
+  const correction = getTokenCorrection(element);
+  if (correction === null) {
     return;
   }
   if (currentToken) {
@@ -216,7 +216,7 @@ function considerCorrecting(event) {
     }
     stopCorrecting();
   }
-  startCorrecting(element, application);
+  startCorrecting(element, correction);
 }
 
 function onTouchStart(event) {

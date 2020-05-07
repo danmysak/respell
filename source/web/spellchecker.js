@@ -12,13 +12,13 @@ function setCorrectionAttributes(token, correctionType) {
 }
 
 function checkToken(tokenChain) {
-  const application = processToken(tokenChain);
+  const correction = processToken(tokenChain);
   const container = tokenChain.getCurrentContainer();
-  if (application !== null) {
-    setCorrectionAttributes(container, application.type);
+  if (correction !== null) {
+    setCorrectionAttributes(container, correction.type);
   }
-  tokenMap.set(container, application);
-  return application;
+  tokenMap.set(container, correction);
+  return correction;
 }
 
 export function findNextCorrection(token) {
@@ -44,19 +44,19 @@ export function findNextCorrection(token) {
 }
 
 export function spellcheck(inputElement) {
-  const applicationSets = [];
+  const correctionSets = [];
   for (const paragraph of [...inputElement.children]) {
     const tokenChain = new TokenChain([...paragraph.children], (container) => container.textContent);
-    const applications = [];
+    const corrections = [];
     while (tokenChain.hasMore()) {
       tokenChain.next();
-      applications.push(checkToken(tokenChain));
+      corrections.push(checkToken(tokenChain));
     }
-    applicationSets.push(applications);
+    correctionSets.push(corrections);
   }
-  return applicationSets;
+  return correctionSets;
 }
 
-export function getTokenRuleApplication(tokenElement) {
+export function getTokenCorrection(tokenElement) {
   return tokenMap.get(tokenElement) || null;
 }
