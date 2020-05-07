@@ -43,9 +43,12 @@ function updateCurrentSelection() {
   if (range === null) {
     return null;
   }
+  const start = getParentOffset(container, range.startContainer, range.startOffset);
+  const end = range.endContainer === range.startContainer && range.endOffset === range.startOffset
+    ? start : getParentOffset(container, range.endContainer, range.endOffset);
   currentSelection = {
-    start: getParentOffset(container, range.startContainer, range.startOffset),
-    end: getParentOffset(container, range.endContainer, range.endOffset)
+    start,
+    end
   };
 }
 
@@ -95,11 +98,41 @@ function attachUndoEvent() {
         const selectionEnd = lastSelection.end;
         setTimeout(() => {
           const start = getNodeAtOffset(container, selectionStart);
-          const end = getNodeAtOffset(container, selectionEnd);
+          const end = selectionStart === selectionEnd ? start : getNodeAtOffset(container, selectionEnd);
           setCursor(start.node, start.offset, end.node, end.offset);
         }, 0);
       }
       container.innerHTML = lastContents.map((text) => `<${paragraphTag}>${text}</${paragraphTag}>`).join('');
+    }
+  });
+}
+
+function attachCursorFixingEvent() {
+  // Working around the following Firefox bug: https://bugzilla.mozilla.org/show_bug.cgi?id=1636248
+  container.addEventListener('keydown', (event) => {
+    if (event.ctrlKey || event.altKey || event.shiftKey || event.metaKey) {
+      return;
+    }
+    let delta = 0;
+    switch (event.key) {
+      case 'ArrowLeft':
+        delta = -1;
+        break;
+      case 'ArrowRight':
+        delta = 1;
+        break;
+    }
+    if (delta !== 0 && currentSelection !== null && currentSelection.start === currentSelection.end) {
+      const selection = currentSelection.start;
+      setTimeout(() => {
+        if (currentSelection !== null && currentSelection.start === selection && currentSelection.end === selection) {
+          const correctSelection = selection + delta;
+          if (correctSelection >= 0 && correctSelection <= container.textContent.length) {
+            const newSelection = getNodeAtOffset(container, correctSelection);
+            setCursor(newSelection.node, newSelection.offset);
+          }
+        }
+      }, 0);
     }
   });
 }
@@ -158,4 +191,5 @@ export function attachObserver(inputElement, statsElement) {
   attachSelectionEvents();
   contentsChanged();
   attachUndoEvent();
+  attachCursorFixingEvent();
 }
