@@ -434,6 +434,9 @@ token-replacement-new button {
     font-weight: bold;
     cursor: pointer;
     position: relative;
+    /* We need to set the outline properties explicitly for the outline not to be clipped due to overflow: hidden */
+    outline-width: 3px;
+    outline-offset: -2px;
 }
 
 token-replacement-new button::before {
