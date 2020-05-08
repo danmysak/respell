@@ -223,9 +223,9 @@ main {
     height: calc(var(--text-font-size) * var(--line-height));
 }
 
-.input-correcting, .input-correcting .correction:not(.correction-current),
-.input-correcting-keyboard, .input-correcting-keyboard .correction:not(.correction-current),
-.input-correcting-redisplay, .input-correcting-redisplay .correction:not(.correction-current) {
+.input-correcting .input, .input-correcting .correction:not(.correction-current),
+.input-correcting-keyboard .input, .input-correcting-keyboard .correction:not(.correction-current),
+.input-correcting-redisplay .input, .input-correcting-redisplay .correction:not(.correction-current) {
     color: var(--background-text-color);
 }
 
