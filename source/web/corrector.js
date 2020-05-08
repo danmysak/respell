@@ -171,6 +171,11 @@ function performReplacement(byKeyboard, index = 0, replacement = null) {
       }, 0);
     }
   }
+  setTimeout(() => {
+    if (!currentToken && [...document.querySelectorAll(':hover')].includes(token)) {
+      considerCorrecting(token);
+    }
+  }, 0);
 }
 
 function onMouseDown(event) {
@@ -219,8 +224,7 @@ function detachEvents() {
   document.removeEventListener('keydown', onKeyDown);
 }
 
-function considerCorrecting(event) {
-  const element = event.target;
+function considerCorrecting(element) {
   const corrections = getTokenCorrections(element);
   if (corrections === null) {
     return;
@@ -240,7 +244,7 @@ function onTouchStart(event) {
     performReplacement(false);
   } else {
     const lastToken = currentToken;
-    considerCorrecting(event);
+    considerCorrecting(event.target);
     if (currentToken !== lastToken) {
       event.preventDefault(); // To prevent subsequent firing of mouse events
     } else if (currentToken !== null && !currentToken.contains(event.target)) {
@@ -251,7 +255,7 @@ function onTouchStart(event) {
 
 export function attachCorrector(inputElement) {
   container = inputElement;
-  inputElement.addEventListener('mouseover', considerCorrecting);
-  inputElement.addEventListener('focusin', considerCorrecting);
+  inputElement.addEventListener('mouseover', (event) => considerCorrecting(event.target));
+  inputElement.addEventListener('focusin', (event) => considerCorrecting(event.target));
   inputElement.addEventListener('touchstart', onTouchStart);
 }
