@@ -1,4 +1,4 @@
-import {serializeCursor, restoreCursor, getRangeIfCollapsedAndInside} from "./cursor.js";
+import {serializeCursor, restoreCursor, getRangeIfInside} from "./cursor.js";
 import {tokenize} from "../spelling/tokenizer.js";
 
 export const paragraphTag = 'P';
@@ -112,15 +112,17 @@ function normalizeParagraph(paragraph) {
 
 export function normalizeCursorClasses(inputElement) {
   const getCursorElements = () => {
-    const range = getRangeIfCollapsedAndInside(inputElement);
+    const range = getRangeIfInside(inputElement);
     if (!range) {
       return [];
     }
-    const token = [range.startContainer, range.startContainer.parentElement].find((candidate) => isTokenTag(candidate));
-    if (!token) {
-      return [];
-    }
-    return [token, token.previousElementSibling, token.nextElementSibling].filter((element) => element !== null);
+    return [range.startContainer, range.endContainer].flatMap((container) => {
+      const token = [container, container.parentElement].find((candidate) => isTokenTag(candidate));
+      if (!token) {
+        return [];
+      }
+      return [token, token.previousElementSibling, token.nextElementSibling].filter((element) => element !== null);
+    });
   };
   const cursorElements = getCursorElements();
   for (const element of [...inputElement.querySelectorAll(`.${cursorClass}`)]) {

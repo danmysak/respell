@@ -9,7 +9,9 @@ const extraChangeTag = 'TOKEN-EXTRA-CHANGE';
 const descriptionTag = 'TOKEN-DESCRIPTION';
 
 const tokenCorrectingClassName = 'correction-current';
-const containerCorrectingClassName = 'correcting';
+const containerCorrectingClassName = 'input-correcting';
+const containerCorrectingKeyboardClassName = 'input-correcting-keyboard';
+const containerCorrectingRedisplayClassName = 'input-correcting-redisplay';
 const replacementClassName = 'replacement';
 const defaultReplacementClassName = 'default-replacement';
 const tooltipHorizontalShiftProperty = '--tooltip-horizontal-shift';
@@ -23,11 +25,12 @@ const tooltipMargin = parseFloat(window.getComputedStyle(document.body).getPrope
 
 function addClasses() {
   currentToken.classList.add(tokenCorrectingClassName);
-  container.classList.add(containerCorrectingClassName);
+  container.parentElement.classList.add(containerCorrectingClassName);
+  // We put this class on the parent element in order not to trigger an extra change for the input
 }
 
 function removeClasses() {
-  container.classList.remove(containerCorrectingClassName);
+  container.parentElement.classList.remove(containerCorrectingClassName);
   currentToken.classList.remove(tokenCorrectingClassName);
 }
 
@@ -134,7 +137,7 @@ function startCorrecting(token, corrections) {
   addClasses();
   displayTooltip();
   attachEvents();
-  endPlannedMutation();
+  endPlannedMutation(false);
 }
 
 export function stopCorrecting() {
@@ -145,9 +148,20 @@ export function stopCorrecting() {
   detachEvents();
   removeTooltip();
   removeClasses();
-  endPlannedMutation();
+  endPlannedMutation(false);
   currentToken = null;
   currentCorrections = null;
+}
+
+function checkForRedisplay(token) {
+  // We need this for the underline color transition to start from grayed out
+  container.parentElement.classList.add(containerCorrectingRedisplayClassName);
+  setTimeout(() => {
+    if (!currentToken && [...document.querySelectorAll(':hover')].includes(token)) {
+      considerCorrecting(token);
+    }
+    container.parentElement.classList.remove(containerCorrectingRedisplayClassName);
+  }, 0);
 }
 
 function performReplacement(byKeyboard, index = 0, replacement = null) {
@@ -164,18 +178,15 @@ function performReplacement(byKeyboard, index = 0, replacement = null) {
   if (byKeyboard && document.activeElement === token) {
     const correction = findNextCorrection(token);
     if (correction !== null) {
-      // We need the following line in order for the underline color transition to start from grayed out
-      container.classList.add(containerCorrectingClassName);
+      // We need the following line for the underline color transition to start from grayed out
+      container.parentElement.classList.add(containerCorrectingKeyboardClassName);
       setTimeout(() => {
         correction.focus();
+        container.parentElement.classList.remove(containerCorrectingKeyboardClassName);
       }, 0);
     }
   }
-  setTimeout(() => {
-    if (!currentToken && [...document.querySelectorAll(':hover')].includes(token)) {
-      considerCorrecting(token);
-    }
-  }, 0);
+  checkForRedisplay(token);
 }
 
 function onMouseDown(event) {
