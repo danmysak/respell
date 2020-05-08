@@ -98,7 +98,8 @@ export function createMaskRule(description) {
         }).join('');
       });
       return new Correction(item.type, replacement, item.description, {
-        removeWhitespaceBefore: item.removeWhitespaceBefore,
+        removePreviousToken: item.removePreviousToken,
+        removeNextToken: item.removeNextToken,
         alternatives: item.alternatives
       });
     }

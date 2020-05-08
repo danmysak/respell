@@ -12,13 +12,13 @@ function setCorrectionAttributes(token, correctionType) {
 }
 
 function checkToken(tokenChain) {
-  const correction = processToken(tokenChain);
+  const corrections = processToken(tokenChain);
   const container = tokenChain.getCurrentContainer();
-  if (correction !== null) {
-    setCorrectionAttributes(container, correction.type);
+  if (corrections !== null) {
+    setCorrectionAttributes(container, corrections[0].type);
   }
-  tokenMap.set(container, correction);
-  return correction;
+  tokenMap.set(container, corrections);
+  return corrections;
 }
 
 export function findNextCorrection(token) {
@@ -57,6 +57,6 @@ export function spellcheck(inputElement) {
   return correctionSets;
 }
 
-export function getTokenCorrection(tokenElement) {
+export function getTokenCorrections(tokenElement) {
   return tokenMap.get(tokenElement) || null;
 }

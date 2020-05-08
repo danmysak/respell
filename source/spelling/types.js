@@ -10,45 +10,16 @@ export class Correction {
   constructor(type, replacement, description, {
     alternatives = [],
     requiresExtraChange = false,
-    removeWhitespaceBefore = false,
     removePreviousToken = false,
     removeNextToken = false
   } = {}) {
     this.type = type;
     this.replacement = replacement;
-    this.descriptions = Array.isArray(description) ? description : [description];
+    this.description = description;
     this.alternatives = alternatives;
     this.requiresExtraChange = requiresExtraChange;
-    this.removeWhitespaceBefore = removeWhitespaceBefore;
     this.removePreviousToken = removePreviousToken;
     this.removeNextToken = removeNextToken;
-  }
-
-  static combine(a, b) {
-    if (a === null || b === null) {
-      return a || b;
-    }
-    if (a.type === correctionTypes.UNCERTAIN) {
-      return b;
-    } else if (b.type === correctionTypes.UNCERTAIN) {
-      return a;
-    }
-    const type = [a.type, b.type].includes(correctionTypes.MISTAKE)
-      ? correctionTypes.MISTAKE : correctionTypes.IMPROVEMENT;
-    const replacement = b.replacement;
-    const descriptions = [...a.descriptions, ...b.descriptions];
-    const alternatives = [...b.alternatives, ...a.alternatives];
-    const requiresExtraChange = a.requiresExtraChange || b.requiresExtraChange;
-    const removeWhitespaceBefore = a.removeWhitespaceBefore || b.removeWhitespaceBefore;
-    const removePreviousToken = a.removePreviousToken || b.removePreviousToken;
-    const removeNextToken = a.removeNextToken || b.removeNextToken;
-    return new Correction(type, replacement, descriptions, {
-      alternatives,
-      requiresExtraChange,
-      removeWhitespaceBefore,
-      removePreviousToken,
-      removeNextToken
-    });
   }
 }
 

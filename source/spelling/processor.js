@@ -1,5 +1,7 @@
 import {isWord, isPunctuation, isWhitespace} from "./tokenizer.js";
-import {Correction, correctionTypes} from "./types.js";
+import {correctionTypes} from "./types.js";
+
+const correctionTypePriority = [correctionTypes.MISTAKE, correctionTypes.IMPROVEMENT, correctionTypes.UNCERTAIN];
 
 const wordRules = [];
 const punctuationRules = [];
@@ -17,26 +19,21 @@ export function registerWhitespaceRule(rule) {
   whitespaceRules.push(rule);
 }
 
-function applyRules(tokenChain, rules) {
-  let currentCorrection = null;
-  let currentForm = tokenChain.getCurrentToken();
-  for (const rule of rules) {
-    if (currentCorrection !== null && currentCorrection.type !== correctionTypes.UNCERTAIN) {
-      currentForm = currentCorrection.replacement;
-    }
-    currentCorrection = Correction.combine(currentCorrection, rule(currentForm, tokenChain));
-  }
-  return currentCorrection;
-}
-
 export function processToken(tokenChain) {
   const token = tokenChain.getCurrentToken();
+  let rules;
   if (isWord(token)) {
-    return applyRules(tokenChain, wordRules);
+    rules = wordRules;
   } else if (isPunctuation(token)) {
-    return applyRules(tokenChain, punctuationRules);
+    rules = punctuationRules;
   } else if (isWhitespace(token)) {
-    return applyRules(tokenChain, whitespaceRules);
+    rules = whitespaceRules;
+  } else {
+    return null;
   }
-  return null;
+  const corrections = rules
+    .map((rule) => rule(token, tokenChain))
+    .filter((correction) => correction !== null)
+    .sort((a, b) => correctionTypePriority.indexOf(a.type) - correctionTypePriority.indexOf(b.type));
+  return corrections.length > 0 ? corrections : null;
 }

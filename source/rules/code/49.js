@@ -20,7 +20,7 @@ registerWordRule(createMaskRule([{
   description: 'Відповідно до § 49 правопису, ім’я Ван Гога слід писати двома окремими словами, обидва з великої букви.'
 }]));
 
-const chiwonPrefixes = ["Ч(і)", "Ч(хі)", "Ч(и)", "Ч(хи)", "Ч(хви)"];
+const chiwonPrefixes = ["Ч|і", "Ч|хі", "Ч|и", "Ч|хи", "Ч|хви"];
 
 registerWordRule(createMaskRule({
   type: correctionTypes.MISTAKE,
@@ -30,12 +30,15 @@ registerWordRule(createMaskRule({
     nextMatches: ["Чі*", "Чх*"],
     replacement: "хве"
   }, {
-    matches: chiwonPrefixes,
+    matches: chiwonPrefixes.map((prefix) => prefix.replace('|', '(') + ')'),
     nextMatches: ["вон*"],
     replacement: "хві"
   }, {
-    matches: chiwonPrefixes.flatMap((prefix) => [`${prefix}вон*`, `${prefix}-вон*`]),
-    replacement: "хві"
+    matches: chiwonPrefixes.flatMap((prefix) => [
+      `${prefix.replace('|', '(')}в)он*`,
+      `${prefix.replace('|', '(')}-в)он*`
+    ]),
+    replacement: "хвів"
   }]
 }));
 
@@ -44,7 +47,7 @@ registerWordRule(createMaskRule({
   description: 'Відповідно до § 49 правопису, складові корейських імен «Вансо», «Чхвівон», «Гімун» слід писати разом.',
   preserveReplacementCase: true,
   rules: [{
-    removeWhitespaceBefore: true,
+    removePreviousToken: true,
     rules: [{
       previousMatches: ["Ван"],
       matches: ["(с)о"],

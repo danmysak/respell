@@ -1,21 +1,23 @@
-import {getTokenCorrection, findNextCorrection} from "./spellchecker.js";
+import {getTokenCorrections, findNextCorrection} from "./spellchecker.js";
 import {startPlannedMutation, endPlannedMutation} from "./observer.js";
 import {isWhitespace} from "../spelling/tokenizer.js";
 
 export const tooltipTag = 'TOKEN-TOOLTIP';
+const correctionContainerTag = 'TOKEN-CORRECTION-CONTAINER';
 const replacementTag = 'TOKEN-REPLACEMENT';
 const extraChangeTag = 'TOKEN-EXTRA-CHANGE';
-const descriptionsTag = 'TOKEN-DESCRIPTIONS';
 const descriptionTag = 'TOKEN-DESCRIPTION';
 
 const tokenCorrectingClassName = 'correction-current';
 const containerCorrectingClassName = 'correcting';
+const replacementClassName = 'replacement';
+const defaultReplacementClassName = 'default-replacement';
 const tooltipHorizontalShiftProperty = '--tooltip-horizontal-shift';
 const tooltipMarginProperty = '--tooltip-margin';
 
 let container = null;
 let currentToken = null;
-let currentCorrection = null;
+let currentCorrections = null;
 let pageBottomPadding = 0;
 const tooltipMargin = parseFloat(window.getComputedStyle(document.body).getPropertyValue(tooltipMarginProperty));
 
@@ -29,30 +31,20 @@ function removeClasses() {
   currentToken.classList.remove(tokenCorrectingClassName);
 }
 
-function getCorrectionPrefixes() {
-  if (currentCorrection.removeWhitespaceBefore) {
-    const previous = currentToken.previousElementSibling;
-    if (previous !== null && isWhitespace(previous.textContent) !== null) {
-      const previousNonWhitespace = previous.previousElementSibling;
-      if (previousNonWhitespace !== null) {
-        return [previousNonWhitespace.textContent + ' ', previousNonWhitespace.textContent];
+function getCorrectionAffixes(prefix, removeToken, getAdjacentSibling) {
+  if (removeToken) {
+    const sibling = getAdjacentSibling(currentToken);
+    if (sibling !== null) {
+      if (isWhitespace(sibling.textContent)) {
+        const adjacentNonWhitespace = getAdjacentSibling(sibling);
+        if (adjacentNonWhitespace !== null) {
+          return [
+            (prefix ? '' : ' ') + adjacentNonWhitespace.textContent + (prefix ? ' ' : ''),
+            adjacentNonWhitespace.textContent
+          ];
+        }
       }
-    }
-  }
-  if (currentCorrection.removePreviousToken) {
-    const previous = currentToken.previousElementSibling;
-    if (previous !== null) {
-      return [previous.textContent, ''];
-    }
-  }
-  return ['', ''];
-}
-
-function getCorrectionSuffixes() {
-  if (currentCorrection.removeNextToken) {
-    const next = currentToken.nextElementSibling;
-    if (next !== null) {
-      return [next.textContent, ''];
+      return [sibling.textContent, ''];
     }
   }
   return ['', ''];
@@ -87,28 +79,46 @@ function displayTooltip() {
   const tooltip = document.createElement(tooltipTag);
   tooltip.setAttribute('contenteditable', 'false');
   tooltip.tabIndex = -1;
-  const [oldCorrectionPrefix, newCorrectionPrefix] = getCorrectionPrefixes();
-  const [oldCorrectionSuffix, newCorrectionSuffix] = getCorrectionSuffixes();
-  const replacement = document.createElement(replacementTag);
-  const oldToken = document.createElement(`${replacementTag}-OLD`);
-  oldToken.textContent = oldCorrectionPrefix + currentToken.textContent + oldCorrectionSuffix;
-  replacement.append(oldToken);
-  const newToken = document.createElement(`${replacementTag}-NEW`);
-  newToken.textContent = [currentCorrection.replacement, ...currentCorrection.alternatives]
-    .map((replacement) => newCorrectionPrefix + replacement + newCorrectionSuffix).join(' / ');
-  replacement.append(newToken);
-  tooltip.append(replacement);
-  if (currentCorrection.requiresExtraChange) {
-    const extraChange = document.createElement(extraChangeTag);
-    tooltip.append(extraChange);
-  }
-  const descriptions = document.createElement(descriptionsTag);
-  currentCorrection.descriptions.forEach((text) => {
+  currentCorrections.forEach((correction, correctionIndex) => {
+    const correctionContainer = document.createElement(correctionContainerTag);
+    const [oldCorrectionPrefix, newCorrectionPrefix] = getCorrectionAffixes(
+      true, correction.removePreviousToken, (element) => element.previousElementSibling
+    );
+    const [oldCorrectionSuffix, newCorrectionSuffix] = getCorrectionAffixes(
+      false, correction.removeNextToken, (element) => element.nextElementSibling
+    );
+    const replacement = document.createElement(replacementTag);
+    replacement.classList.add(`${replacementClassName}-${correction.type}`);
+    const oldToken = document.createElement(`${replacementTag}-OLD`);
+    oldToken.textContent = oldCorrectionPrefix + currentToken.textContent + oldCorrectionSuffix;
+    replacement.append(oldToken);
+    const newToken = document.createElement(`${replacementTag}-NEW`);
+    [correction.replacement, ...correction.alternatives].forEach((replacement, replacementIndex) => {
+      if (replacementIndex > 0) {
+        const slash = document.createTextNode(' / ');
+        newToken.append(slash);
+      }
+      const button = document.createElement('button');
+      button.innerText = newCorrectionPrefix + replacement + newCorrectionSuffix;
+      button.addEventListener('click', () => {
+        performReplacement(false, correctionIndex, replacement);
+      });
+      if (correctionIndex === 0 && replacementIndex === 0) {
+        button.classList.add(defaultReplacementClassName);
+      }
+      newToken.append(button);
+    });
+    replacement.append(newToken);
+    correctionContainer.append(replacement);
+    if (correction.requiresExtraChange) {
+      const extraChange = document.createElement(extraChangeTag);
+      correctionContainer.append(extraChange);
+    }
     const description = document.createElement(descriptionTag);
-    description.innerHTML = formatDescription(text);
-    descriptions.append(description);
+    description.innerHTML = formatDescription(correction.description);
+    correctionContainer.append(description);
+    tooltip.append(correctionContainer);
   });
-  tooltip.append(descriptions);
   currentToken.append(tooltip);
   fixTooltipPositioning(tooltip);
 }
@@ -117,9 +127,9 @@ function removeTooltip() {
   currentToken.querySelector(tooltipTag).remove();
 }
 
-function startCorrecting(token, correction) {
+function startCorrecting(token, corrections) {
   currentToken = token;
-  currentCorrection = correction;
+  currentCorrections = corrections;
   startPlannedMutation();
   addClasses();
   displayTooltip();
@@ -137,16 +147,15 @@ export function stopCorrecting() {
   removeClasses();
   endPlannedMutation();
   currentToken = null;
-  currentCorrection = null;
+  currentCorrections = null;
 }
 
-function performReplacement(byKeyboard) {
+function performReplacement(byKeyboard, index = 0, replacement = null) {
   const token = currentToken;
-  const correction = currentCorrection;
+  const correction = currentCorrections[index];
   stopCorrecting();
-  token.textContent = correction.replacement;
-  if (token.previousElementSibling !== null && (correction.removePreviousToken
-    || (correction.removeWhitespaceBefore && isWhitespace(token.previousElementSibling.textContent)))) {
+  token.textContent = replacement || correction.replacement;
+  if (token.previousElementSibling !== null && correction.removePreviousToken) {
     token.previousElementSibling.remove();
   }
   if (token.nextElementSibling !== null && correction.removeNextToken) {
@@ -190,15 +199,21 @@ function onKeyDown(event) {
   }
 }
 
+function onFocusOut(event) {
+  if (currentToken !== null && !currentToken.contains(event.relatedTarget)) {
+    stopCorrecting();
+  }
+}
+
 function attachEvents() {
   document.addEventListener('keydown', onKeyDown);
   currentToken.addEventListener('mousedown', onMouseDown);
   currentToken.addEventListener('mouseleave', stopCorrecting);
-  currentToken.addEventListener('focusout', stopCorrecting);
+  currentToken.addEventListener('focusout', onFocusOut);
 }
 
 function detachEvents() {
-  currentToken.removeEventListener('focusout', stopCorrecting);
+  currentToken.removeEventListener('focusout', onFocusOut);
   currentToken.removeEventListener('mouseleave', stopCorrecting);
   currentToken.removeEventListener('mousedown', onMouseDown);
   document.removeEventListener('keydown', onKeyDown);
@@ -206,8 +221,8 @@ function detachEvents() {
 
 function considerCorrecting(event) {
   const element = event.target;
-  const correction = getTokenCorrection(element);
-  if (correction === null) {
+  const corrections = getTokenCorrections(element);
+  if (corrections === null) {
     return;
   }
   if (currentToken) {
@@ -216,7 +231,7 @@ function considerCorrecting(event) {
     }
     stopCorrecting();
   }
-  startCorrecting(element, correction);
+  startCorrecting(element, corrections);
 }
 
 function onTouchStart(event) {

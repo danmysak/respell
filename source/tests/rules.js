@@ -12,18 +12,29 @@ function processText(text) {
   const encounteredDescriptions = [];
   let encounteredExtraChange = false;
   let skipNext = false;
+  let joinNext = false;
   while (chain.hasMore()) {
     chain.next();
     if (skipNext) {
       skipNext = false;
+      if (isWhitespace(chain.getCurrentToken())) {
+        joinNext = true;
+      }
       continue;
     }
-    const correction = processToken(chain);
-    if (correction === null) {
+    if (joinNext) {
+      joinNext = false;
+      if (replaced.length > 0) {
+        replaced[replaced.length - 1] += chain.getCurrentToken();
+        continue;
+      }
+    }
+    const corrections = processToken(chain);
+    if (corrections === null) {
       replaced.push(chain.getCurrentToken());
     } else {
-      if (replaced.length > 0 && (correction.removePreviousToken
-        || (correction.removeWhitespaceBefore && isWhitespace(replaced[replaced.length - 1])))) {
+      const correction = corrections[0];
+      if (replaced.length > 0 && correction.removePreviousToken) {
         replaced.pop();
       }
       if (correction.removeNextToken) {
@@ -32,7 +43,7 @@ function processText(text) {
       replaced.push(correction.replacement);
       encounteredExtraChange = encounteredExtraChange || correction.requiresExtraChange;
       encounteredTypes.push(correction.type);
-      encounteredDescriptions.push(...correction.descriptions);
+      encounteredDescriptions.push(correction.description);
     }
   }
   return {

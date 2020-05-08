@@ -47,9 +47,9 @@ function getNumberType(number) {
 function gatherCumulativeCorrectionStats(correctionSets) {
   const correctionStats = Object.fromEntries(Object.values(correctionTypes).map((type) => [type, 0]));
   for (const set of correctionSets) {
-    for (const correction of set) {
-      if (correction !== null) {
-        correctionStats[correction.type]++;
+    for (const corrections of set) {
+      if (corrections !== null) {
+        correctionStats[corrections[0].type]++;
       }
     }
   }
