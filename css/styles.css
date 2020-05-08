@@ -11,6 +11,7 @@
     --correction-font-size: 18px;
     --subcaption-font-size: 12px;
     --line-height: 1.25;
+    --replacement-line-height: 1.5;
     --tooltip-width: 300px;
     --tooltip-margin: 10px; /* Number of pixels between the tooltip's border and the edges of the page */
     --tooltip-top-margin: 4px; /* Gap between the text being corrected and the tooltip */
@@ -351,7 +352,9 @@ token-correction-container:not(:first-child)::before {
 token-replacement {
     display: block;
     text-align: center;
+    line-height: var(--replacement-line-height);
     margin-bottom: 10px;
+    overflow: hidden;
 }
 
 token-replacement-old {
