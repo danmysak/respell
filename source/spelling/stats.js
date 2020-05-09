@@ -7,16 +7,43 @@ let spellingStats = null;
 const numberTemplate = '{{number}} {text}'; // With a non-breaking space
 
 const correctionTemplates = {
-  [correctionTypes.MISTAKE]: ['жодної помилки', 'помилка', 'помилки', 'помилок'],
-  [correctionTypes.IMPROVEMENT]: ['жодної пропозиції', 'пропозиція', 'пропозиції', 'пропозицій'],
-  [correctionTypes.UNCERTAIN]: ['жодного припущення', 'припущення', 'припущення', 'припущень']
+  [correctionTypes.MISTAKE]: {
+    labels: ['жодної помилки', 'помилка', 'помилки', 'помилок']
+  },
+  [correctionTypes.IMPROVEMENT]: {
+    labels: ['жодної пропозиції', 'пропозиція', 'пропозиції', 'пропозицій']
+  },
+  [correctionTypes.UNCERTAIN]: {
+    labels: ['жодного припущення', 'припущення', 'припущення', 'припущень']
+  }
 };
 
 const spellingTemplates = {
-  'paragraphs': ['жодного абзацу', 'абзац', 'абзаци', 'абзаців'],
-  'sentences': ['жодного речення', 'речення', 'речення', 'речень'],
-  'words': ['жодного слова', 'слово', 'слова', 'слів'],
-  'characters': ['жодного символу', 'символ', 'символи', 'символів']
+  'paragraphs': {
+    labels: ['жодного абзацу', 'абзац', 'абзаци', 'абзаців']
+  },
+  'sentences': {
+    labels: ['жодного речення', 'речення', 'речення', 'речень'],
+    average: {
+      denominator: 'paragraphs',
+      label: 'абзац'
+    }
+  },
+  'words': {
+    labels: ['жодного слова', 'слово', 'слова', 'слів'],
+    average: {
+      denominator: 'sentences',
+      label: 'речення'
+    }
+  },
+  'characters': {
+    labels: ['жодного символу', 'символ', 'символи', 'символів'],
+    average: {
+      numerator: 'wordCharacters',
+      denominator: 'words',
+      label: 'слово'
+    }
+  }
 };
 
 const numberTypes = {
@@ -60,12 +87,14 @@ function gatherSpellingStats(tokens) {
   let sentences = 0;
   let words = 0;
   let characters = 0;
+  let wordCharacters = 0;
   let lastNonSpace = null;
   let lastSentenceHasCapitalizedWords = false;
   tokens.forEach((token) => {
     if (isWord(token)) {
-      const isCapitalized = token.match(/^[А-ЯҐЄІЇA-Z]/);
       words++;
+      wordCharacters += token.length;
+      const isCapitalized = token.match(/^[А-ЯҐЄІЇA-Z]/);
       if (lastNonSpace !== null && lastSentenceHasCapitalizedWords &&
         (lastNonSpace.includes('?') || lastNonSpace.includes('!') ||
           (lastNonSpace.includes('.') && token.length > 0 && !token[0].match(/[0-9а-яґєіїa-z]/)))) {
@@ -84,7 +113,7 @@ function gatherSpellingStats(tokens) {
   if (words > 0 && (lastSentenceHasCapitalizedWords || sentences === 0)) {
     sentences++;
   }
-  return {sentences, words, characters};
+  return {sentences, words, characters, wordCharacters};
 }
 
 function gatherCumulativeSpellingStats(tokenSets) {
@@ -92,7 +121,8 @@ function gatherCumulativeSpellingStats(tokenSets) {
     paragraphs: 0,
     sentences: 0,
     words: 0,
-    characters: 0
+    characters: 0,
+    wordCharacters: 0
   };
   for (const set of tokenSets) {
     const setStats = gatherSpellingStats(set);
@@ -101,6 +131,7 @@ function gatherCumulativeSpellingStats(tokenSets) {
       cumulativeStats.sentences += setStats.sentences;
       cumulativeStats.words += setStats.words;
       cumulativeStats.characters += setStats.characters;
+      cumulativeStats.wordCharacters += setStats.wordCharacters;
     }
   }
   return cumulativeStats;
@@ -114,14 +145,13 @@ export function updateSpellingStats(tokenSets) {
   spellingStats = gatherCumulativeSpellingStats(tokenSets);
 }
 
-function getLabels(templates, stats, includeAverages = false) {
+function getLabels(templates, stats) {
   const labels = {};
-  let lastValue = null;
-  let lastUnit = null;
   Object.keys(templates).forEach((type) => {
+    const template = templates[type];
     const value = stats[type];
     const valueType = getNumberType(value);
-    const text = templates[type][valueType];
+    const text = template.labels[valueType];
     const label = {};
     if (valueType === numberTypes.ZERO) {
       label.zero = true;
@@ -130,13 +160,15 @@ function getLabels(templates, stats, includeAverages = false) {
       label.zero = false;
       label.text = numberTemplate.replace('{number}', value).replace('{text}', text);
     }
-    if (includeAverages && value > 0 && lastValue !== null && lastValue > 1) {
-      const average = (value / lastValue).toFixed(1).replace('.', ',');
-      label.extra = `~${average}/${lastUnit}`;
+    if (template.average) {
+      const numerator = stats[template.average.numerator || type];
+      const denominator = stats[template.average.denominator];
+      if (numerator > 0 && denominator > 1) {
+        const average = (numerator / denominator).toFixed(1).replace('.', ',');
+        label.extra = `~${average}/${template.average.label}`;
+      }
     }
     labels[type] = label;
-    lastValue = value;
-    lastUnit = templates[type][numberTypes.ONE];
   });
   return labels;
 }
@@ -146,5 +178,5 @@ export function getCorrectionLabels() {
 }
 
 export function getSpellingLabels() {
-  return getLabels(spellingTemplates, spellingStats, true);
+  return getLabels(spellingTemplates, spellingStats);
 }
