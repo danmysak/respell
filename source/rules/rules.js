@@ -35,3 +35,4 @@ import "./code/67a.js";
 import "./code/67b.js";
 import "./code/82a.js";
 import "./code/82b.js";
+import "./code/82c.js";
