@@ -1,6 +1,6 @@
 import {requestIntraToken} from "../spelling/tokenizer.js";
 
-const cursorPlaceholder = requestIntraToken();
+export const cursorPlaceholder = requestIntraToken();
 
 export function setCursor(startNode, startOffset, endNode = startNode, endOffset = startOffset) {
   const range = document.createRange();

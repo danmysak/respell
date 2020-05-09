@@ -1,4 +1,4 @@
-import {serializeCursor, restoreCursor, getRangeIfInside} from "./cursor.js";
+import {cursorPlaceholder, serializeCursor, restoreCursor, getRangeIfInside} from "./cursor.js";
 import {tokenize} from "../spelling/tokenizer.js";
 
 export const paragraphTag = 'P';
@@ -149,11 +149,11 @@ function trim(paragraph) {
 export function normalize(inputElement, extraTagsToRemove, trimWhitespace) {
   if (!inputElement.hasChildNodes()) {
     const emptyParagraph = document.createElement('p');
-    emptyParagraph.textContent = '\n';
+    emptyParagraph.textContent = cursorPlaceholder + '\n';
     inputElement.append(emptyParagraph);
-    return;
+  } else {
+    serializeCursor(inputElement);
   }
-  serializeCursor(inputElement);
   substituteLineBreaks(inputElement);
   paragraphize(inputElement, extraTagsToRemove);
   for (const paragraph of [...inputElement.children]) {
