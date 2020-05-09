@@ -16,6 +16,7 @@ import {
   isCapitalized,
   capitalize,
   normalizeCase,
+  simplifyApostrophe,
   isAfterSentenceBoundary
 } from "../spelling/utils.js";
 
@@ -44,5 +45,6 @@ export {
   isCapitalized,
   capitalize,
   normalizeCase,
+  simplifyApostrophe,
   isAfterSentenceBoundary
 };
