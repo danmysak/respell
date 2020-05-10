@@ -3,7 +3,8 @@ import {Correction, correctionTypes, registerWordRule, canBeSentenceBoundary, is
 const maxLength = 3;
 
 function isLatin(token) {
-  return token !== null && token.match(/^[^а-яґєії]*[a-z][а-яґєії]*$/i);
+  return token !== null && token.match(/^[^а-яґєії]*[a-z][а-яґєії]*$/i)
+    && !token.match(/^[IVXLCDM]+$/); // Roman numerals
 }
 
 function canBeInitialPart(token) {

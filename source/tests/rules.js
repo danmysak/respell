@@ -4,7 +4,11 @@ import {processToken} from "../spelling/processor.js";
 import {tests} from "./data/rules.js";
 import "../rules/rules.js";
 
-function processText(text) {
+function generateRegex(section) {
+  return new RegExp(`§\\s*${section}(?!\d)`);
+}
+
+function processText(text, omitSections = []) {
   const tokens = tokenize(text);
   const replaced = [];
   const chain = new TokenChain(tokens);
@@ -29,8 +33,10 @@ function processText(text) {
         continue;
       }
     }
-    const corrections = processToken(chain);
-    if (corrections === null) {
+    const corrections = (processToken(chain) || []).filter((correction) => !omitSections.some(
+      (section) => correction.description.match(generateRegex(section))
+    ));
+    if (corrections.length === 0) {
       replaced.push(chain.getCurrentToken());
     } else {
       const correction = corrections[0];
@@ -59,6 +65,11 @@ function test(tests) {
   let failed = 0;
 
   tests.forEach(([sections, text, corrected, types, extraChange, processings]) => {
+    if (!Array.isArray(sections)) {
+      sections = [sections];
+    }
+    const expectedSections = sections.filter((section) => section > 0);
+    const omitSections = sections.filter((section) => section < 0).map((section) => -section);
     extraChange = extraChange || false;
     processings = processings || 1;
     let current = text;
@@ -71,7 +82,7 @@ function test(tests) {
         encounteredTypes: types,
         encounteredDescriptions: descriptions,
         encounteredExtraChange: extraChange
-      } = processText(current);
+      } = processText(current, omitSections);
       current = next;
       encounteredTypes.push(...types);
       encounteredDescriptions.push(...descriptions);
@@ -91,12 +102,12 @@ function test(tests) {
       errors.push(`Types differ: "${actualTypes}" instead of expected "${expectedTypes}"`);
     }
     const actualDescriptions = encounteredDescriptions.join('; ');
-    (Array.isArray(sections) ? sections : [sections]).forEach((section) => {
-      if (!actualDescriptions.match(new RegExp(`§\\s*${section}(?!\d)`))) {
+    expectedSections.forEach((section) => {
+      if (!actualDescriptions.match(generateRegex(section))) {
         errors.push(`Section "${section}" not found in descriptions "${actualDescriptions}"`);
       }
     });
-    const reprocessed = processText(processed);
+    const reprocessed = processText(processed, omitSections);
     if (reprocessed.encounteredTypes.length > 0) {
       errors.push(`Reapplication of the rules yielded the following corrections: ` +
         reprocessed.encounteredTypes.join(',') + `; the final text is as follows: "${reprocessed.processed}"`);

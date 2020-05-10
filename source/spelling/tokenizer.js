@@ -68,8 +68,8 @@ export function isQuote(token) {
   return token !== null && token.match(quotePattern);
 }
 
-export function isPunctuation(token) {
-  return token !== null && token.length > 0 && punctuationPlain.includes(token[0]);
+export function isPunctuation(token, canBeNull = false) {
+  return token === null ? canBeNull : token.length > 0 && punctuationPlain.includes(token[0]);
 }
 
 export function isWord(token) {
