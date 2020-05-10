@@ -18,12 +18,12 @@ registerWordRule(createMaskRule({
       return false;
     }
     const previous = chain.getPreviousToken();
-    const plausiblePreceding = isPunctuation(previous, true) || previous.endsWith('ий')
+    const plausiblePreceding = isPunctuation(previous, true) || previous.match(/[иії]й$/)
       || (previous.match(/[еую]$/) && isPunctuation(chain.getPreviousToken(2), true));
     if (!plausiblePreceding) {
       return false;
     }
-    return plausiblePreceding;
+    return true;
   },
   replacement: "же",
   type: correctionTypes.UNCERTAIN,
