@@ -43,35 +43,48 @@
     <h2>Уведення тексту</h2>
     <div class="input" contenteditable="true" spellcheck="false"></div>
     <div class="input-bg"></div>
-    <aside class="stats">
-        <div class="stats-container">
-        <h3>Статистика</h3>
-            <dl>
-                <div class="stats-important">
-                    <dt>Кількість помилок</dt>
-                    <dd class="stats-mistake"></dd>
+    <aside class="tweaks">
+        <div class="tweaks-container">
+            <div class="tweaks-subcontainer settings-container">
+                <h3>Налаштування</h3>
+                <label class="checkbox-container">
+                    <input type="checkbox" class="checkbox" checked="checked" data-ignore-label="feminitives" />
+                    <span class="checkbox-label">Подавати <span class="explanation" data-title="Слова на&nbsp;означення осіб жіночої статі на&nbsp;кшталт «авторка» чи&nbsp;«учениця»">фемінітиви</span></span>
+                </label>
+                <label class="checkbox-container">
+                    <input type="checkbox" class="checkbox" checked="checked" data-ignore-label="latin-proper-nouns" />
+                    <span class="checkbox-label">Виділяти власні назви латиницею</span>
+                </label>
+            </div>
+            <div class="tweaks-subcontainer stats-container">
+                <h3>Статистика</h3>
+                <dl>
+                    <div class="stats-important">
+                        <dt>Кількість помилок</dt>
+                        <dd class="stats-mistake"></dd>
 
-                    <dt>Кількість можливих покращень</dt>
-                    <dd class="stats-improvement"></dd>
+                        <dt>Кількість можливих покращень</dt>
+                        <dd class="stats-improvement"></dd>
 
-                    <dt>Кількість непевних зауважень</dt>
-                    <dd class="stats-uncertain"></dd>
-                </div>
+                        <dt>Кількість непевних зауважень</dt>
+                        <dd class="stats-uncertain"></dd>
+                    </div>
 
-                <div class="stats-spelling">
-                    <dt>Кількість абзаців</dt>
-                    <dd class="stats-paragraphs"></dd>
+                    <div class="stats-spelling">
+                        <dt>Кількість абзаців</dt>
+                        <dd class="stats-paragraphs"></dd>
 
-                    <dt>Кількість речень</dt>
-                    <dd class="stats-sentences"></dd>
+                        <dt>Кількість речень</dt>
+                        <dd class="stats-sentences"></dd>
 
-                    <dt>Кількість слів</dt>
-                    <dd class="stats-words"></dd>
+                        <dt>Кількість слів</dt>
+                        <dd class="stats-words"></dd>
 
-                    <dt>Кількість символів</dt>
-                    <dd class="stats-characters"></dd>
-                </div>
-            </dl>
+                        <dt>Кількість символів</dt>
+                        <dd class="stats-characters"></dd>
+                    </div>
+                </dl>
+            </div>
         </div>
     </aside>
 </main>

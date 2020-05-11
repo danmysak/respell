@@ -7,6 +7,7 @@ import {getRangeIfInside, getParentOffset, getNodeAtOffset, setCursor} from "./c
 let observer = null;
 let container = null;
 let statsContainer = null;
+let settingsContainer = null;
 let isPasting = false;
 let plannedMutationStackSize = 0;
 
@@ -14,6 +15,8 @@ let lastContents = null;
 let lastSelection = null;
 let currentContents = null;
 let currentSelection = null;
+
+let ignoredLabels = null;
 
 function renderStats() {
   const irrelevantClass = 'stats-irrelevant';
@@ -72,7 +75,7 @@ function contentsChanged() {
   updateSnapshots();
   const tokenSets = getTokenSets();
   updateSpellingStats(tokenSets);
-  const correctionSets = spellcheck(container);
+  const correctionSets = spellcheck(container, ignoredLabels);
   updateCorrectionStats(correctionSets);
   renderStats();
   observer.takeRecords();
@@ -177,9 +180,32 @@ function updateCursorClasses() {
   endPlannedMutation(true);
 }
 
-export function attachObserver(inputElement, statsElement) {
+function watchSettings() {
+  ignoredLabels = [];
+  settingsContainer.querySelectorAll('input[type=checkbox][data-ignore-label]').forEach((checkbox) => {
+    const label = checkbox.dataset.ignoreLabel;
+    if (!checkbox.checked) {
+      ignoredLabels.push(label);
+    }
+    checkbox.addEventListener('change', () => {
+      const index = ignoredLabels.indexOf(label);
+      const doChange = checkbox.checked !== (index === -1);
+      if (doChange) {
+        if (index >= 0) {
+          ignoredLabels.splice(index, 1);
+        } else {
+          ignoredLabels.push(label);
+        }
+        contentsChanged();
+      }
+    });
+  });
+}
+
+export function attachObserver(inputElement, statsElement, settingsElement) {
   container = inputElement;
   statsContainer = statsElement;
+  settingsContainer = settingsElement;
   attachPasteEvent();
   observer = new MutationObserver(contentsChanged);
   observer.observe(inputElement, {
@@ -189,6 +215,7 @@ export function attachObserver(inputElement, statsElement) {
     subtree: true
   });
   attachSelectionEvents();
+  watchSettings();
   contentsChanged();
   attachUndoEvent();
   attachCursorFixingEvent();

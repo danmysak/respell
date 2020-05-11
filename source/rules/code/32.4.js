@@ -29,5 +29,5 @@ registerWordRule(createTreeRule(
     requiresExtraChange: true,
     lowerCase: true,
     fixApostrophe: true
-  })
+  }), ['feminitives']
 );

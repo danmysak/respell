@@ -10,13 +10,14 @@
     --text-font-size: 16px;
     --correction-font-size: 18px;
     --subcaption-font-size: 12px;
+    --subcaption-margin-bottom: 18px;
     --line-height: 1.25;
     --replacement-line-height: 1.5;
     --tooltip-width: 300px;
     --tooltip-margin: 10px; /* Number of pixels between the tooltip's border and the edges of the page */
     --tooltip-top-margin: 4px; /* Gap between the text being corrected and the tooltip */
     --tooltip-border-width: 3px;
-    --info-margin: 32px;
+    --block-spacing: 32px;
 
     --blue: 49, 117, 185;
     --text-color: #2A2A2A;
@@ -25,6 +26,7 @@
     --improvement-color: #579B2D;
     --uncertain-color: rgb(var(--blue));
     --line-color: black;
+    --tooltip-background-color: #FAFAF8;
     --tooltip-border-color: #BEA2AE;
 
     --correction-transition-duration: 0.3s;
@@ -51,14 +53,14 @@ body {
     grid-template-areas:
             ".    heading      heading"
             "info instructions .      "
-            "info input        stats  ";
+            "info input        tweaks ";
 }
 
 h1, h2, h3, p {
     margin-top: 0;
 }
 
-h1, .instructions, .info, .stats {
+h1, .instructions, .info, .tweaks {
     padding: 0 var(--main-padding);
 }
 
@@ -86,6 +88,21 @@ a:hover {
     white-space: nowrap;
 }
 
+.checkbox-container {
+    display: inline-flex;
+    align-items: baseline;
+}
+
+.checkbox-container + .checkbox-container {
+    margin-top: 6px;
+}
+
+.checkbox-container .checkbox {
+    position: relative;
+    top: 2px;
+    margin-right: 4px;
+}
+
 h1, h3 {
     color: #64595F;
     font-weight: normal;
@@ -101,7 +118,7 @@ h3 {
     letter-spacing: 1px;
     overflow: hidden;
     white-space: nowrap;
-    margin-bottom: 18px;
+    margin-bottom: var(--subcaption-margin-bottom);
     --middle-line-left-width: 28px;
 }
 
@@ -128,6 +145,26 @@ h3::after {
 
 .instructions h2, .info h2, main h2 {
     display: none;
+}
+
+.explanation {
+    cursor: help;
+    border-bottom: 1px dotted;
+    position: relative;
+}
+
+.explanation:hover::after {
+    content: attr(data-title);
+    display: block;
+    position: absolute;
+    background-color: var(--tooltip-background-color);
+    padding: 6px 10px;
+    border: 1px solid var(--text-color);
+    border-radius: 4px;
+    z-index: 2;
+    width: 150px;
+    right: -20px;
+    top: calc(100% + 4px);
 }
 
 t-t {
@@ -184,7 +221,7 @@ t-t:not(.correction) {
 }
 
 .info article:not(:last-child) {
-    margin-bottom: var(--info-margin);
+    margin-bottom: var(--block-spacing);
 }
 
 header {
@@ -257,20 +294,30 @@ cursor-position {
     --shadow-opacity: 0.6;
 }
 
-.stats {
-    grid-area: stats;
+.tweaks {
+    grid-area: tweaks;
     z-index: 2;
 }
 
-.stats-container {
+.tweaks h3 {
+    --middle-line-left-width: calc(var(--main-padding) - var(--middle-line-horizontal-margin));
+    margin-left: calc(0px - var(--main-padding));
+}
+
+.tweaks-container {
     position: sticky;
     top: 0;
     padding-top: calc(var(--main-padding) + var(--text-font-size) - var(--subcaption-font-size));
+    padding-bottom: var(--main-padding);
 }
 
-.stats h3 {
-    --middle-line-left-width: calc(var(--main-padding) - var(--middle-line-horizontal-margin));
-    margin-left: calc(0px - var(--main-padding));
+.tweaks-subcontainer + .tweaks-subcontainer {
+    margin-top: var(--block-spacing);
+}
+
+.settings-container {
+    display: flex;
+    flex-direction: column;
 }
 
 .stats-spelling {
@@ -284,11 +331,11 @@ cursor-position {
     color: var(--background-text-color);
 }
 
-.stats dt {
+.stats-container dt {
     display: none;
 }
 
-.stats dd {
+.stats-container dd {
     margin: 0 0 4px 0;
 }
 
@@ -318,7 +365,7 @@ token-tooltip {
     width: var(--tooltip-width);
     margin: auto;
     color: var(--text-color);
-    background-color: #FAFAF8;
+    background-color: var(--tooltip-background-color);
     border: var(--tooltip-border-width) solid var(--tooltip-border-color);
     border-radius: 15px;
     padding: 8px 12px;
@@ -483,7 +530,7 @@ token-replacement-new button:hover::before, token-tooltip:not(:hover) token-repl
                 "heading"
                 "instructions"
                 "input"
-                "stats"
+                "tweaks"
                 "info";
     }
 
@@ -491,17 +538,18 @@ token-replacement-new button:hover::before, token-tooltip:not(:hover) token-repl
         grid-area: 3 / 1 / 5 / 2;
     }
 
-    .stats-container {
-        position: static;
-        padding-top: 0;
-    }
-
-    .stats h3 {
+    .tweaks h3 {
         margin-right: calc(0px - var(--main-padding));
     }
 
+    .tweaks-container {
+        position: static;
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+
     .info {
-        margin-top: var(--info-margin);
+        margin-top: var(--block-spacing);
     }
 
     .info h3 {

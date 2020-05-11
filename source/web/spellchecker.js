@@ -11,8 +11,8 @@ function setCorrectionAttributes(token, correctionType) {
   token.tabIndex = 0;
 }
 
-function checkToken(tokenChain) {
-  const corrections = processToken(tokenChain);
+function checkToken(tokenChain, ignoredLabels) {
+  const corrections = processToken(tokenChain, ignoredLabels);
   const container = tokenChain.getCurrentContainer();
   if (corrections !== null) {
     setCorrectionAttributes(container, corrections[0].type);
@@ -43,14 +43,14 @@ export function findNextCorrection(token) {
   }
 }
 
-export function spellcheck(inputElement) {
+export function spellcheck(inputElement, ignoredLabels) {
   const correctionSets = [];
   for (const paragraph of [...inputElement.children]) {
     const tokenChain = new TokenChain([...paragraph.children], (container) => container.textContent);
     const corrections = [];
     while (tokenChain.hasMore()) {
       tokenChain.next();
-      corrections.push(checkToken(tokenChain));
+      corrections.push(checkToken(tokenChain, ignoredLabels));
     }
     correctionSets.push(corrections);
   }

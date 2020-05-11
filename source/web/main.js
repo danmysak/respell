@@ -7,8 +7,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function initialize() {
   const inputElement = document.querySelector('.input');
-  const statsContainer = document.querySelector('.stats');
+  const statsContainer = document.querySelector('.stats-container');
+  const settingsContainer = document.querySelector('.settings-container');
   inputElement.focus(); // Setting the autofocus attribute doesn't seem to work in Firefox
-  attachObserver(inputElement, statsContainer);
+  attachObserver(inputElement, statsContainer, settingsContainer);
   attachCorrector(inputElement);
 }

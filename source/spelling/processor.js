@@ -3,36 +3,29 @@ import {correctionTypes} from "./types.js";
 
 const correctionTypePriority = [correctionTypes.MISTAKE, correctionTypes.IMPROVEMENT, correctionTypes.UNCERTAIN];
 
-const wordRules = [];
-const punctuationRules = [];
-const whitespaceRules = [];
+const rules = [];
 
-export function registerWordRule(rule) {
-  wordRules.push(rule);
+function registerRule(condition, rule, labels = []) {
+  rules.push({condition, rule, labels});
 }
 
-export function registerPunctuationRule(rule) {
-  punctuationRules.push(rule);
+export function registerWordRule(rule, labels = []) {
+  registerRule(isWord, rule, labels);
 }
 
-export function registerWhitespaceRule(rule) {
-  whitespaceRules.push(rule);
+export function registerPunctuationRule(rule, labels = []) {
+  registerRule(isPunctuation, rule, labels);
 }
 
-export function processToken(tokenChain) {
+export function registerWhitespaceRule(rule, labels = []) {
+  registerRule(isWhitespace, rule, labels);
+}
+
+export function processToken(tokenChain, ignoredLabels = []) {
   const token = tokenChain.getCurrentToken();
-  let rules;
-  if (isWord(token)) {
-    rules = wordRules;
-  } else if (isPunctuation(token)) {
-    rules = punctuationRules;
-  } else if (isWhitespace(token)) {
-    rules = whitespaceRules;
-  } else {
-    return null;
-  }
   const corrections = rules
-    .map((rule) => rule(token, tokenChain))
+    .filter((rule) => rule.labels.every((label) => !ignoredLabels.includes(label)) && rule.condition(token))
+    .map((rule) => rule.rule(token, tokenChain))
     .filter((correction) => correction !== null)
     .sort((a, b) =>
       correctionTypePriority.indexOf(a.type) - correctionTypePriority.indexOf(b.type)
