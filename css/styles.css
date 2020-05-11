@@ -23,7 +23,7 @@
     --background-text-color: #BBBBBB;
     --mistake-color: #B83F31;
     --improvement-color: #579B2D;
-    --uncertain-color: black;
+    --uncertain-color: rgb(var(--blue));
     --line-color: black;
     --tooltip-border-color: #BEA2AE;
 
