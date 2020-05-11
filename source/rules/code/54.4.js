@@ -1,10 +1,16 @@
-import {Correction, correctionTypes, registerWordRule, canBeSentenceBoundary, isQuote} from "../imports.js";
+import {
+  Correction,
+  correctionTypes,
+  registerWordRule,
+  canBeSentenceBoundary,
+  isQuote,
+  isRomanNumeral
+} from "../imports.js";
 
 const maxLength = 3;
 
 function isLatin(token) {
-  return token !== null && token.match(/^[^а-яґєії]*[a-z][а-яґєії]*$/i)
-    && !token.match(/^[IVXLCDM]+$/); // Roman numerals
+  return token !== null && token.match(/^[^а-яґєії]*[a-z][а-яґєії]*$/i) && !isRomanNumeral(token);
 }
 
 function canBeInitialPart(token) {

@@ -30,6 +30,10 @@ export function getSibilants(includeSoftened) {
   return ["ж", "з", "с", "ц", "ч", "ш", "щ", ...(includeSoftened ? ["зь", "сь", "ць"] : [])];
 }
 
+export function isRomanNumeral(string) {
+  return string.match(/^[IVXLCDM]+$/);
+}
+
 export function simplifyApostrophe(string) {
   return string.replace(/’/g, "'");
 }
