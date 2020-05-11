@@ -34,6 +34,8 @@ export function processToken(tokenChain) {
   const corrections = rules
     .map((rule) => rule(token, tokenChain))
     .filter((correction) => correction !== null)
-    .sort((a, b) => correctionTypePriority.indexOf(a.type) - correctionTypePriority.indexOf(b.type));
+    .sort((a, b) =>
+      correctionTypePriority.indexOf(a.type) - correctionTypePriority.indexOf(b.type)
+      || (a.requiresExtraChange ? 1 : 0) - (b.requiresExtraChange ? 1 : 0));
   return corrections.length > 0 ? corrections : null;
 }

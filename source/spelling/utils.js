@@ -13,6 +13,10 @@ export function parenthesizeFirst(items) {
   return applyOrMap(items, (item) => `(${item[0]})${item.slice(1)}`);
 }
 
+export function getLastLetter(string) {
+  return string === '' ? '' : string[string.length - 1];
+}
+
 export function getConsonants(includeSoftSign) {
   return ["б", "в", "г", "ґ", "д", "ж", "з", "й", "к", "л", "м", "н",
           "п", "р", "с", "т", "ф", "х", "ц", "ч", "ш", "щ", ...(includeSoftSign ? ["ь"] : [])];
@@ -73,6 +77,10 @@ export function normalizeCase(string, model) {
     default:
       return string;
   }
+}
+
+export function arrayify(item) {
+  return Array.isArray(item) ? item : [item];
 }
 
 function applyOrMap(items, callback) {

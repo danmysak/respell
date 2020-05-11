@@ -1,4 +1,5 @@
 import {correctionTypes, registerWordRule, createMaskRule, isPunctuation, determineCase, cases} from "../imports.js";
+import {masculine} from "../data/vocative.js";
 
 registerWordRule(createMaskRule({
   matches: [
@@ -8,14 +9,14 @@ registerWordRule(createMaskRule({
     const next = chain.getNextToken();
     const plausibleFollowing = isPunctuation(next, true) || (
       isPunctuation(chain.getNextToken(2), true) && (
-        [cases.CAPITALIZED, cases.CAMEL].includes(determineCase(next)) || next.match(/[иії]й$/)
+        [cases.CAPITALIZED, cases.CAMEL].includes(determineCase(next)) || next.match(masculine.adjectivePattern)
       )
     );
     if (!plausibleFollowing) {
       return false;
     }
     const previous = chain.getPreviousToken();
-    const plausiblePreceding = isPunctuation(previous, true) || previous.match(/[иії]й$/);
+    const plausiblePreceding = isPunctuation(previous, true) || previous.match(masculine.adjectivePattern);
     if (!plausiblePreceding) {
       return false;
     }

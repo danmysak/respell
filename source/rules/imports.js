@@ -5,6 +5,7 @@ import {createMaskRule} from "../spelling/masks.js";
 import {createTreeRule} from "../spelling/trees.js";
 import {
   parenthesizeFirst,
+  getLastLetter,
   getConsonants,
   getVowels,
   getSibilants,
@@ -17,7 +18,8 @@ import {
   capitalize,
   normalizeCase,
   simplifyApostrophe,
-  isAfterSentenceBoundary
+  isAfterSentenceBoundary,
+  arrayify
 } from "../spelling/utils.js";
 
 export {
@@ -34,6 +36,7 @@ export {
   createMaskRule,
   createTreeRule,
   parenthesizeFirst,
+  getLastLetter,
   getConsonants,
   getVowels,
   getSibilants,
@@ -46,5 +49,6 @@ export {
   capitalize,
   normalizeCase,
   simplifyApostrophe,
-  isAfterSentenceBoundary
+  isAfterSentenceBoundary,
+  arrayify
 };

@@ -1,4 +1,5 @@
 import {correctionTypes, registerWordRule, createMaskRule, isPunctuation, determineCase, cases} from "../imports.js";
+import {masculine} from "../data/vocative.js";
 
 registerWordRule(createMaskRule({
   matches: ["Ігор(е)"],
@@ -18,8 +19,8 @@ registerWordRule(createMaskRule({
       return false;
     }
     const previous = chain.getPreviousToken();
-    const plausiblePreceding = isPunctuation(previous, true) || previous.match(/[иії]й$/)
-      || (previous.match(/[еую]$/) && isPunctuation(chain.getPreviousToken(2), true));
+    const plausiblePreceding = isPunctuation(previous, true) || previous.match(masculine.adjectivePattern)
+      || (previous.match(masculine.vocativePattern) && isPunctuation(chain.getPreviousToken(2), true));
     if (!plausiblePreceding) {
       return false;
     }
