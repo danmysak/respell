@@ -1,3 +1,32 @@
+const extraFeminineVocative = [
+  "бізнеследі", "бізнес-леді",
+  "леді",
+  "мадам",
+  "міледі",
+  "міс",
+  "місіс",
+  "пані",
+  "фрау",
+  "фрейлейн",
+  "фрекен"
+];
+
+export const feminine = {
+  adjectivePattern: /[ая]$/i,
+  vocativePattern: new RegExp(`([еєо]|сю|^(${extraFeminineVocative.join('|')}))$`, 'i'),
+  endings: {
+    "а": {
+      "о": null,
+      "е": ["ж", "ч", "ш"]
+    },
+    "я": {
+      "е": null,
+      "є": ["а", "е", "є", "и", "і", "ї", "о", "у", "ь", "ю", "я", "'"],
+      "ю": ["с"]
+    },
+  }
+};
+
 const extraMasculineVocative = [{
   ending: "о",
   preceding: [

@@ -5,20 +5,19 @@ import {
   determineCase,
   cases,
   getLastLetter,
+  simplifyApostrophe,
   isPunctuation,
   canBeSentenceBoundary,
   arrayify
 } from "../imports.js";
-import {masculine} from "../data/vocative.js";
+import {masculine, feminine} from "../data/vocative.js";
 
 const minCommonTokenLength = 4;
-const minProperTokenLength = 3;
+const minMasculineProperTokenLength = 3;
+const minFeminineProperTokenLength = 4;
 const minPreviousLength = 4;
 
-const vocativePattern = masculine.vocativePattern;
-const adjectivePattern = masculine.adjectivePattern;
-
-function inspectPreceding(chain, minPreviousLength) {
+function inspectPreceding(chain, minPreviousLength, vocativePattern, adjectivePattern) {
   const previous = chain.getPreviousToken();
   if (previous === null || isPunctuation(previous) || previous.length < minPreviousLength
     || !previous.match(vocativePattern)) {
@@ -37,7 +36,8 @@ function inspectPreceding(chain, minPreviousLength) {
 }
 
 function registerRule({
-    endings, excludedEndings, endingRequirements = {},
+    vocativePattern, adjectivePattern,
+    endings, excludedEndings = [], endingRequirements = {},
     allowedCases, minTokenLength, minPreviousLength,
     description
   }) {
@@ -52,18 +52,37 @@ function registerRule({
       || excludedEndings.some((ending) => token.endsWith(ending))) {
       return null;
     }
-    if (!inspectPreceding(chain, minPreviousLength)) {
+    if (!inspectPreceding(chain, minPreviousLength, vocativePattern, adjectivePattern)) {
       return null;
     }
     return new Correction(correctionTypes.UNCERTAIN, null, description,
       {
-        alternatives: arrayify(endings[getLastLetter(token)]).map((ending) => token.slice(0, -1) + ending)
+        alternatives: arrayify(endings[lastLetter]).map((ending) => {
+          const stem = token.slice(0, -1);
+          const actualEnding = typeof ending !== 'object' ? ending : (Object.entries(ending).find(
+            ([_, options]) => options !== null && options.includes(simplifyApostrophe(getLastLetter(stem)))
+          ) || Object.entries(ending).find(([_, options]) => options === null))[0];
+          return stem + actualEnding;
+        })
       }
     );
   });
 }
 
 registerRule({
+  vocativePattern: feminine.vocativePattern,
+  adjectivePattern: feminine.adjectivePattern,
+  endings: feminine.endings,
+  allowedCases: [cases.CAPITALIZED, cases.CAMEL],
+  minTokenLength: minFeminineProperTokenLength,
+  minPreviousLength,
+  description: 'Відповідно до § 74 правопису, у звертаннях до жінок, що складаються з загальної назви та прізвища, '
+    + 'прізвище (як і загальна назва) набуває форми кличного відмінка.'
+});
+
+registerRule({
+  vocativePattern: masculine.vocativePattern,
+  adjectivePattern: masculine.adjectivePattern,
   endings: masculine.endings,
   excludedEndings: masculine.excludedEndings,
   allowedCases: [cases.LOWER],
@@ -74,6 +93,8 @@ registerRule({
 });
 
 registerRule({
+  vocativePattern: masculine.vocativePattern,
+  adjectivePattern: masculine.adjectivePattern,
   endings: {
     ...masculine.endings,
     ...masculine.specificLastNameEndings
@@ -81,7 +102,7 @@ registerRule({
   excludedEndings: masculine.excludedEndings,
   endingRequirements: masculine.lastNameRequirements,
   allowedCases: [cases.CAPITALIZED, cases.CAMEL],
-  minTokenLength: minProperTokenLength,
+  minTokenLength: minMasculineProperTokenLength,
   minPreviousLength,
   description: 'Відповідно до § 87 правопису, у звертаннях до чоловіків, що складаються з загальної назви та прізвища, '
     + 'прізвище (як і загальна назва) може набувати форми кличного відмінка.'
