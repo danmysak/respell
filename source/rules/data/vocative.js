@@ -11,9 +11,13 @@ const extraFeminineVocative = [
   "фрекен"
 ];
 
+const minFeminineTitleLength = 4;
+
 export const feminine = {
   adjectivePattern: /[ая]$/i,
   vocativePattern: new RegExp(`([еєо]|сю|^(${extraFeminineVocative.join('|')}))$`, 'i'),
+  minTitleLength: minFeminineTitleLength,
+  shorterTitles: extraFeminineVocative.filter((title) => title.length < minFeminineTitleLength),
   endings: {
     "а": {
       "о": null,
@@ -28,6 +32,15 @@ export const feminine = {
 };
 
 const extraMasculineVocative = [{
+  wholeWord: true,
+  ending: "",
+  preceding: [
+    "гер",
+    "сер",
+    "сір"
+  ]
+}, {
+  wholeWord: false,
   ending: "о",
   preceding: [
     "батюшк",
@@ -78,11 +91,19 @@ const extraMasculineVocative = [{
     "шульг",
     "ябед"
   ]
-}].map(({ending, preceding}) => `|(${preceding.join('|')})${ending}`).join('');
+}];
+
+const minMasculineTitleLength = 4;
 
 export const masculine = {
   adjectivePattern: /[иії]й$/i,
-  vocativePattern: new RegExp(`(е|ю|[гґжкхчшщ]у|([аеєиіїоуюя][гкх]|о(нь|ч)к|ин)о${extraMasculineVocative})$`, 'i'),
+  vocativePattern: new RegExp('(е|ю|[гґжкхчшщ]у|([аеєиіїоуюя][гкх]|о(нь|ч)к|ин)о' + extraMasculineVocative.map(
+    ({wholeWord, ending, preceding}) => `|${wholeWord ? '^' : ''}(${preceding.join('|')})${ending}`
+  ).join('') + ')$', 'i'),
+  minTitleLength: minMasculineTitleLength,
+  shorterTitles: extraMasculineVocative
+    .flatMap(({wholeWord, ending, preceding}) => wholeWord ? preceding.map((stem) => stem + ending) : [])
+    .filter((title) => title.length < minMasculineTitleLength),
   endings: {
     "б": "бе",
     "в": "ве",

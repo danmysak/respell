@@ -15,11 +15,11 @@ import {masculine, feminine} from "../data/vocative.js";
 const minCommonTokenLength = 4;
 const minMasculineProperTokenLength = 3;
 const minFeminineProperTokenLength = 4;
-const minPreviousLength = 4;
 
-function inspectPreceding(chain, minPreviousLength, vocativePattern, adjectivePattern) {
+function inspectPreceding(chain, minPreviousLength, shorterTitlesLowerCased, vocativePattern, adjectivePattern) {
   const previous = chain.getPreviousToken();
-  if (previous === null || isPunctuation(previous) || previous.length < minPreviousLength
+  if (previous === null || isPunctuation(previous)
+    || (previous.length < minPreviousLength && !shorterTitlesLowerCased.includes(previous.toLowerCase()))
     || !previous.match(vocativePattern)) {
     return false;
   }
@@ -38,9 +38,10 @@ function inspectPreceding(chain, minPreviousLength, vocativePattern, adjectivePa
 function registerRule({
     vocativePattern, adjectivePattern,
     endings, excludedEndings = [], endingRequirements = {},
-    allowedCases, minTokenLength, minPreviousLength,
+    allowedCases, minTokenLength, minPreviousLength, shorterTitles,
     description
   }) {
+  const shorterTitlesLowerCased = shorterTitles.map((title) => title.toLowerCase());
   registerWordRule((token, chain) => {
     if (!isPunctuation(chain.getNextToken())) {
       return null;
@@ -52,7 +53,7 @@ function registerRule({
       || excludedEndings.some((ending) => token.endsWith(ending))) {
       return null;
     }
-    if (!inspectPreceding(chain, minPreviousLength, vocativePattern, adjectivePattern)) {
+    if (!inspectPreceding(chain, minPreviousLength, shorterTitlesLowerCased, vocativePattern, adjectivePattern)) {
       return null;
     }
     return new Correction(correctionTypes.UNCERTAIN, null, description,
@@ -75,7 +76,8 @@ registerRule({
   endings: feminine.endings,
   allowedCases: [cases.CAPITALIZED, cases.CAMEL],
   minTokenLength: minFeminineProperTokenLength,
-  minPreviousLength,
+  minPreviousLength: feminine.minTitleLength,
+  shorterTitles: feminine.shorterTitles,
   description: 'Відповідно до § 74 правопису, у звертаннях до жінок, що складаються з загальної назви та прізвища, '
     + 'прізвище (як і загальна назва) набуває форми кличного відмінка.'
 });
@@ -87,7 +89,8 @@ registerRule({
   excludedEndings: masculine.excludedEndings,
   allowedCases: [cases.LOWER],
   minTokenLength: minCommonTokenLength,
-  minPreviousLength,
+  minPreviousLength: masculine.minTitleLength,
+  shorterTitles: masculine.shorterTitles,
   description: 'Відповідно до § 87 правопису, у звертаннях до чоловіків, що складаються з двох загальних назв, форму '
     + 'кличного відмінка обов’язково мають обидва слова.'
 });
@@ -103,7 +106,8 @@ registerRule({
   endingRequirements: masculine.lastNameRequirements,
   allowedCases: [cases.CAPITALIZED, cases.CAMEL],
   minTokenLength: minMasculineProperTokenLength,
-  minPreviousLength,
+  minPreviousLength: masculine.minTitleLength,
+  shorterTitles: masculine.shorterTitles,
   description: 'Відповідно до § 87 правопису, у звертаннях до чоловіків, що складаються з загальної назви та прізвища, '
     + 'прізвище (як і загальна назва) може набувати форми кличного відмінка.'
 });
