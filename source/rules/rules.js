@@ -41,3 +41,8 @@ import "./code/85.js";
 import "./code/87+74.js";
 import "./code/87a.js";
 import "./code/87b.js";
+import "./code/89.js";
+import "./code/95.js";
+import "./code/106.js";
+import "./code/107.js";
+import "./code/121.js";

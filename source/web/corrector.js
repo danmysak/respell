@@ -75,7 +75,10 @@ function fixTooltipPositioning(tooltip) {
 }
 
 function formatDescription(text) {
-  return text.replace(/(§) /g, '$1&nbsp;').replace(/«-[^»\s]+»/g, '<span class="no-break">$&</span>')
+  return text
+    .replace(/(§) /g, '$1&nbsp;')
+    .replace(/ (—)/g, '&nbsp;$1')
+    .replace(/«-[^»\s]+»/g, '<span class="no-break">$&</span>')
 }
 
 function displayTooltip() {

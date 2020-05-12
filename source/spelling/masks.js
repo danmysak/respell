@@ -90,7 +90,7 @@ export function createMaskRule(description) {
             if (determineCase(token) === cases.UPPER) {
               return item.replacement.toUpperCase();
             } else if (!item.preserveReplacementCase && item.replacement.toLowerCase() === item.replacement) {
-              return group === group.toUpperCase() ? item.replacement.toUpperCase() : item.replacement;
+              return group !== '' && group === group.toUpperCase() ? item.replacement.toUpperCase() : item.replacement;
             } else {
               return item.replacement;
             }
