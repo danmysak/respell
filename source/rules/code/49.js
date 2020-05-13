@@ -57,7 +57,7 @@ registerWordRule(createMaskRule({
       matches: ["(в)он*"],
       replacement: "в"
     }, {
-      previousMatches: ["Гі"],
+      previousMatches: ["Гі", "Ґі"],
       matches: ["(м)ун*"],
       replacement: "м"
     }]
@@ -69,7 +69,7 @@ registerWordRule(createMaskRule({
       matches: ["Чхві(-в)он*"],
       replacement: "в"
     }, {
-      matches: ["Гі(-м)ун*"],
+      matches: ["Гі(-м)ун*", "Ґі(-м)ун*"],
       replacement: "м"
     }]
   }]
