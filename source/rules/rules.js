@@ -46,3 +46,5 @@ import "./code/95.js";
 import "./code/106.js";
 import "./code/107.js";
 import "./code/121.js";
+import "./code/122.3.js";
+import "./code/122.4.js";

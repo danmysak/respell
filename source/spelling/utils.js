@@ -95,9 +95,9 @@ export function unpackSingleParadigmList(list, callback, paradigmExtractor = (gr
   return combineCorrespondences(
     list.flatMap((group) => {
       const paradigm = paradigmExtractor(group);
-      return paradigm ? group.roots.map((root) => [root, paradigm]) : [];
+      return paradigm ? group.roots.map((root) => [root, paradigm, group]) : [];
     }).map(
-      ([root, paradigm]) => Object.fromEntries(paradigm.map((suffix) => callback(root + suffix)))
+      ([root, paradigm, group]) => Object.fromEntries(paradigm.map((suffix) => callback(root + suffix, group)))
     )
   );
 }
