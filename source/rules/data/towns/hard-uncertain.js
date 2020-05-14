@@ -1,8 +1,8 @@
 export const data = {
-  "paradigm": {
+  paradigm: {
     "а": "у"
   },
-  "roots": [
+  roots: [
     "Антенал",
     "Бариш",
     "Бйорк",

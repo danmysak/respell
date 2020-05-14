@@ -1,9 +1,4 @@
-// Only proper nouns are listed, since common nouns ending in "-ін"/"-їн" seem to have already been listed with the
-// "-ові" ending in dictionaries (along with the "-у" ending), while the ending paradoxically doesn't feel to fit most
-// of them at all ("новокаїнові"?..). Also, only proper nouns are presented as examples for this change in the
-// Orthography.
-
-export const masculineInYin = [{
+export const namesWithIn = [{
   paradigm: ["їн"],
   roots: [
     "Абака",
