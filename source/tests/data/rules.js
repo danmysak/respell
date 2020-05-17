@@ -797,4 +797,9 @@ export const tests = [
   [123, 'Афонію принесе Афоні цей афонівський.', 'Афонію принесе Атоні цей атонівський.', [correctionTypes.IMPROVEMENT, correctionTypes.IMPROVEMENT]],
   [123, 'Скіфи й скіф’янки жили у Скіфії, а Піфія зі скіф\'янками - у чомусь піфічному', 'Скити й скитіянки жили у Скитії, а Питія зі скитіянками - у чомусь питичному', [correctionTypes.IMPROVEMENT, correctionTypes.IMPROVEMENT, correctionTypes.IMPROVEMENT, correctionTypes.IMPROVEMENT, correctionTypes.IMPROVEMENT, correctionTypes.IMPROVEMENT]],
   [_, 'Випити б кефіру з зефіром і не думати про той парафін!', 'Випити б кефіру з зефіром і не думати про той парафін!', _],
+
+  [124, 'Останній уікенд був найгіршим.', 'Останній вікенд був найгіршим.', correctionTypes.MISTAKE],
+  [124, 'Уїкендами по-українському', 'Вікендами по-українському', correctionTypes.MISTAKE],
+  [124, 'СУПЕРУЇКЕНДИ', 'СУПЕРВІКЕНДИ', correctionTypes.MISTAKE],
+  [124, 'Ага. Уікенду.', 'Ага. Вікенду.', correctionTypes.MISTAKE],
 ];

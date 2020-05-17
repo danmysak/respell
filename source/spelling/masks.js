@@ -1,5 +1,5 @@
 import {Correction} from "./types.js";
-import {determineCase, cases} from "./utils.js";
+import {normalizeCase, determineCase, cases} from "./utils.js";
 
 export function createMaskRule(description) {
   const flattenDescription = (description, extraOptions = {}, currentItems = []) => {
@@ -90,10 +90,10 @@ export function createMaskRule(description) {
             // This is one of the actual groups
             if (determineCase(token) === cases.UPPER) {
               return item.replacement.toUpperCase();
-            } else if (!item.preserveReplacementCase && item.replacement.toLowerCase() === item.replacement) {
-              return group !== '' && group === group.toUpperCase() ? item.replacement.toUpperCase() : item.replacement;
-            } else {
+            } else if (item.preserveReplacementCase || item.replacement.toLowerCase() !== item.replacement) {
               return item.replacement;
+            } else {
+              return normalizeCase(item.replacement, group);
             }
           }
         }).join('');
