@@ -36,7 +36,8 @@ export function createMaskRule(description) {
       .replace(/$/, `(${suffixes.join('|')})`)
       .replace(/[а-яґєії]/g, (c) => `[${c}${c.toUpperCase()}]`) // For "abc", we also want to match Abc or ABC
       .replace(/['’]/g, "['’]")
-      .replace(/[*]/g, '.*');
+      .replace(/[*]/g, '.*')
+      .replace(/[+]/g, '.+');
     return new RegExp(`^${normalized}$`);
   };
   const flattened = flattenDescription(description);

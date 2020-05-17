@@ -3,6 +3,7 @@ export const data = {
   skipFirst: false,
   roots: [
     "Агапі",
+    "Агаті",
     "Агафі",
     "Агла",
     "Аграфі",
