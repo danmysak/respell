@@ -50,3 +50,5 @@ import "./code/122.3.js";
 import "./code/122.4.js";
 import "./code/123.js";
 import "./code/124.js";
+import "./code/126a.js";
+import "./code/126b.js";
