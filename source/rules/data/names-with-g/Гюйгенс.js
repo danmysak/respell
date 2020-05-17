@@ -3,6 +3,7 @@ export const data = {
   skipFirst: true,
   roots: [
     "Гайдеггер",
+    "Гільдегард",
     "Гюйгенс"
   ]
 };
