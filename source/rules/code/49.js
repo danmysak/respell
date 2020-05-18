@@ -79,5 +79,5 @@ registerWordRule(createMaskRule({
   matches: ["р(и)чард*"],
   replacement: "і",
   type: correctionTypes.MISTAKE,
-  description: 'Як продемонстровано у § 49 правопису, ім’я «Річард» слід писати через «і».'
+  description: 'Як продемонстровано у § 49 і § 129 правопису, ім’я «Річард» слід писати через «і».'
 }));
