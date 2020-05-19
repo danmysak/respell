@@ -19,6 +19,9 @@ registerWordRule(createMaskRule({
     replacement: "іх"
   }],
   callback: (token, chain) => {
+    if (!token.match(/і$/i)) { // Potential optimization
+      return false;
+    }
     for (let level = 1; level <= maxNumeratorDistance; level++) {
       const currentToken = chain.getPreviousToken(level);
       if (currentToken === null || !isWord(currentToken)) {

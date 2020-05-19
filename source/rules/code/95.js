@@ -3,6 +3,7 @@ import {correctionTypes, registerWordRule, createMaskRule} from "../imports.js";
 const prepositions = ["у", "в", "на", "по", "при"];
 
 registerWordRule(createMaskRule({
+  callback: (token) => token.match(/і$/i), // Potential optimization
   matches: [
     [[
       "*ост",

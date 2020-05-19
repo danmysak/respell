@@ -1,6 +1,7 @@
 import {correctionTypes, registerWordRule, createMaskRule} from "../imports.js";
 
 registerWordRule(createMaskRule({
+  callback: (token) => token.match(/кк/i), // Potential optimization
   matches: [
     "бек(к)ер*", "бек(к)ет*", "бек(к)і*", "брок(к)ес*", "*брюк(к)*", "бюк(к)ебур*",
     "вік(к)ерс*", "гек(к)ел*", "дік(к)енс*", "зек(к)ау*", "кентук(к)і*", "лок(к)*",

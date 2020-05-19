@@ -3,6 +3,7 @@ import {correctionTypes, registerWordRule, createMaskRule} from "../imports.js";
 const mythPrefixes = ["", "*-", "авто", "анти", "де", "етно", "з", "за", "кіно", "напів", "не", "нео", "поза", "ре"];
 
 registerWordRule(createMaskRule({
+  callback: (token) => token.match(/ф/i), // Potential optimization
   rules: [{
     matches: [
       "ага(ф)*", "аґа(ф)*", "а(ф)анас*", "а(ф)он*", "ахалі-а(ф)он*",

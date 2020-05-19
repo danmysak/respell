@@ -23,6 +23,7 @@ function transformFormIntoTreeEntry(form) {
 }
 
 registerWordRule(createMaskRule({
+  callback: (token) => token.match(pattern), // Potential optimization
   matches: [
     "*-(рі)вер*",
     ...toponymsWithRiCommonRoots.flatMap(
