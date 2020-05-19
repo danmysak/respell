@@ -31,11 +31,15 @@ export class Correction {
 export class TokenChain {
   constructor(containers, extractor = (token) => token) {
     this.containers = containers;
-    this.tokens = containers.map(extractor);
+    this.tokens = containers.map((container) => this.normalizeToken(extractor(container)));
     this.nonWhitespaceIndices = this.tokens.flatMap((token, index) => isWhitespace(token) ? [] : [index]);
     this.currentIndex = -1;
     this.closestLeftNonWhitespace = -1;
     this.closestRightNonWhitespace = 0;
+  }
+
+  normalizeToken(token) {
+    return token.replace(/\u0301/gu, ''); // Combining acute accent
   }
 
   hasMore() {

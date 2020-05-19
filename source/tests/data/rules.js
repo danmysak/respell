@@ -3,6 +3,8 @@ import {correctionTypes} from "../../spelling/types.js";
 const _ = [];
 
 export const tests = [
+  [_, String.fromCharCode(0x301), String.fromCharCode(0x301), _], // Just to make sure nothing breaks
+
   [2, 'Іч який!', 'Ич який!', correctionTypes.IMPROVEMENT],
   [2, 'А я: «іч, як поважно розкинувся».', 'А я: «ич, як поважно розкинувся».', correctionTypes.IMPROVEMENT],
   [2, 'Птахи відлітають в ірій.', 'Птахи відлітають в ирій.', correctionTypes.IMPROVEMENT],
@@ -334,7 +336,7 @@ export const tests = [
   [[46, -32], 'Прозвучала пісня (Оплески глядачів Театру)', 'Прозвучала пісня (оплески глядачів Театру)', correctionTypes.UNCERTAIN],
   [46, 'Прозвучала «пісня» (Тривалі, оплески).', 'Прозвучала «пісня» (тривалі, оплески).', correctionTypes.UNCERTAIN],
   [46, 'І (Вийшла тоді)!', 'І (вийшла тоді)!', correctionTypes.UNCERTAIN],
-  [46, 'Привіт,  (Хто це?)', 'Привіт,  (хто це?)', correctionTypes.UNCERTAIN],
+  [46, 'Приві́т,  (Хто це?)', 'Приві́т,  (хто це?)', correctionTypes.UNCERTAIN],
   [46, 'Хто? - (спитав я) (Я таки!)', 'Хто? - (спитав я) (я таки!)', correctionTypes.UNCERTAIN],
   [_, 'Прозвучала пісня (Поетенко) нарешті', 'Прозвучала пісня (Поетенко) нарешті', _],
   [_, 'Прозвучала пісня (О. Плески та інших)', 'Прозвучала пісня (О. Плески та інших)', _],
@@ -364,7 +366,7 @@ export const tests = [
 
   [49, 'Чо Чі-вон', 'Чхве Чхвівон', [correctionTypes.MISTAKE, correctionTypes.MISTAKE]],
   [49, 'Нічого не зробиш без Чхе Чхи-Вона...', 'Нічого не зробиш без Чхве Чхвівона...', [correctionTypes.MISTAKE, correctionTypes.MISTAKE]],
-  [49, 'Чхво Чи Вон тут ні до чого.', 'Чхве Чхвівон тут ні до чого.', [correctionTypes.MISTAKE, correctionTypes.MISTAKE, correctionTypes.MISTAKE], false, 2],
+  [49, 'Чхво Чи Во́н тут ні до чого.', 'Чхве Чхвівон тут ні до чого.', [correctionTypes.MISTAKE, correctionTypes.MISTAKE, correctionTypes.MISTAKE], false, 2],
   [49, 'Віддати Чхо Чхі Вонові належне', 'Віддати Чхве Чхвівонові належне', [correctionTypes.MISTAKE, correctionTypes.MISTAKE, correctionTypes.MISTAKE]],
   [49, 'ЧХВИ-ВОНІВСЬКИЙ СПАДОК', 'ЧХВІВОНІВСЬКИЙ СПАДОК', correctionTypes.MISTAKE],
   [49, 'Його прізвище — Чхві Вон або Чхві-вон.', 'Його прізвище — Чхвівон або Чхвівон.', [correctionTypes.MISTAKE, correctionTypes.MISTAKE]],
@@ -373,7 +375,7 @@ export const tests = [
   [_, 'І чи Вон, чи Він його звали — не пам’ятаю.', 'І чи Вон, чи Він його звали — не пам’ятаю.', _],
   [_, 'Чо? Чи чіпав чхання?', 'Чо? Чи чіпав чхання?', _],
 
-  [49, 'Привітаймо Ван Со з ювілеєм!', 'Привітаймо Вансо з ювілеєм!', correctionTypes.MISTAKE],
+  [49, 'Привітаймо Ва́н Со з ювілеєм!', 'Привітаймо Ва́нсо з ювілеєм!', correctionTypes.MISTAKE],
   [49, 'Ван-со чи Ван-Со писати неправильно, правильно писати Вансо', 'Вансо чи Вансо писати неправильно, правильно писати Вансо', [correctionTypes.MISTAKE, correctionTypes.MISTAKE]],
   [49, 'ПАК ВАН СО.', 'ПАК ВАНСО.', correctionTypes.MISTAKE],
   [_, 'Ван. Со то таке?', 'Ван. Со то таке?', _],
@@ -766,7 +768,7 @@ export const tests = [
   [122, 'НЕХОСПІСІВСЬКИЙ РАНОК', 'НЕГОСПІСІВСЬКИЙ РАНОК', correctionTypes.MISTAKE],
   [_, 'Зупинився у хостелі.', 'Зупинився у хостелі.', _],
 
-  [123, 'Анафеми на тебе бракує!', 'Анатеми на тебе бракує!', correctionTypes.IMPROVEMENT],
+  [123, 'Ана́феми на тебе бракує!', 'Анатеми на тебе бракує!', correctionTypes.IMPROVEMENT],
   [123, 'Що це у вас за дифірамб?', 'Що це у вас за дитирамб?', correctionTypes.IMPROVEMENT],
   [123, 'У нашому прямому радіоефірі — мер.', 'У нашому прямому радіоетері — мер.', correctionTypes.IMPROVEMENT],
   [123, 'Знайомтеся, це наш завкафедри кафедрального мистецтва.', 'Знайомтеся, це наш завкатедри катедрального мистецтва.', [correctionTypes.IMPROVEMENT, correctionTypes.IMPROVEMENT]],
@@ -884,7 +886,7 @@ export const tests = [
   [130, 'СОЛЬ-ДІЕЗ', 'СОЛЬ-ДІЄЗ', correctionTypes.MISTAKE],
 
   [130, 'Де ваш ріелтор?..', 'Де ваш рієлтор?..', correctionTypes.MISTAKE],
-  [130, 'РІЕЛТЕРА ЛИШЕ БРАКУВАЛО!', 'РІЄЛТОРА ЛИШЕ БРАКУВАЛО!', correctionTypes.MISTAKE],
+  [130, 'РІЕЛТЕРА ЛИШЕ БРАКУВАЛО! ́р́іе́лте́ра́', 'РІЄЛТОРА ЛИШЕ БРАКУВАЛО! рієлтора', [correctionTypes.MISTAKE, correctionTypes.MISTAKE]],
   [130, 'Рієлтерові треба перевдягнутися.', 'Рієлторові треба перевдягнутися.', correctionTypes.MISTAKE],
   [130, 'ріелторські витребеньки', 'рієлторські витребеньки', correctionTypes.MISTAKE],
 

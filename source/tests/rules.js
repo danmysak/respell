@@ -21,7 +21,7 @@ function processText(text, omitSections = []) {
     chain.next();
     if (skipNext) {
       skipNext = false;
-      if (isWhitespace(chain.getCurrentToken())) {
+      if (isWhitespace(chain.getCurrentContainer())) {
         joinNext = true;
       }
       continue;
@@ -29,7 +29,7 @@ function processText(text, omitSections = []) {
     if (joinNext) {
       joinNext = false;
       if (replaced.length > 0) {
-        replaced[replaced.length - 1] += chain.getCurrentToken();
+        replaced[replaced.length - 1] += chain.getCurrentContainer();
         continue;
       }
     }
@@ -37,7 +37,7 @@ function processText(text, omitSections = []) {
       (section) => correction.description.match(generateRegex(section))
     ));
     if (corrections.length === 0) {
-      replaced.push(chain.getCurrentToken());
+      replaced.push(chain.getCurrentContainer());
     } else {
       const correction = corrections[0];
       if (replaced.length > 0 && correction.removePreviousToken) {
