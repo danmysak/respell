@@ -1,14 +1,16 @@
-import {correctionTypes, registerWordRule, createMaskRule, getConsonants} from "../imports.js";
+import {registerWordRule, correctionTypes, createTreeRule, unpackSingleParadigmList} from "../imports.js";
+import {lastNamesWithOwe} from "../data/last-names-with-owe.js";
 
-const prefixes = getConsonants(false).map((letter) => '*' + letter);
+const pattern = /([ао])(в)(е)/gi;
 
-registerWordRule(createMaskRule({
-  matches: [
-    [prefixes, "(авелл)*"],
-    [prefixes, "(овелл)*"]
-  ],
-  antiMatches: ["*веллю"],
-  replacement: "ауелл",
-  type: correctionTypes.MISTAKE,
-  description: 'Відповідно до § 133 правопису, англійські прізвища на «-owell» слід передавати через «-ауелл».'
-}));
+registerWordRule(createTreeRule(
+  unpackSingleParadigmList(
+    lastNamesWithOwe, (form) => [form, form.replace(pattern, '$1у$3')]
+  ),
+  correctionTypes.MISTAKE,
+  'Відповідно до § 133 правопису, літеру «w» у складі «-owe-» в англійських прізвищах слід передавати з допомогою «у».',
+  {
+    callback: (token) => token.match(pattern), // Potential optimization
+    fixApostrophe: true
+  })
+);
