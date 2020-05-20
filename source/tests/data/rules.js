@@ -940,4 +940,7 @@ export const tests = [
   [134, 'ЦЕ ПАЛ-МАЛ', 'ЦЕ ПЕЛЛ-МЕЛЛ', correctionTypes.MISTAKE],
   [134, 'Аромати пал-меллу чарівні. Пал-мелл!', 'Аромати пелл-меллу чарівні. Пелл-мелл!', [correctionTypes.MISTAKE, correctionTypes.MISTAKE]],
   [134, 'А що скажете про Палл-Мелл чи Пелл-Малл?', 'А що скажете про Пелл-Мелл чи Пелл-Мелл?', [correctionTypes.MISTAKE, correctionTypes.MISTAKE]],
+
+  [135, 'Дон Ширлі мешкав не в Ширлі.', 'Дон Шерлі мешкав не в Шерлі.', [correctionTypes.MISTAKE, correctionTypes.MISTAKE]],
+  [_, 'Ширлі-мирлі тут не потрібні!', 'Ширлі-мирлі тут не потрібні!', _],
 ];
