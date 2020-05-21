@@ -839,9 +839,6 @@ export const tests = [
   [129, 'Бажаю тобі вступити до Прінстонського університету.', 'Бажаю тобі вступити до Принстонського університету.', correctionTypes.MISTAKE],
   [129, 'якомусь цюріхському хлопцю...', 'якомусь цюрихському хлопцю...', correctionTypes.MISTAKE],
   [129, 'Із Тюрінгією все буде добре', 'Із Тюрингією все буде добре', correctionTypes.MISTAKE],
-  [129, 'Відпочили всією родиною на Ред-Рівер', 'Відпочили всією родиною на Ред-Ривер', correctionTypes.MISTAKE],
-  [129, 'Побачили на власні очі витівки фолл-ріверського мера', 'Побачили на власні очі витівки фолл-риверського мера', correctionTypes.MISTAKE],
-  [129, 'АНТАНАНАРІВУ із ЧОК-РІВЕРОМ', 'АНТАНАНАРИВУ із ЧОК-РИВЕРОМ', [correctionTypes.MISTAKE, correctionTypes.MISTAKE]],
   [129, 'Мерілендові до нас далеко!', 'Мерилендові до нас далеко!', correctionTypes.MISTAKE],
   [129, 'Фрітаун', 'Фритаун', correctionTypes.MISTAKE],
   [129, 'У Бріджпорті найбільший міст. Чи порт.', 'У Бриджпорті найбільший міст. Чи порт.', correctionTypes.MISTAKE],
@@ -854,6 +851,10 @@ export const tests = [
   [129, 'Правильно «Уоррінгтоном» чи «Воррінгтоном»?', 'Правильно «Уоррингтоном» чи «Воррингтоном»?', [correctionTypes.MISTAKE, correctionTypes.MISTAKE]],
   [129, 'Найкраще -- в Грігоріополі або на Дора-Ріпаріа, ну або в крайньому випадку в Мазарі-Шаріфі', 'Найкраще -- в Григоріополі або на Дора-Рипаріа, ну або в крайньому випадку в Мазарі-Шарифі', [correctionTypes.MISTAKE, correctionTypes.MISTAKE, correctionTypes.MISTAKE]],
   [129, 'У Нерінзі, Акарігуа чи з Мерідою на думці.', 'У Неринзі, Акаригуа чи з Меридою на думці.', [correctionTypes.MISTAKE, correctionTypes.MISTAKE, correctionTypes.MISTAKE]],
+  // The following tests used to be under 129, but the 'river' component is more naturally handled by 140
+  [[129, 140], 'АНТАНАНАРІВУ із ЧОК-РІВЕРОМ', 'АНТАНАНАРИВУ із ЧОК-РИВЕРОМ', [correctionTypes.MISTAKE, correctionTypes.MISTAKE]],
+  [140, 'Відпочили всією родиною на Ред-Рівер', 'Відпочили всією родиною на Ред-ривер', [correctionTypes.MISTAKE, correctionTypes.MISTAKE], false, 2],
+  [140, 'Побачили на власні очі витівки фолл-ріверського мера', 'Побачили на власні очі витівки фолл-риверського мера', correctionTypes.MISTAKE],
   [_, 'Річка на Шрі-Ланці', 'Річка на Шрі-Ланці', _],
 
   [129, 'Вийшов на Таймс-стрит.', 'Вийшов на Таймс-стріт.', correctionTypes.MISTAKE],
@@ -956,4 +957,13 @@ export const tests = [
 
   [138, 'Містере Донах’ю, зачекайте!', 'Містере Донаг’ю, зачекайте!', correctionTypes.MISTAKE],
   [138, 'Цей ваш ДОНАХ\'Ю втік.', 'Цей ваш ДОНАГ\'Ю втік.', correctionTypes.MISTAKE],
+
+  [140, 'Учора на Таймс-Сквер відбувалися неймовірні дійства.', 'Учора на Таймс-сквер відбувалися неймовірні дійства.', correctionTypes.MISTAKE],
+  [[140, 129], 'На Волл-Стріт не жартують. На Пакер-Стрит теж.', 'На Волл-стріт не жартують. На Пакер-стріт теж.', [correctionTypes.MISTAKE, correctionTypes.MISTAKE, correctionTypes.MISTAKE], false, 2],
+  [140, 'Краще звернути на Майлстон-Роуд чи на Пудинг-Лейн?', 'Краще звернути на Майлстон-роуд чи на Пудинг-лейн?', [correctionTypes.MISTAKE, correctionTypes.MISTAKE]],
+  [140, 'Найт-Ривер — найчистіша річка.', 'Найт-ривер — найчистіша річка.', correctionTypes.MISTAKE],
+  [140, 'А на Олд-Рівер важко побачити своє відображення.', 'А на Олд-ривер важко побачити своє відображення.', [correctionTypes.MISTAKE, correctionTypes.MISTAKE], false, 2],
+  [140, 'НЬЮ-РІВЕРСЬКЕ ЖИТТЯ', 'НЬЮ-РИВЕРСЬКЕ ЖИТТЯ', correctionTypes.MISTAKE],
+  [140, 'Коп-Стрітівські будинки і Бед-Ріверські теж.', 'Коп-стрітівські будинки і Бед-риверські теж.', [correctionTypes.MISTAKE, correctionTypes.MISTAKE, correctionTypes.MISTAKE], false, 2],
+  [_, 'ТАЙМС-СКВЕР І БЕД-РИВЕРСЬКІ ХЛОПЦІ', 'ТАЙМС-СКВЕР І БЕД-РИВЕРСЬКІ ХЛОПЦІ', _],
 ];
