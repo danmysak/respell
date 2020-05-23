@@ -24,7 +24,7 @@ function createRule(description, letterCase, generalDecliner, lastPartUndecliner
     const lastPartForms = unique(Object.values(lastPartUndecliner(lastPart)).flat());
     const compatibleForms = getCompatibleNominalForms(chain);
     let suggestions = [];
-    compatibleForms.forEach((form) => { // We would like the ordering of compatible forms, not last part forms
+    compatibleForms.forEach((form) => { // The preferable ordering is of the compatible forms, hence iterating over them
       if (!lastPartForms.includes(form)) {
         return;
       }

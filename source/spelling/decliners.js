@@ -18,6 +18,9 @@ export const decliners = {
     }
 
     static decline(word, form) {
+      if (!this.check(word)) {
+        return [];
+      }
       const group = getGroup(word);
       const lastLetter = getLastLetter(word);
       switch (form) {
@@ -101,7 +104,7 @@ export const decliners = {
             return append(word, 'ах');
           }
         default:
-          return word;
+          return [word];
       }
     }
 
