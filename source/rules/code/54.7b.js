@@ -4,14 +4,14 @@ import {
   registerWordRule,
   createTreeRule,
   unpackSingleParadigmList,
-  determineCase,
-  cases,
+  determineLetterCase,
+  letterCases,
   capitalize,
   isWhitespace,
   isQuote,
   isAfterSentenceBoundary
 } from "../imports.js";
-import {websites, websiteTypes} from "../data/websites.js";
+import {websites, websiteTypes} from "../../data/websites.js";
 
 const maxTypeDistance = 2; // Type, then possibly wordsAfterType, then possibly an attribute, then the website name
 const wordsAfterType = ["для"]; // In lower case
@@ -45,12 +45,12 @@ function findTypeWord(chain, maxDistance) {
 }
 
 function determineCapitalization(token, chain, typeWordFound) {
-  const tokenCase = determineCase(token);
-  if (tokenCase === cases.LOWER) {
+  const tokenCase = determineLetterCase(token);
+  if (tokenCase === letterCases.LOWER) {
     if (typeWordFound) {
       return 1;
     }
-  } else if (tokenCase === cases.CAPITALIZED) {
+  } else if (tokenCase === letterCases.CAPITALIZED) {
     if (!typeWordFound && !isAfterSentenceBoundary(chain)) {
       return -1;
     }

@@ -1,5 +1,5 @@
 import {processToken} from "../spelling/processor.js";
-import {TokenChain} from "../spelling/types.js";
+import {TokenChain} from "../spelling/token-chain.js";
 import "../rules/rules.js";
 
 const correctionClass = 'correction';

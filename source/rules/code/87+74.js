@@ -2,15 +2,15 @@ import {
   registerWordRule,
   Correction,
   correctionTypes,
-  determineCase,
-  cases,
+  determineLetterCase,
+  letterCases,
   getLastLetter,
   simplifyApostrophe,
   isPunctuation,
   canBeSentenceBoundary,
   arrayify
 } from "../imports.js";
-import {masculine, feminine} from "../data/vocative.js";
+import {masculine, feminine} from "../../data/vocative.js";
 
 const minCommonTokenLength = 4;
 const minMasculineProperTokenLength = 3;
@@ -24,8 +24,8 @@ function inspectPreceding(chain, minPreviousLength, shorterTitlesLowerCased, voc
     return false;
   }
   const secondPrevious = chain.getPreviousToken(2);
-  if (!(determineCase(previous) === cases.LOWER
-    || (determineCase(previous) === cases.CAPITALIZED && canBeSentenceBoundary(secondPrevious)))) {
+  if (!(determineLetterCase(previous) === letterCases.LOWER
+    || (determineLetterCase(previous) === letterCases.CAPITALIZED && canBeSentenceBoundary(secondPrevious)))) {
     return false;
   }
   if (!(isPunctuation(secondPrevious, true)
@@ -47,7 +47,7 @@ function registerRule({
       return null;
     }
     const lastLetter = getLastLetter(token);
-    if (token.length < minTokenLength || !allowedCases.includes(determineCase(token))
+    if (token.length < minTokenLength || !allowedCases.includes(determineLetterCase(token))
       || !Object.keys(endings).includes(lastLetter)
       || (endingRequirements.hasOwnProperty(lastLetter) && !token.match(endingRequirements[lastLetter]))
       || excludedEndings.some((ending) => token.endsWith(ending))) {
@@ -74,7 +74,7 @@ registerRule({
   vocativePattern: feminine.vocativePattern,
   adjectivePattern: feminine.adjectivePattern,
   endings: feminine.endings,
-  allowedCases: [cases.CAPITALIZED, cases.CAMEL],
+  allowedCases: [letterCases.CAPITALIZED, letterCases.CAMEL],
   minTokenLength: minFeminineProperTokenLength,
   minPreviousLength: feminine.minTitleLength,
   shorterTitles: feminine.shorterTitles,
@@ -87,7 +87,7 @@ registerRule({
   adjectivePattern: masculine.adjectivePattern,
   endings: masculine.endings,
   excludedEndings: masculine.excludedEndings,
-  allowedCases: [cases.LOWER],
+  allowedCases: [letterCases.LOWER],
   minTokenLength: minCommonTokenLength,
   minPreviousLength: masculine.minTitleLength,
   shorterTitles: masculine.shorterTitles,
@@ -104,7 +104,7 @@ registerRule({
   },
   excludedEndings: masculine.excludedEndings,
   endingRequirements: masculine.lastNameRequirements,
-  allowedCases: [cases.CAPITALIZED, cases.CAMEL],
+  allowedCases: [letterCases.CAPITALIZED, letterCases.CAMEL],
   minTokenLength: minMasculineProperTokenLength,
   minPreviousLength: masculine.minTitleLength,
   shorterTitles: masculine.shorterTitles,

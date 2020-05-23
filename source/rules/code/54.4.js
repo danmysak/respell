@@ -2,6 +2,7 @@ import {
   Correction,
   correctionTypes,
   registerWordRule,
+  labels,
   canBeSentenceBoundary,
   isQuote,
   isRomanNumeral
@@ -66,4 +67,4 @@ registerWordRule((token, chain) => {
   return new Correction(correctionTypes.UNCERTAIN, `${isFirst ? '«' : ''}${token}${isLast ? '»' : ''}`,
     'Відповідно до § 54 правопису, назви компаній, написані латинкою, слід брати в лапки.'
   );
-}, ['latin-proper-nouns']);
+}, [labels.LATIN_PROPER_NOUNS]);

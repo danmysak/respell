@@ -1,5 +1,12 @@
-import {correctionTypes, registerWordRule, createMaskRule, isPunctuation, determineCase, cases} from "../imports.js";
-import {masculine} from "../data/vocative.js";
+import {
+  correctionTypes,
+  registerWordRule,
+  createMaskRule,
+  isPunctuation,
+  determineLetterCase,
+  letterCases
+} from "../imports.js";
+import {masculine} from "../../data/vocative.js";
 
 registerWordRule(createMaskRule({
   matches: ["Ігор(е)"],
@@ -13,7 +20,8 @@ registerWordRule(createMaskRule({
   callback: (token, chain) => {
     const next = chain.getNextToken();
     const plausibleFollowing = isPunctuation(next, true) || (
-      isPunctuation(chain.getNextToken(2), true) && [cases.CAPITALIZED, cases.CAMEL].includes(determineCase(next))
+      isPunctuation(chain.getNextToken(2), true)
+      && [letterCases.CAPITALIZED, letterCases.CAMEL].includes(determineLetterCase(next))
     );
     if (!plausibleFollowing) {
       return false;

@@ -1,56 +1,90 @@
-import {Correction, correctionTypes} from "../spelling/types.js";
+import {labels} from "../includes/labels.js";
+import {cases, number, nominalForms, frequency, groups} from "../includes/grammar.js";
+import {letterCases} from "../includes/typography.js";
+import {Correction, correctionTypes} from "../spelling/correction.js";
 import {isWord, isWhitespace, isPunctuation, isQuote, canBeSentenceBoundary} from "../spelling/tokenizer.js";
 import {registerWordRule, registerPunctuationRule, registerWhitespaceRule} from "../spelling/processor.js";
 import {createMaskRule} from "../spelling/masks.js";
 import {createTreeRule} from "../spelling/trees.js";
+import {decliners} from "../spelling/decliners.js";
+import {isAfterSentenceBoundary, getCompatibleNominalForms, isRomanNumeral} from "../spelling/helpers.js";
 import {
-  parenthesizeFirst,
-  getLastLetter,
+  getGroup,
   getConsonants,
   getVowels,
+  getVelars,
+  getHushing,
+  getHissing,
   getSibilants,
-  isRomanNumeral,
+  getCoronals,
+  getSoft
+} from "../spelling/phonetics.js";
+import {
   unpackSingleParadigmList,
   unpackDoubleParadigm,
   combineCorrespondences,
-  cases,
-  determineCase,
+  unique,
+  arrayify
+} from "../spelling/data-manipulation.js";
+import {
+  parenthesizeFirst,
+  getLastLetter,
+  determineLetterCase,
   isCapitalized,
   capitalize,
   normalizeCase,
-  simplifyApostrophe,
-  isAfterSentenceBoundary,
-  arrayify
-} from "../spelling/utils.js";
+  simplifyApostrophe
+} from "../spelling/typography.js";
 
 export {
-  Correction,
+  labels,
+  cases,
+  number,
+  nominalForms,
+  frequency,
+  groups,
+  letterCases,
+
   correctionTypes,
-  isWord,
-  isWhitespace,
-  isPunctuation,
-  isQuote,
-  canBeSentenceBoundary,
+  Correction,
   registerWordRule,
   registerPunctuationRule,
   registerWhitespaceRule,
   createMaskRule,
   createTreeRule,
-  parenthesizeFirst,
-  getLastLetter,
+  isWord,
+  isWhitespace,
+  isPunctuation,
+  isQuote,
+  canBeSentenceBoundary,
+
+  isAfterSentenceBoundary,
+  getCompatibleNominalForms,
+  isRomanNumeral,
+
+  decliners,
+
+  getGroup,
   getConsonants,
   getVowels,
+  getVelars,
+  getHushing,
+  getHissing,
   getSibilants,
-  isRomanNumeral,
-  unpackSingleParadigmList,
-  unpackDoubleParadigm,
-  combineCorrespondences,
-  cases,
-  determineCase,
+  getCoronals,
+  getSoft,
+
+  parenthesizeFirst,
+  getLastLetter,
+  determineLetterCase,
   isCapitalized,
   capitalize,
   normalizeCase,
   simplifyApostrophe,
-  isAfterSentenceBoundary,
+
+  unpackSingleParadigmList,
+  unpackDoubleParadigm,
+  combineCorrespondences,
+  unique,
   arrayify
 };

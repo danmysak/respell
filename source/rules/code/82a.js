@@ -4,10 +4,10 @@ import {
   createTreeRule,
   unpackDoubleParadigm,
   combineCorrespondences,
-  determineCase,
-  cases
+  determineLetterCase,
+  letterCases
 } from "../imports.js";
-import {towns} from '../data/towns.js';
+import {towns} from "../../data/towns.js";
 
 Object.entries({
   [correctionTypes.IMPROVEMENT]: towns.certain,
@@ -28,7 +28,8 @@ Object.entries({
       + 'території чи мають суфікси «-ськ», «-цьк», «-ець», суфікси присвійності «-ів», «-їв», «-ев», «-єв», «-ов», '
       + '«-ин», «-ін», «-ач», «-ич», «-яч» або частинки «-бург», «-град», «-город», «-піль», «-поль», «-мир», «-слав».',
     {
-      callback: (token) => [cases.CAPITALIZED, cases.CAMEL, cases.UPPER].includes(determineCase(token)),
+      callback: (token) =>
+        [letterCases.CAPITALIZED, letterCases.CAMEL, letterCases.UPPER].includes(determineLetterCase(token)),
       lowerCase: true,
       fixApostrophe: true
     })

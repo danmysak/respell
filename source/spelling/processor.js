@@ -1,5 +1,5 @@
 import {isWord, isPunctuation, isWhitespace} from "./tokenizer.js";
-import {correctionTypes} from "./types.js";
+import {correctionTypes} from "./correction.js";
 
 const correctionTypePriority = [correctionTypes.MISTAKE, correctionTypes.IMPROVEMENT, correctionTypes.UNCERTAIN];
 

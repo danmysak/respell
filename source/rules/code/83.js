@@ -1,5 +1,5 @@
 import {registerWordRule, correctionTypes, createTreeRule, unpackSingleParadigmList} from "../imports.js";
-import {namesWithIn} from "../data/names-with-in.js";
+import {namesWithIn} from "../../data/names-with-in.js";
 
 // Only proper nouns are examined, since common nouns ending in "-ін"/"-їн" seem to have already been listed with the
 // "-ові" ending in dictionaries (along with the "-у" ending), while the ending paradoxically doesn't feel to fit most

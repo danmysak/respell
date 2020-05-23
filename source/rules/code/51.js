@@ -5,10 +5,10 @@ import {
   unpackSingleParadigmList,
   capitalize,
   canBeSentenceBoundary,
-  determineCase,
-  cases
+  determineLetterCase,
+  letterCases
 } from "../imports.js";
-import {greekLetters} from "../data/greek-letters.js";
+import {greekLetters} from "../../data/greek-letters.js";
 
 registerWordRule(createTreeRule(
   unpackSingleParadigmList(greekLetters, (form) => [capitalize(form), form]),
@@ -19,7 +19,7 @@ registerWordRule(createTreeRule(
     callback: (token, chain) => !(
       canBeSentenceBoundary(chain.getPreviousToken())
       || chain.getNextToken() === null
-      || determineCase(chain.getNextToken()) === cases.LOWER
+      || determineLetterCase(chain.getNextToken()) === letterCases.LOWER
     ),
     fixApostrophe: true
   })

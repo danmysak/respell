@@ -1,5 +1,5 @@
 import {correctionTypes, registerWordRule, createTreeRule, unpackSingleParadigmList} from "../imports.js";
-import {namesWithG} from "../data/names-with-g.js";
+import {namesWithG} from "../../data/names-with-g.js";
 
 registerWordRule(createTreeRule(
   unpackSingleParadigmList(namesWithG, (form, group) => [form, form.replace(/г/ig, (match, offset) => {

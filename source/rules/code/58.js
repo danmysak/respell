@@ -7,7 +7,7 @@ import {
   isQuote,
   isAfterSentenceBoundary
 } from "../imports.js";
-import {brands} from "../data/brands.js";
+import {brands} from "../../data/brands.js";
 
 registerWordRule(createTreeRule(
   unpackSingleParadigmList(brands, (form) => [form, '']), correctionTypes.UNCERTAIN,

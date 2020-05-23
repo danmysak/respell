@@ -1,5 +1,5 @@
 import {correctionTypes, registerWordRule, createTreeRule, unpackSingleParadigmList} from "../imports.js";
-import {websites} from "../data/websites.js";
+import {websites} from "../../data/websites.js";
 
 registerWordRule(createTreeRule(
   unpackSingleParadigmList(

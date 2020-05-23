@@ -1,4 +1,4 @@
-import {TokenChain} from "../spelling/types.js";
+import {TokenChain} from "../spelling/token-chain.js";
 import {tokenize, isWhitespace} from "../spelling/tokenizer.js";
 import {processToken} from "../spelling/processor.js";
 import {tests} from "./data/rules.js";

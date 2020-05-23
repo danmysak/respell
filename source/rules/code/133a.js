@@ -1,5 +1,5 @@
 import {registerWordRule, correctionTypes, createTreeRule, unpackSingleParadigmList} from "../imports.js";
-import {lastNamesWithOwe} from "../data/last-names-with-owe.js";
+import {lastNamesWithOwe} from "../../data/last-names-with-owe.js";
 
 const pattern = /([ао])(в)(е)/gi;
 

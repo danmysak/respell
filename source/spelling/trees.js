@@ -1,5 +1,5 @@
-import {simplifyApostrophe, normalizeApostrophe, normalizeCase} from "./utils.js";
-import {Correction} from "./types.js";
+import {simplifyApostrophe, normalizeApostrophe, normalizeCase} from "./typography.js";
+import {Correction} from "./correction.js";
 
 const leaf = Symbol('leaf');
 

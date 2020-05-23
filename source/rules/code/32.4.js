@@ -1,12 +1,13 @@
 import {
   correctionTypes,
   registerWordRule,
+  labels,
   createTreeRule,
   unpackDoubleParadigm,
   combineCorrespondences,
   simplifyApostrophe
 } from "../imports.js";
-import {feminitives} from '../data/feminitives.js';
+import {feminitives} from "../../data/feminitives.js";
 
 registerWordRule(createTreeRule(
   combineCorrespondences(
@@ -29,5 +30,5 @@ registerWordRule(createTreeRule(
     requiresExtraChange: true,
     lowerCase: true,
     fixApostrophe: true
-  }), ['feminitives']
+  }), [labels.FEMINITIVES]
 );

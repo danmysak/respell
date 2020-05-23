@@ -7,7 +7,7 @@ import {
   normalizeCase,
   getVowels
 } from "../imports.js";
-import {toponymsWithRiCommonRoots, toponymsWithRiForms} from "../data/toponyms-with-ri.js";
+import {toponymsWithRiCommonRoots, toponymsWithRiForms} from "../../data/toponyms-with-ri.js";
 
 const pattern = new RegExp(`рі(?=[^${getVowels(true).join('')}й-])`, 'gi');
 const replacement = "ри";

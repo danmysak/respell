@@ -7,8 +7,8 @@ import {
   isPunctuation,
   isWord,
   isRomanNumeral,
-  determineCase,
-  cases
+  determineLetterCase,
+  letterCases
 } from "../imports.js";
 
 const maxLookupLevel = 3;
@@ -32,7 +32,7 @@ registerWordRule((token, chain) => {
     && !isRomanNumeral(token)
     && !canBeSentenceBoundary(chain.getPreviousToken(2))
     && !(isPunctuation(chain.getPreviousToken(2)) && canBeSentenceBoundary(chain.getPreviousToken(3)))
-    && isCapitalized(token) && determineCase(getNextWord(chain, maxLookupLevel) || '') === cases.LOWER;
+    && isCapitalized(token) && determineLetterCase(getNextWord(chain, maxLookupLevel) || '') === letterCases.LOWER;
 
   return !applicable ? null : new Correction(correctionTypes.UNCERTAIN, token.toLowerCase(),
     'Відповідно до § 46 правопису, ремарки та посилання, взяті в дужки, з великої літери слід писати лише в тому разі, '

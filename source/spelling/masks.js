@@ -1,5 +1,6 @@
-import {Correction} from "./types.js";
-import {normalizeCase, determineCase, cases} from "./utils.js";
+import {Correction} from "./correction.js";
+import {normalizeCase, determineLetterCase} from "./typography.js";
+import {letterCases} from "../includes/typography.js";
 
 export function createMaskRule(description) {
   const flattenDescription = (description, extraOptions = {}, currentItems = []) => {
@@ -88,7 +89,7 @@ export function createMaskRule(description) {
             return group;
           } else {
             // This is one of the actual groups
-            if (determineCase(token) === cases.UPPER) {
+            if (determineLetterCase(token) === letterCases.UPPER) {
               return item.replacement.toUpperCase();
             } else if (item.preserveReplacementCase || item.replacement.toLowerCase() !== item.replacement) {
               return item.replacement;

@@ -1,5 +1,5 @@
 import {isWhitespace, isWord} from "./tokenizer.js";
-import {correctionTypes} from "./types.js";
+import {correctionTypes} from "./correction.js";
 
 let correctionStats = null;
 let spellingStats = null;

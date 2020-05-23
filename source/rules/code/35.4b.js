@@ -1,4 +1,4 @@
-import {Correction, correctionTypes, registerWordRule, cases, determineCase} from "../imports.js";
+import {Correction, correctionTypes, registerWordRule, letterCases, determineLetterCase} from "../imports.js";
 
 const prefixes = [
   "арт", "бліц", "веб", "віце", "диско", "економ", "екс", "кібер", "контр", "лейб", "максі", "медіа", "міді", "міні",
@@ -14,11 +14,11 @@ registerWordRule((token) => {
     return null;
   }
   const postfix = token.slice(prefix.length + hyphen.length);
-  const postfixCase = determineCase(postfix);
-  if ([cases.EMPTY, cases.CAPITALIZED, cases.CAMEL].includes(postfixCase)) {
+  const postfixCase = determineLetterCase(postfix);
+  if ([letterCases.EMPTY, letterCases.CAPITALIZED, letterCases.CAMEL].includes(postfixCase)) {
     return null;
   }
-  const correctionType = postfixCase === cases.LOWER ? correctionTypes.MISTAKE : correctionTypes.UNCERTAIN;
+  const correctionType = postfixCase === letterCases.LOWER ? correctionTypes.MISTAKE : correctionTypes.UNCERTAIN;
   const replacement = token.slice(0, prefix.length) + postfix;
   return new Correction(correctionType, replacement,
     'Відповідно до § 35 правопису, загальні назви з початковими компонентами «арт-», «бліц-», «веб-», «віце-», '
