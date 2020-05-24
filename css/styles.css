@@ -174,7 +174,7 @@ t-t {
 
 .correction {
     color: var(--correction-color);
-    display: inline-block;
+    display: inline-block; /* We will have to resort to this until hyphens: nowrap is implemented in browsers */
     max-width: 100%;
 }
 
