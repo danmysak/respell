@@ -3,12 +3,12 @@ import {getGroup, getConsonants, getVowels, getVelars, getCoronals, getHushing} 
 import {getLastLetter} from "./typography.js";
 import {arrayify, unique} from "./data-manipulation.js";
 
-function append(name, endings) {
-  return arrayify(endings).map((ending) => name + ending);
+function append(word, endings) {
+  return arrayify(endings).map((ending) => word + ending);
 }
 
-function replaceLast(name, endings) {
-  return arrayify(endings).map((ending) => name.slice(0, -1) + ending);
+function replaceLast(word, endings) {
+  return arrayify(endings).map((ending) => word.slice(0, -1) + ending);
 }
 
 export const decliners = {
@@ -128,6 +128,44 @@ export const decliners = {
       return Object.fromEntries(possibilities.map(
         (possibility) => [possibility, forms.filter((form) => this.decline(possibility, form).includes(word))]
       ).filter(([_, forms]) => forms.length > 0));
+    }
+  },
+
+  feminineConsonantalForeign: class {
+    static check(word) {
+      const lastLetter = getLastLetter(word);
+      return lastLetter !== 'й' && getConsonants(true).includes(lastLetter);
+    }
+
+    static decline(word, form) {
+      if (!this.check(word)) {
+        return [];
+      }
+      const soft = getLastLetter(word) === 'ь';
+      switch (form) {
+        case nominalForms.GENITIVE_SINGULAR:
+        case nominalForms.DATIVE_SINGULAR:
+        case nominalForms.LOCATIVE_SINGULAR:
+        case nominalForms.NOMINATIVE_PLURAL:
+        case nominalForms.VOCATIVE_PLURAL:
+          return soft ? replaceLast(word, 'і') : append(word, 'і');
+        case nominalForms.INSTRUMENTAL_SINGULAR:
+          return soft ? replaceLast(word, (word.length >= 2 ? word[word.length - 2].toLowerCase() : '') + 'ю')
+                      : append(word, '\'ю');
+        case nominalForms.VOCATIVE_SINGULAR:
+          return soft ? replaceLast(word, 'е') : append(word, 'е');
+        case nominalForms.GENITIVE_PLURAL:
+        case nominalForms.ACCUSATIVE_PLURAL:
+          return soft ? replaceLast(word, 'ей') : append(word, 'ей');
+        case nominalForms.DATIVE_PLURAL:
+          return soft ? replaceLast(word, 'ям') : append(word, '\'ям');
+        case nominalForms.INSTRUMENTAL_PLURAL:
+          return soft ? replaceLast(word, 'ями') : append(word, '\'ями');
+        case nominalForms.LOCATIVE_PLURAL:
+          return soft ? replaceLast(word, 'ях') : append(word, '\'ях');
+        default:
+          return [word];
+      }
     }
   }
 };

@@ -349,6 +349,9 @@ export const prepositions = {
     [cases.ACCUSATIVE]: frequency.UNCOMMON,
     [cases.LOCATIVE]: frequency.FREQUENT
   },
+  "углиб": {
+    [cases.GENITIVE]: frequency.FREQUENT
+  },
   "уздовж": {
     [cases.GENITIVE]: frequency.FREQUENT
   },
@@ -357,6 +360,18 @@ export const prepositions = {
   },
   "унаслідок": {
     [cases.GENITIVE]: frequency.FREQUENT
+  },
+  "упродовж": {
+    [cases.GENITIVE]: frequency.FREQUENT
+  },
+  "усередині": {
+    [cases.GENITIVE]: frequency.FREQUENT
+  },
+  "усередину": {
+    [cases.GENITIVE]: frequency.FREQUENT
+  },
+  "услід": {
+    [cases.DATIVE]: frequency.FREQUENT
   },
   "усупереч": {
     [cases.DATIVE]: frequency.FREQUENT
