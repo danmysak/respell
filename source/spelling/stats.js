@@ -46,6 +46,18 @@ const spellingTemplates = {
   }
 };
 
+function reverse(string) {
+  return string.split('').reverse().join('');
+}
+
+function formatNumber(number) {
+  const string = number.toString();
+  if (string.length <= 4) {
+    return string;
+  }
+  return reverse(reverse(string).replace(/\d{3}(?!$)/g, '$& '));
+}
+
 const numberTypes = {
   ZERO: 0,
   ONE: 1,
@@ -158,7 +170,7 @@ function getLabels(templates, stats) {
       label.text = text;
     } else {
       label.zero = false;
-      label.text = numberTemplate.replace('{number}', value).replace('{text}', text);
+      label.text = numberTemplate.replace('{number}', formatNumber(value)).replace('{text}', text);
     }
     if (template.average) {
       const numerator = stats[template.average.numerator || type];

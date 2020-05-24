@@ -3,7 +3,9 @@ import {correctionTypes} from "../../spelling/correction.js";
 const _ = [];
 
 export const tests = [
-  [_, String.fromCharCode(0x301), String.fromCharCode(0x301), _], // Just to make sure nothing breaks
+  [_, '', '', _], // Just to make sure nothing breaks
+  [_, String.fromCharCode(0x301), String.fromCharCode(0x301), _], // Same here
+  [[126, 54, 32, 123, 24, 95], 'Сподіваємося, проект Respell дозволить користувачам ефективніше привести свої тексти до нової орфографії й додасть продуктивності в остаточному засвоєнні нового правопису.', 'Сподіваємося, проєкт «Respell» дозволить користувачкам ефективніше привести свої тексти до нової ортографії і додасть продуктивности в остаточному засвоєнні нового правопису.', [correctionTypes.MISTAKE, correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN, correctionTypes.IMPROVEMENT, correctionTypes.MISTAKE, correctionTypes.UNCERTAIN], true],
 
   [2, 'Іч який!', 'Ич який!', correctionTypes.IMPROVEMENT],
   [2, 'А я: «іч, як поважно розкинувся».', 'А я: «ич, як поважно розкинувся».', correctionTypes.IMPROVEMENT],
