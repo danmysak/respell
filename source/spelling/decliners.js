@@ -150,8 +150,13 @@ export const decliners = {
         case nominalForms.VOCATIVE_PLURAL:
           return soft ? replaceLast(word, 'і') : append(word, 'і');
         case nominalForms.INSTRUMENTAL_SINGULAR:
-          return soft ? replaceLast(word, (word.length >= 2 ? word[word.length - 2].toLowerCase() : '') + 'ю')
-                      : append(word, '\'ю');
+          if (soft) {
+            const secondLast = word.length >= 2 ? word[word.length - 2].toLowerCase() : '';
+            const thirdLast = word.length >= 3 ? word[word.length - 3].toLowerCase() : '';
+            return replaceLast(word, (getVowels(true).includes(thirdLast) ? secondLast : '') + 'ю');
+          } else {
+            return append(word, '\'ю');
+          }
         case nominalForms.VOCATIVE_SINGULAR:
           return soft ? replaceLast(word, 'е') : append(word, 'е');
         case nominalForms.GENITIVE_PLURAL:

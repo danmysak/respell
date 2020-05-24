@@ -1065,6 +1065,7 @@ export const tests = [
   [140, 'Зейнаб', 'Зейнабі', correctionTypes.UNCERTAIN],
   [[140, -122], 'Гюль', 'Гюлі', correctionTypes.UNCERTAIN],
   [140, 'Крізь Зейнаб і крізь Сесіль', 'Крізь Зейнабей і крізь Сесілей', [correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN]],
+  [140, 'Це між Белль та іншими.', 'Це між Беллю та іншими.', correctionTypes.UNCERTAIN],
   [_, 'Кім', 'Кім', _],
   [-122, 'Гюльчатай', 'Гюльчатай', _],
   [_, 'Монік', 'Монік', _],
