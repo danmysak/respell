@@ -6,6 +6,10 @@ export function arrayify(item) {
   return Array.isArray(item) ? item : [item];
 }
 
+export function unarrayify(list) {
+  return list.length === 1 ? list[0] : list;
+}
+
 export function applyOrMap(items, callback) {
   return Array.isArray(items) ? items.map(callback) : callback(items);
 }
@@ -60,7 +64,7 @@ export function combineCorrespondences(list) {
       }
       currentIndex++;
     }
-    combined[key] = options.length === 1 ? options[0] : options;
+    combined[key] = unarrayify(unique(options));
   }
   return combined;
 }

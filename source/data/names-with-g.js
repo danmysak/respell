@@ -10,16 +10,17 @@ import {data as _6} from './names-with-g/Аглая.js';
 import {data as _7} from './names-with-g/Дога.js';
 import {data as _8} from './names-with-g/Герш.js';
 import {data as _9} from './names-with-g/Габсбург.js';
-import {data as _10} from './names-with-g/Гюйгенс.js';
-import {data as _11} from './names-with-g/Гуго.js';
-import {data as _12} from './names-with-g/Агафоника.js';
-import {data as _13} from './names-with-g/Глінка.js';
-import {data as _14} from './names-with-g/Гемінгвей.js';
-import {data as _15} from './names-with-g/Гегель.js';
-import {data as _16} from './names-with-g/Булганак.js';
-import {data as _17} from './names-with-g/Гаха.js';
-import {data as _18} from './names-with-g/Гоя.js';
-import {data as _19} from './names-with-g/Гуджа.js';
+import {data as _10} from './names-with-g/Гюль.js';
+import {data as _11} from './names-with-g/Гюйгенс.js';
+import {data as _12} from './names-with-g/Гуго.js';
+import {data as _13} from './names-with-g/Агафоника.js';
+import {data as _14} from './names-with-g/Глінка.js';
+import {data as _15} from './names-with-g/Гемінгвей.js';
+import {data as _16} from './names-with-g/Гегель.js';
+import {data as _17} from './names-with-g/Булганак.js';
+import {data as _18} from './names-with-g/Гаха.js';
+import {data as _19} from './names-with-g/Гоя.js';
+import {data as _20} from './names-with-g/Гуджа.js';
 
 export const namesWithG = [
   _0,
@@ -41,5 +42,6 @@ export const namesWithG = [
   _16,
   _17,
   _18,
-  _19
+  _19,
+  _20
 ];
