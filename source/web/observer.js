@@ -2,13 +2,13 @@ import {normalize, normalizeCursorClasses, paragraphTag} from "./normalizer.js";
 import {spellcheck} from "./spellchecker.js";
 import {tooltipTag, stopCorrecting} from "./corrector.js";
 import {updateCorrectionStats, updateSpellingStats, getCorrectionLabels, getSpellingLabels} from "../spelling/stats.js";
-import {getRangeIfInside, getParentOffset, getNodeAtOffset, setCursor} from "./cursor.js";
+import {getRangeIfInside, getParentOffset, getNodeAtOffset, setCursor, insertAtCursor} from "./cursor.js";
 
 let observer = null;
 let container = null;
 let statsContainer = null;
 let settingsContainer = null;
-let isPasting = false;
+let coverContainer = null;
 let plannedMutationStackSize = 0;
 
 let lastContents = null;
@@ -68,7 +68,7 @@ function getTokenSets() {
 
 function contentsChanged() {
   detachSelectionEvents();
-  normalize(container, [tooltipTag], isPasting);
+  normalize(container, [tooltipTag]);
   setTimeout(() => {
     attachSelectionEvents();
   }, 0);
@@ -82,11 +82,36 @@ function contentsChanged() {
 }
 
 function attachPasteEvent() {
-  container.addEventListener('paste', () => {
-    isPasting = true;
-    setTimeout(() => {
-      isPasting = false;
-    }, 0);
+  const maxLengthWithoutCover = 1000;
+  container.addEventListener('paste', (event) => {
+    const text = event.clipboardData.getData('text/plain');
+    event.preventDefault();
+    const doInsert = () => {
+      const contents = new DocumentFragment();
+      text.split(/\n/).forEach((line, index) => {
+        if (index === 0) {
+          contents.append(document.createTextNode(line));
+        } else {
+          const paragraph = document.createElement(paragraphTag);
+          const trimmed = line.trim();
+          if (trimmed !== '') {
+            paragraph.textContent = trimmed;
+            contents.append(paragraph);
+          }
+        }
+      });
+      insertAtCursor(contents, container);
+    }
+    if (text.length > maxLengthWithoutCover) {
+      coverContainer.dataset.type = 'processing';
+      coverContainer.classList.add('active');
+      setTimeout(() => {
+        doInsert();
+        coverContainer.classList.remove('active');
+      }, 50); // 0 or even 1 is not enough for most browsers except Chrome
+    } else {
+      doInsert();
+    }
   });
 }
 
@@ -202,10 +227,11 @@ function watchSettings() {
   });
 }
 
-export function attachObserver(inputElement, statsElement, settingsElement) {
+export function attachObserver(inputElement, statsElement, settingsElement, coverElement) {
   container = inputElement;
   statsContainer = statsElement;
   settingsContainer = settingsElement;
+  coverContainer = coverElement;
   attachPasteEvent();
   observer = new MutationObserver(contentsChanged);
   observer.observe(inputElement, {
@@ -219,4 +245,5 @@ export function attachObserver(inputElement, statsElement, settingsElement) {
   contentsChanged();
   attachUndoEvent();
   attachCursorFixingEvent();
+  coverContainer.classList.remove('active');
 }

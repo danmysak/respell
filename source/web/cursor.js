@@ -27,6 +27,16 @@ export function getRangeIfCollapsedAndInside(node) {
   return getRangeIfInside(node, true);
 }
 
+export function insertAtCursor(contents, parentNode) {
+  const range = getRangeIfInside(parentNode);
+  if (range === null) {
+    return false;
+  }
+  range.deleteContents();
+  range.insertNode(contents);
+  range.collapse(false);
+}
+
 export function getParentOffset(parent, node, offset) {
   let currentNode, currentOffset;
   if (node.nodeType === Node.TEXT_NODE) {

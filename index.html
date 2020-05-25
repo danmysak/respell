@@ -28,7 +28,7 @@
     <meta name="theme-color" content="#F3F0E4">
     <!-- End of favicons -->
 
-    <script src="source/web/main.js" type="module"></script>
+    <script src="source/web/main.js" type="module" async></script>
 </head>
 <body>
 <header>
@@ -43,6 +43,7 @@
     <h2>Уведення тексту</h2>
     <div class="input" contenteditable="true" spellcheck="false"><p>Сподіваємося, проект Respell дозволить користувачам ефективніше привести свої тексти до нової орфографії й додасть продуктивності в остаточному засвоєнні нового правопису.</p></div>
     <div class="input-bg"></div>
+    <div class="input-cover active" data-type="loading"></div>
     <aside class="tweaks">
         <div class="tweaks-container">
             <div class="tweaks-subcontainer settings-container">
@@ -65,27 +66,27 @@
                 <dl>
                     <div class="stats-important">
                         <dt>Кількість помилок</dt>
-                        <dd class="stats-mistake"></dd>
+                        <dd class="stats-mistake">&nbsp;</dd>
 
                         <dt>Кількість можливих покращень</dt>
-                        <dd class="stats-improvement"></dd>
+                        <dd class="stats-improvement">&nbsp;</dd>
 
                         <dt>Кількість непевних зауважень</dt>
-                        <dd class="stats-uncertain"></dd>
+                        <dd class="stats-uncertain">&nbsp;</dd>
                     </div>
 
                     <div class="stats-spelling">
                         <dt>Кількість абзаців</dt>
-                        <dd class="stats-paragraphs"></dd>
+                        <dd class="stats-paragraphs">&nbsp;</dd>
 
                         <dt>Кількість речень</dt>
-                        <dd class="stats-sentences"></dd>
+                        <dd class="stats-sentences">&nbsp;</dd>
 
                         <dt>Кількість слів</dt>
-                        <dd class="stats-words"></dd>
+                        <dd class="stats-words">&nbsp;</dd>
 
                         <dt>Кількість символів</dt>
-                        <dd class="stats-characters"></dd>
+                        <dd class="stats-characters">&nbsp;</dd>
                     </div>
                 </dl>
             </div>

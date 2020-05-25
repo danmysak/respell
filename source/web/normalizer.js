@@ -135,18 +135,7 @@ export function normalizeCursorClasses(inputElement) {
   });
 }
 
-function trim(paragraph) {
-  for (const childType of ['firstElementChild', 'lastElementChild']) {
-    while (paragraph[childType] && paragraph[childType].textContent.trim() === '') {
-      paragraph[childType].remove();
-    }
-  }
-  if (paragraph.textContent.trim() === '') {
-    paragraph.remove();
-  }
-}
-
-export function normalize(inputElement, extraTagsToRemove, trimWhitespace) {
+export function normalize(inputElement, extraTagsToRemove) {
   if (!inputElement.hasChildNodes()) {
     const emptyParagraph = document.createElement('p');
     emptyParagraph.textContent = cursorPlaceholder + '\n';
@@ -160,10 +149,5 @@ export function normalize(inputElement, extraTagsToRemove, trimWhitespace) {
     normalizeParagraph(paragraph);
   }
   restoreCursor(inputElement);
-  if (trimWhitespace) { // We must trim after restoring the cursor, as its placeholder will be at the end of the text
-    for (const paragraph of [...inputElement.children]) {
-      trim(paragraph);
-    }
-  }
   normalizeCursorClasses(inputElement);
 }
