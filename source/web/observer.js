@@ -143,23 +143,23 @@ function attachPasteEvent() {
     const text = event.clipboardData.getData('text/plain');
     event.preventDefault();
     const doInsert = () => {
-      const contents = new DocumentFragment();
+      const contents = [];
       text.split(/\n/).forEach((line, index, lines) => {
         if (index === 0) {
           const normalized = lines.length > 1 ? line.trim() : line;
           if (normalized !== '') {
-            contents.append(document.createTextNode(normalized));
+            contents.push(document.createTextNode(normalized));
           }
         } else {
           const paragraph = document.createElement(paragraphTag);
           const trimmed = line.trim();
           if (trimmed !== '') {
             paragraph.textContent = trimmed;
-            contents.append(paragraph);
+            contents.push(paragraph);
           }
         }
       });
-      const multiline = contents.childNodes.length > 1;
+      const multiline = contents.length > 1;
       startPlannedMutation();
       insertAtCursor(container, contents, multiline);
       const records = endPlannedMutation();

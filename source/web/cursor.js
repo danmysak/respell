@@ -1,28 +1,42 @@
 export const cursorPlaceholder = '[[CURSOR]]';
 
-export function setCursor(startNode, startOffset, endNode = startNode, endOffset = startOffset) {
-  const range = document.createRange();
-  range.setStart(startNode, startOffset);
-  range.setEnd(endNode, endOffset);
+function setCursorRange(range) {
   const selection = window.getSelection();
   selection.removeAllRanges();
   selection.addRange(range);
 }
 
-export function getRangeIfInside(node, shouldBeCollapsed = false) {
+export function setCursor(startNode, startOffset, endNode = startNode, endOffset = startOffset) {
+  const range = document.createRange();
+  range.setStart(startNode, startOffset);
+  range.setEnd(endNode, endOffset);
+  setCursorRange(range);
+  return range;
+}
+
+export function getRangeIfInside(node) {
   const selection = window.getSelection();
   if (!selection || selection.rangeCount === 0) {
     return null;
   }
   const range = selection.getRangeAt(0);
-  if (!range || (shouldBeCollapsed && !range.collapsed)) {
+  if (!range) {
     return null;
   }
   return node.contains(range.commonAncestorContainer) ? range : null;
 }
 
-export function getRangeIfCollapsedAndInside(node) {
-  return getRangeIfInside(node, true);
+function collapseRangeIfInside(container, toStart = false) {
+  const range = getRangeIfInside(container);
+  if (range === null) {
+    return null;
+  } else if (range.collapsed) {
+    return range;
+  } else if (toStart) {
+    return setCursor(range.startContainer, range.startOffset);
+  } else {
+    return setCursor(range.endContainer, range.endOffset);
+  }
 }
 
 export function insertAtCursor(parentNode, contents, collapseToStart = false) {
@@ -31,8 +45,32 @@ export function insertAtCursor(parentNode, contents, collapseToStart = false) {
     return false;
   }
   range.deleteContents();
-  range.insertNode(contents);
-  range.collapse(collapseToStart);
+  let container, firstNode, lastNode;
+  if (Array.isArray(contents)) {
+    if (contents.length === 0) {
+      return false;
+    }
+    firstNode = contents[0];
+    lastNode = contents[contents.length - 1];
+    container = new DocumentFragment();
+    container.append(...contents);
+  } else {
+    firstNode = contents;
+    lastNode = contents;
+    container = contents;
+  }
+  range.insertNode(container);
+  // collapseRangeIfInside wouldn't work in Safari because it leaves cursor at the beginning of the inserted contents
+  const newRange = document.createRange();
+  if (collapseToStart) {
+    newRange.setStartBefore(firstNode);
+    newRange.setEndBefore(firstNode);
+  } else {
+    newRange.setStartAfter(lastNode);
+    newRange.setEndAfter(lastNode);
+  }
+  setCursorRange(newRange);
+  return true;
 }
 
 function getParentOffset(parent, node, offset) {
@@ -126,10 +164,9 @@ export function setSelectionOffsets(container, offsets) {
 }
 
 export function serializeCursor(container) {
-  const range = getRangeIfCollapsedAndInside(container);
-  if (range) {
-    const cursor = document.createTextNode(cursorPlaceholder);
-    range.insertNode(cursor);
+  const range = collapseRangeIfInside(container);
+  if (range !== null) {
+    range.insertNode(document.createTextNode(cursorPlaceholder));
   }
 }
 
