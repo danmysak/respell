@@ -27,7 +27,9 @@ export function getTokenCorrectionPresentations(element) {
 }
 
 export function getParagraphCorrectionSets(paragraph) {
-  return paragraph[paragraphDataSymbol].correctionSets.map((corrections) => filterCorrections(corrections));
+  return paragraph[paragraphDataSymbol].correctionSets.map(
+    (corrections) => filterCorrections(corrections).map(({correction}) => correction)
+  );
 }
 
 function computeTokenCurrentClass(tokenElement) {

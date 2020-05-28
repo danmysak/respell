@@ -100,8 +100,10 @@ export function computeSpellingStats(tokens) {
   let lastSentenceHasCapitalizedWords = false;
   tokens.forEach((token) => {
     if (isWord(token)) {
-      words++;
-      wordCharacters += token.length;
+      if (!token.match(/^\d+$/)) {
+        words++;
+        wordCharacters += token.length;
+      }
       const isCapitalized = token.match(/^[А-ЯҐЄІЇA-Z]/);
       if (lastNonSpace !== null && lastSentenceHasCapitalizedWords &&
         (lastNonSpace.includes('?') || lastNonSpace.includes('!') ||
