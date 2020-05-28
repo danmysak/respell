@@ -66,21 +66,22 @@ function paragraphize(inputElement, paragraphsToSkip) {
   }
 }
 
-function substituteLineBreaks(inputElement) {
+function removeLineBreaks(inputElement) {
   for (const br of [...inputElement.querySelectorAll('br')]) {
-    br.replaceWith('\n');
+    br.remove();
   }
 }
 
 export function normalize(inputElement, paragraphsToSkip) {
   if (!inputElement.hasChildNodes()) {
     const emptyParagraph = document.createElement(paragraphTag);
-    emptyParagraph.textContent = cursorPlaceholder + '\n';
+    emptyParagraph.textContent = cursorPlaceholder;
     inputElement.append(emptyParagraph);
   } else {
     serializeCursor(inputElement);
   }
-  substituteLineBreaks(inputElement);
+  removeLineBreaks(inputElement); // Simply replacing line breaks with '\n' doesn't work well in Firefox (it treats
+                                  // trailing '\n' as actual text rather than as end-of-contenteditable-element)
   paragraphize(inputElement, paragraphsToSkip);
   restoreCursor(inputElement);
 }

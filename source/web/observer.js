@@ -232,9 +232,11 @@ function attachCursorFixingEvent() {
     const currentSelection = history.getSelection();
     if (delta !== 0 && currentSelection !== null && currentSelection.start === currentSelection.end) {
       const selection = currentSelection.start;
+      const node = currentSelection.extraInfo.startContainer;
       setTimeout(() => {
         const currentSelection = history.getSelection();
-        if (currentSelection !== null && currentSelection.start === selection && currentSelection.end === selection) {
+        if (currentSelection !== null && currentSelection.start === selection && currentSelection.end === selection
+          && currentSelection.extraInfo.startContainer === node) {
           const correctSelection = selection + delta;
           if (correctSelection >= 0 && correctSelection <= container.textContent.length) {
             setSelectionOffsets(container, {start: correctSelection, end: correctSelection});

@@ -73,7 +73,11 @@ export function getSelectionOffsets(container) {
     : getParentOffset(container, range.endContainer, range.endOffset);
   return {
     start,
-    end
+    end,
+    extraInfo: {
+      startContainer: range.startContainer,
+      endContainer: range.endContainer
+    }
   };
 }
 
