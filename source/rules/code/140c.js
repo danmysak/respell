@@ -53,10 +53,7 @@ registerWordRule((token, chain) => {
     return null;
   }
   const replacements = arrayify(middleNameEndings).map((ending) => normalizeCase(middleName + ending, token));
-  return new Correction(correctionTypes.MISTAKE, replacements[0],
-    'Відповідно до § 140 правопису, у прізвищі Конана Дойла відмінюються обидві частини.',
-    {
-      alternatives: replacements.slice(1)
-    }
+  return new Correction(correctionTypes.MISTAKE, replacements,
+    'Відповідно до § 140 правопису, у прізвищі Конана Дойла відмінюються обидві частини.'
   );
 });

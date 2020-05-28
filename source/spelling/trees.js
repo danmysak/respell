@@ -68,8 +68,7 @@ export function createTreeRule(correspondences, correctionType, description,
       values = values.map((value) => normalizeCase(value, token));
     }
     values = values.filter((value) => simplifyApostrophe(value) !== simplifyApostrophe(token));
-    return values.length === 0 ? null : new Correction(correctionType, values[0], description, {
-      alternatives: values.slice(1),
+    return values.length === 0 ? null : new Correction(correctionType, values, description, {
       requiresExtraChange: requiresExtraChange || false
     });
   };

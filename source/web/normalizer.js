@@ -1,9 +1,7 @@
-import {cursorPlaceholder, serializeCursor, restoreCursor, getRangeIfInside} from "./cursor.js";
-import {tokenize} from "../spelling/tokenizer.js";
+import {cursorPlaceholder, serializeCursor, restoreCursor, getSelectionOffsets, setSelectionOffsets} from "./cursor.js";
 
 export const paragraphTag = 'P';
 const tokenTag = 'T-T';
-const cursorClass = 'cursor-around';
 
 function isTokenTag(node) {
   return node !== null && node.nodeType === Node.ELEMENT_NODE && node.tagName === tokenTag;
@@ -14,24 +12,38 @@ function isTokenTagWithText(node, text = null) {
       [...node.childNodes].every((childNode) => childNode.nodeType === Node.TEXT_NODE); // Text nodes can be split
 }
 
-function paragraphize(inputElement, extraTagsToRemove) {
+function isAcceptableChildNode(node) {
+  return node.nodeType === Node.TEXT_NODE || isTokenTagWithText(node);
+}
+
+function paragraphize(inputElement, paragraphsToSkip) {
   const paragraphLikeTags = ['DIV', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6'];
-  const tagsToRemove = ['STYLE', ...extraTagsToRemove];
+  const tagsToRemove = ['STYLE'];
+  let lastParagraph = null;
   let currentParagraph = null;
   let node = inputElement.hasChildNodes() ? inputElement.childNodes[0] : null;
   while (node !== null) {
     let nextNode = node.nextSibling;
-    if (node.nodeType === Node.TEXT_NODE || isTokenTagWithText(node)) {
+    if (isAcceptableChildNode(node)) {
       if (currentParagraph === null) {
         currentParagraph = document.createElement(paragraphTag);
-        inputElement.prepend(currentParagraph);
+        if (lastParagraph === null) {
+          inputElement.prepend(currentParagraph);
+        } else {
+          lastParagraph.after(currentParagraph);
+        }
       }
       currentParagraph.append(node);
     } else if (node.nodeType !== Node.ELEMENT_NODE || tagsToRemove.includes(node.tagName)) {
       node.remove();
     } else {
       const isParagraph = node.tagName === paragraphTag;
-      if (!isParagraph || ![...node.childNodes].every((childNode) => isTokenTagWithText(childNode))) {
+      const shouldBeSkipped = isParagraph &&
+        (paragraphsToSkip.has(node) || [...node.childNodes].every(isAcceptableChildNode));
+      if (shouldBeSkipped) {
+        lastParagraph = node;
+        currentParagraph = null;
+      } else {
         if (node.hasChildNodes()) {
           nextNode = node.firstChild;
           do {
@@ -55,99 +67,125 @@ function paragraphize(inputElement, extraTagsToRemove) {
 }
 
 function substituteLineBreaks(inputElement) {
-  let br;
-  while ((br = inputElement.querySelector('br'))) {
+  for (const br of [...inputElement.querySelectorAll('br')]) {
     br.replaceWith('\n');
   }
 }
 
-function removeAttributes(element) {
-  for (const child of [...element.children]) {
-    removeAttributes(child);
-  }
-  for (const className of [...element.classList]) {
-    // We need to preserve the cursor class so that pseudo-elements are not recreated and transitions are not broken
-    if (className !== cursorClass) {
-      element.classList.remove(className);
-    }
-  }
-  for (const attribute of [...element.attributes]) {
-    if (attribute.name !== 'class') {
-      element.removeAttribute(attribute.name);
-    }
-  }
-}
-
-function normalizeParagraph(paragraph) {
-  const children = paragraph.childNodes;
-  const tokens = tokenize(paragraph.textContent);
-  let left = 0;
-  while (left < tokens.length && left < children.length
-         && isTokenTagWithText(children[left], tokens[left])) {
-    left++;
-  }
-  let right = 0;
-  while (left + right < tokens.length && left + right < children.length
-         && isTokenTagWithText(children[children.length - 1 - right], tokens[tokens.length - 1 - right])) {
-    right++;
-  }
-  while (left + right < tokens.length && left + right < children.length && isTokenTag(children[left])) {
-    children[left].textContent = tokens[left];
-    left++;
-  }
-  for (let current = children.length - 1 - right; current >= left; current--) {
-    children[current].remove();
-  }
-  for (let current = tokens.length - 1 - right; current >= left; current--) {
-    const token = document.createElement(tokenTag);
-    if (left === 0) {
-      paragraph.prepend(token);
-    } else {
-      children[left - 1].after(token);
-    }
-    token.textContent = tokens[current];
-  }
-  removeAttributes(paragraph);
-}
-
-export function normalizeCursorClasses(inputElement) {
-  const getCursorElements = () => {
-    const range = getRangeIfInside(inputElement);
-    if (!range) {
-      return [];
-    }
-    return [range.startContainer, range.endContainer].flatMap((container) => {
-      const token = [container, container.parentElement].find((candidate) => isTokenTag(candidate));
-      if (!token) {
-        return [];
-      }
-      return [token, token.previousElementSibling, token.nextElementSibling].filter((element) => element !== null);
-    });
-  };
-  const cursorElements = getCursorElements();
-  for (const element of [...inputElement.querySelectorAll(`.${cursorClass}`)]) {
-    if (!cursorElements.includes(element)) {
-      element.classList.remove(cursorClass);
-    }
-  }
-  cursorElements.forEach((element) => {
-    element.classList.add(cursorClass);
-  });
-}
-
-export function normalize(inputElement, extraTagsToRemove) {
+export function normalize(inputElement, paragraphsToSkip) {
   if (!inputElement.hasChildNodes()) {
-    const emptyParagraph = document.createElement('p');
+    const emptyParagraph = document.createElement(paragraphTag);
     emptyParagraph.textContent = cursorPlaceholder + '\n';
     inputElement.append(emptyParagraph);
   } else {
     serializeCursor(inputElement);
   }
   substituteLineBreaks(inputElement);
-  paragraphize(inputElement, extraTagsToRemove);
-  for (const paragraph of [...inputElement.children]) {
-    normalizeParagraph(paragraph);
-  }
+  paragraphize(inputElement, paragraphsToSkip);
   restoreCursor(inputElement);
-  normalizeCursorClasses(inputElement);
+}
+
+function removeAttributes(element) {
+  for (const attribute of [...element.attributes]) {
+    element.removeAttribute(attribute.name);
+  }
+}
+
+export function merge(paragraph, data) {
+  const selection = getSelectionOffsets(paragraph);
+  removeAttributes(paragraph);
+
+  const splitNode = (node, at, insertAfter) => {
+    const first = node.textContent.slice(0, at);
+    const last = node.textContent.slice(at);
+    const textNode = document.createTextNode('');
+    [node.textContent, textNode.textContent] = insertAfter ? [first, last] : [last, first];
+    node[insertAfter ? 'after' : 'before'](textNode);
+  };
+
+  let currentNode = paragraph.firstChild;
+  let currentOffset = 0;
+
+  const textifyAhead = (chars, splitLast = false) => {
+    let charsLeft = chars;
+    while (charsLeft > 0) {
+      const leftInNode = currentNode.textContent.length - currentOffset;
+      if (currentNode.nodeType === Node.ELEMENT_NODE) { // currentOffset must be 0 in this case
+        if (leftInNode <= charsLeft) {
+          const textNode = document.createTextNode(currentNode.textContent);
+          currentNode.replaceWith(textNode);
+          currentNode = textNode;
+        } else {
+          splitNode(currentNode, charsLeft, false);
+          charsLeft = 0;
+        }
+      } else { // Text node
+        if (leftInNode <= charsLeft) {
+          charsLeft -= leftInNode;
+          currentNode = currentNode.nextSibling;
+          currentOffset = 0;
+        } else {
+          currentOffset += charsLeft;
+          if (splitLast) {
+            splitNode(currentNode, currentOffset, false);
+            currentOffset = 0;
+          }
+          charsLeft = 0;
+        }
+      }
+    }
+  };
+
+  for (const {token, callback} of data) {
+    let leftInToken = token.length;
+    if (callback === null) { // No callback means the token shouldn't be wrapped in an element
+      textifyAhead(leftInToken);
+    } else { // The token should be wrapped in an element and this element should be passed to the callback
+      if (currentOffset > 0) { // Only possible for text nodes
+        splitNode(currentNode, currentOffset, false);
+        currentOffset = 0;
+      }
+      const textNodesToPrepend = [];
+      while (leftInToken > 0 && currentNode.nodeType !== Node.ELEMENT_NODE) { // Text node
+        if (currentNode.textContent.length > leftInToken) {
+          splitNode(currentNode, leftInToken, true);
+        }
+        leftInToken -= currentNode.textContent.length;
+        textNodesToPrepend.push(currentNode);
+        currentNode = currentNode.nextSibling;
+      }
+      if (leftInToken === 0) { // No elements found
+        const element = document.createElement(tokenTag);
+        if (currentNode === null) {
+          paragraph.append(element);
+        } else {
+          currentNode.before(element);
+        }
+        element.prepend(...textNodesToPrepend);
+        currentNode = element.nextSibling;
+        callback(element);
+      } else { // currentNode is an element
+        removeAttributes(currentNode);
+        currentNode.prepend(...textNodesToPrepend);
+        const element = currentNode;
+        if (currentNode.textContent.length > token.length) {
+          splitNode(currentNode, token.length, true);
+          currentNode = currentNode.nextSibling;
+        } else {
+          currentNode = currentNode.nextSibling;
+          textifyAhead(token.length - element.textContent.length, true);
+          while (element.nextSibling !== currentNode) {
+            element.append(element.nextSibling);
+          }
+        }
+        callback(element);
+      }
+    }
+  }
+
+  setSelectionOffsets(paragraph, selection);
+}
+
+export function updateTokens(paragraph, callback) {
+  [...paragraph.children].forEach((token) => callback(token));
 }

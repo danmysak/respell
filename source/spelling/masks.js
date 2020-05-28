@@ -1,6 +1,7 @@
 import {Correction} from "./correction.js";
 import {normalizeCase, determineLetterCase} from "./typography.js";
 import {letterCases} from "../includes/typography.js";
+import {arrayify} from "./data-manipulation.js";
 
 export function createMaskRule(description) {
   const flattenDescription = (description, extraOptions = {}, currentItems = []) => {
@@ -81,28 +82,29 @@ export function createMaskRule(description) {
         !inspectAdjacent(chain.getNextToken(), item.canBeLast, item.nextMatches, item.nextCallback)) {
         continue;
       }
-      const replacement = token.replace(matchingMask, (match, ...rest) => {
-        const groups = rest.slice(0, -2); // The last two parameters are the offset and the string
-        return groups.map((group, index) => {
-          if (index % 2 === 1 || index === 0 || index === groups.length - 1) {
-            // This is either one of the extra groups, or prefixes, or suffixes
-            return group;
-          } else {
-            // This is one of the actual groups
-            if (determineLetterCase(token) === letterCases.UPPER) {
-              return item.replacement.toUpperCase();
-            } else if (item.preserveReplacementCase || item.replacement.toLowerCase() !== item.replacement) {
-              return item.replacement;
+      const replacements = arrayify(item.replacement).map(
+        (replacement) => token.replace(matchingMask, (match, ...rest) => {
+          const groups = rest.slice(0, -2); // The last two parameters are the offset and the string
+          return groups.map((group, index) => {
+            if (index % 2 === 1 || index === 0 || index === groups.length - 1) {
+              // This is either one of the extra groups, or prefixes, or suffixes
+              return group;
             } else {
-              return normalizeCase(item.replacement, group);
+              // This is one of the actual groups
+              if (determineLetterCase(token) === letterCases.UPPER) {
+                return replacement.toUpperCase();
+              } else if (item.preserveReplacementCase || replacement.toLowerCase() !== replacement) {
+                return replacement;
+              } else {
+                return normalizeCase(replacement, group);
+              }
             }
-          }
-        }).join('');
-      });
-      return new Correction(item.type, replacement, item.description, {
+          }).join('');
+        })
+      );
+      return new Correction(item.type, replacements, item.description, {
         removePreviousToken: item.removePreviousToken,
-        removeNextToken: item.removeNextToken,
-        alternatives: item.alternatives
+        removeNextToken: item.removeNextToken
       });
     }
     return null;

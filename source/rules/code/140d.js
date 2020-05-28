@@ -48,9 +48,7 @@ function createRule(description, letterCase, generalDecliner, lastPartUndecliner
           .filter((suggestion) => suggestion !== token)
       ]);
     });
-    return suggestions.length === 0 ? null : new Correction(correctionTypes.UNCERTAIN, suggestions[0], description, {
-      alternatives: suggestions.slice(1)
-    });
+    return suggestions.length === 0 ? null : new Correction(correctionTypes.UNCERTAIN, suggestions, description);
   };
 }
 

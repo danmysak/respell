@@ -26,6 +26,7 @@
     --improvement-color: #579B2D;
     --uncertain-color: rgb(var(--blue));
     --line-color: black;
+    --input-background-color: white;
     --tooltip-background-color: #FAFAF8;
     --tooltip-border-color: #BEA2AE;
     --cover-background-color: var(--tooltip-background-color);
@@ -171,21 +172,27 @@ h3::after {
 }
 
 t-t {
-    position: relative;
-}
-
-.input t-t {
-    transition: color var(--correction-transition-duration);
-}
-
-.correction {
     color: var(--correction-color);
     display: inline-block; /* We will have to resort to this until hyphens: nowrap is implemented in browsers */
     max-width: 100%;
+    position: relative;
 }
 
-.input .correction {
+.input, .input t-t {
+    transition: color var(--correction-transition-duration);
+}
+
+.input t-t {
     cursor: pointer;
+}
+
+.input t-t.correction-none {
+    cursor: inherit;
+}
+
+.correction-none {
+    --correction-color: var(--input-background-color);
+    color: var(--text-color);
 }
 
 .correction-mistake {
@@ -200,15 +207,11 @@ t-t {
     --correction-color: var(--uncertain-color);
 }
 
-t-t:not(.correction) {
-    --correction-color: rgba(255, 255, 255, 0);
-}
-
-.correction::after, .cursor-around::after {
-    /* We don't want to simply attach ::after to all tokens as this really slows things down */
+t-t::after {
     content: "";
     display: block;
     position: absolute;
+    z-index: -1;
     background-color: var(--correction-color);
     transition: background-color var(--correction-transition-duration);
 
@@ -270,16 +273,19 @@ main {
     height: calc(var(--text-font-size) * var(--line-height));
 }
 
-.input-correcting .input, .input-correcting .correction:not(.correction-current),
-.input-correcting-keyboard .input, .input-correcting-keyboard .correction:not(.correction-current),
-.input-correcting-redisplay .input, .input-correcting-redisplay .correction:not(.correction-current) {
+.input-correcting, .input-correcting t-t:not(.correction-current),
+.input-correcting-redisplay, .input-correcting-redisplay t-t:not(.correction-current) {
     color: var(--background-text-color);
 }
 
-.input-correcting .correction:not(.correction-current)::after,
-.input-correcting-keyboard .correction:not(.correction-current)::after,
-.input-correcting-redisplay .correction:not(.correction-current)::after {
+.input-correcting t-t:not(.correction-current)::after,
+.input-correcting-redisplay t-t:not(.correction-current)::after {
     background-color: var(--background-text-color);
+}
+
+.input-correcting t-t.correction-none::after,
+.input-correcting-redisplay t-t.correction-none::after {
+    background-color: var(--input-background-color);
 }
 
 cursor-position {
@@ -294,7 +300,7 @@ cursor-position {
 
 .input-bg {
     z-index: 1;
-    background-color: white;
+    background-color: var(--input-background-color);
     box-shadow: 0 0 3px rgba(var(--shadow-color), var(--shadow-opacity)),
                 0 0 1px rgba(var(--shadow-color), calc(var(--shadow-opacity) * 2 / 3));
     transition: box-shadow var(--focus-and-cover-transition-duration);

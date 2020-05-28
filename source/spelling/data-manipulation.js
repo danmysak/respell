@@ -6,12 +6,16 @@ export function arrayify(item) {
   return Array.isArray(item) ? item : [item];
 }
 
-export function unarrayify(list) {
+export function dearrayify(list) {
   return list.length === 1 ? list[0] : list;
 }
 
 export function applyOrMap(items, callback) {
   return Array.isArray(items) ? items.map(callback) : callback(items);
+}
+
+export function reduceObjects(a, b) {
+  return Object.fromEntries(Object.entries(a).map(([key, value]) => [key, value + b[key]]));
 }
 
 export function unpackSingleParadigmList(list, callback, paradigmExtractor = (group) => group.paradigm) {
@@ -64,7 +68,7 @@ export function combineCorrespondences(list) {
       }
       currentIndex++;
     }
-    combined[key] = unarrayify(unique(options));
+    combined[key] = dearrayify(unique(options));
   }
   return combined;
 }

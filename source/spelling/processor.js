@@ -21,14 +21,17 @@ export function registerWhitespaceRule(rule, labels = []) {
   registerRule(isWhitespace, rule, labels);
 }
 
-export function processToken(tokenChain, ignoredLabels = []) {
+export function processToken(tokenChain) {
   const token = tokenChain.getCurrentToken();
-  const corrections = rules
-    .filter((rule) => rule.labels.every((label) => !ignoredLabels.includes(label)) && rule.condition(token))
-    .map((rule) => rule.rule(token, tokenChain))
-    .filter((correction) => correction !== null)
-    .sort((a, b) =>
-      correctionTypePriority.indexOf(a.type) - correctionTypePriority.indexOf(b.type)
-      || (a.requiresExtraChange ? 1 : 0) - (b.requiresExtraChange ? 1 : 0));
-  return corrections.length > 0 ? corrections : null;
+  return rules
+    .filter((rule) => rule.condition(token))
+    .map((rule) => ({
+      correction: rule.rule(token, tokenChain),
+      labels: rule.labels
+    }))
+    .filter(({correction}) => correction !== null)
+    .sort(
+      (a, b) => correctionTypePriority.indexOf(a.correction.type) - correctionTypePriority.indexOf(b.correction.type)
+        || (a.correction.requiresExtraChange ? 1 : 0) - (b.correction.requiresExtraChange ? 1 : 0)
+    );
 }

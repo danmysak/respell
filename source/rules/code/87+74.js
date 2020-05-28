@@ -56,17 +56,14 @@ function registerRule({
     if (!inspectPreceding(chain, minPreviousLength, shorterTitlesLowerCased, vocativePattern, adjectivePattern)) {
       return null;
     }
-    return new Correction(correctionTypes.UNCERTAIN, null, description,
-      {
-        alternatives: arrayify(endings[lastLetter]).map((ending) => {
-          const stem = token.slice(0, -1);
-          const actualEnding = typeof ending !== 'object' ? ending : (Object.entries(ending).find(
-            ([_, options]) => options !== null && options.includes(simplifyApostrophe(getLastLetter(stem)))
-          ) || Object.entries(ending).find(([_, options]) => options === null))[0];
-          return stem + actualEnding;
-        })
-      }
-    );
+    const replacements = arrayify(endings[lastLetter]).map((ending) => {
+      const stem = token.slice(0, -1);
+      const actualEnding = typeof ending !== 'object' ? ending : (Object.entries(ending).find(
+        ([_, options]) => options !== null && options.includes(simplifyApostrophe(getLastLetter(stem)))
+      ) || Object.entries(ending).find(([_, options]) => options === null))[0];
+      return stem + actualEnding;
+    });
+    return new Correction(correctionTypes.UNCERTAIN, replacements, description);
   });
 }
 

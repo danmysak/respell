@@ -21,7 +21,7 @@ function processText(text, omitSections = []) {
     chain.next();
     if (skipNext) {
       skipNext = false;
-      if (isWhitespace(chain.getCurrentContainer())) {
+      if (isWhitespace(chain.getCurrentToken(false))) {
         joinNext = true;
       }
       continue;
@@ -29,15 +29,18 @@ function processText(text, omitSections = []) {
     if (joinNext) {
       joinNext = false;
       if (replaced.length > 0) {
-        replaced[replaced.length - 1] += chain.getCurrentContainer();
+        replaced[replaced.length - 1] += chain.getCurrentToken(false);
         continue;
       }
     }
-    const corrections = (processToken(chain) || []).filter((correction) => !omitSections.some(
-      (section) => correction.description.match(generateRegex(section))
-    ));
+    const corrections = processToken(chain)
+      .map(({correction}) => correction)
+      .filter((correction) => !omitSections.some(
+        (section) => correction.description.match(generateRegex(section))
+      )
+    );
     if (corrections.length === 0) {
-      replaced.push(chain.getCurrentContainer());
+      replaced.push(chain.getCurrentToken(false));
     } else {
       const correction = corrections[0];
       if (replaced.length > 0 && correction.removePreviousToken) {
@@ -46,7 +49,7 @@ function processText(text, omitSections = []) {
       if (correction.removeNextToken) {
         skipNext = true;
       }
-      replaced.push(correction.replacement);
+      replaced.push(correction.replacements[0]);
       encounteredExtraChange = encounteredExtraChange || correction.requiresExtraChange;
       encounteredTypes.push(correction.type);
       encounteredDescriptions.push(correction.description);

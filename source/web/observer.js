@@ -1,84 +1,140 @@
-import {normalize, normalizeCursorClasses, paragraphTag} from "./normalizer.js";
-import {spellcheck} from "./spellchecker.js";
-import {tooltipTag, stopCorrecting} from "./corrector.js";
-import {updateCorrectionStats, updateSpellingStats, getCorrectionLabels, getSpellingLabels} from "../spelling/stats.js";
-import {getRangeIfInside, getParentOffset, getNodeAtOffset, setCursor, insertAtCursor} from "./cursor.js";
+import {normalize, merge, updateTokens, paragraphTag} from "./normalizer.js";
+import {getSelectionOffsets, setSelectionOffsets, insertAtCursor} from "./cursor.js";
+import {History} from "./history.js";
+import {spellcheck, getParagraphCorrectionSets, setLabelStatus, getTokenLabelUpdater} from "./spellchecker.js";
+import {stopCorrecting} from "./corrector.js";
+import {
+  computeCorrectionStats,
+  computeSpellingStats,
+  getCorrectionLabels,
+  getSpellingLabels
+} from "../spelling/stats.js";
+
+const correctionStatsSymbol = Symbol('correction-stats');
+const spellingStatsSymbol = Symbol('spelling-stats');
 
 let observer = null;
 let container = null;
 let statsContainer = null;
 let settingsContainer = null;
 let coverContainer = null;
-let plannedMutationStackSize = 0;
+let plannedMutationStack = [];
 
-let lastContents = null;
-let lastSelection = null;
-let currentContents = null;
-let currentSelection = null;
+let unmutatedParagraphs = null;
 
-let ignoredLabels = null;
+let history = null;
 
-function renderStats() {
-  const irrelevantClass = 'stats-irrelevant';
-  const render = (labels) => {
-    for (const type of Object.keys(labels)) {
-      const label = labels[type];
-      const element = statsContainer.querySelector(`.stats-${type}`);
-      const html = [];
-      html.push(label.text.replace(/{(.*)}/, '<strong>$1</strong>'));
-      if (label.extra) {
-        html.push(`<aside class="stats-extra">${label.extra}</aside>`);
-      }
-      element.innerHTML = html.join('');
-      if (label.zero) {
-        element.classList.add(irrelevantClass);
-      } else {
-        element.classList.remove(irrelevantClass);
-      }
-    }
-  };
-  render(getCorrectionLabels());
-  render(getSpellingLabels());
-}
-
-function updateCurrentSelection() {
-  const range = getRangeIfInside(container);
-  if (range === null) {
-    return null;
+function setCoverState(active) {
+  if (active) {
+    coverContainer.classList.add('active');
+  } else {
+    coverContainer.classList.remove('active');
   }
-  const start = getParentOffset(container, range.startContainer, range.startOffset);
-  const end = range.endContainer === range.startContainer && range.endOffset === range.startOffset
-    ? start : getParentOffset(container, range.endContainer, range.endOffset);
-  currentSelection = {
-    start,
-    end
-  };
 }
 
-function updateSnapshots() {
-  lastContents = currentContents;
-  lastSelection = currentSelection;
-  currentContents = [...container.children].map((paragraph) => paragraph.textContent);
-  updateCurrentSelection();
+function renderStats(labelGetter, statsSymbol) {
+  const irrelevantClass = 'stats-irrelevant';
+  const paragraphs = [...container.children];
+  const labels = labelGetter(paragraphs.map((paragraph) => paragraph[statsSymbol]));
+  for (const type of Object.keys(labels)) {
+    const label = labels[type];
+    const element = statsContainer.querySelector(`.stats-${type}`);
+    const html = [];
+    html.push(label.text.replace(/{(.*)}/, '<strong>$1</strong>'));
+    if (label.extra) {
+      html.push(`<aside class="stats-extra">${label.extra}</aside>`);
+    }
+    element.innerHTML = html.join('');
+    if (label.zero) {
+      element.classList.add(irrelevantClass);
+    } else {
+      element.classList.remove(irrelevantClass);
+    }
+  }
 }
 
-function getTokenSets() {
-  return [...container.children].map((paragraph) => [...paragraph.children].map((child) => child.textContent));
+function renderCorrectionStats() {
+  renderStats(getCorrectionLabels, correctionStatsSymbol);
 }
 
-function contentsChanged() {
+function renderSpellingStats() {
+  renderStats(getSpellingLabels, spellingStatsSymbol);
+}
+
+function processUpdatedRecords(records) {
+  if (records === null) { // Initialization call
+    return true;
+  }
+  let treeModified = false;
+  records.forEach((record) => {
+    if (record.type === 'attributes' && record.target === container) {
+      return;
+    }
+    treeModified = true;
+    let node = record.target;
+    while (node !== container && node !== null) {
+      if (node.nodeType === Node.ELEMENT_NODE && node.tagName === paragraphTag && unmutatedParagraphs.has(node)) {
+        unmutatedParagraphs.delete(node);
+      }
+      node = node.parentElement;
+    }
+  });
+  return treeModified;
+}
+
+function update(records = null, updateHistory = true, removeEmptyMutated = false) {
+  if (!processUpdatedRecords(records)) {
+    return;
+  }
   detachSelectionEvents();
-  normalize(container, [tooltipTag]);
+  normalize(container, unmutatedParagraphs);
+  const historyItems = [];
+  for (const paragraph of [...container.children]) {
+    let mutated = !unmutatedParagraphs.has(paragraph);
+    if (mutated) {
+      if (removeEmptyMutated && paragraph.textContent.trim() === '') {
+        paragraph.remove();
+        continue;
+      }
+      unmutatedParagraphs.add(paragraph);
+      const tokenData = spellcheck(paragraph, (start, end, replacement) => {
+        setSelectionOffsets(paragraph, {start, end});
+        insertAtCursor(paragraph, document.createTextNode(replacement));
+      });
+      merge(paragraph, tokenData);
+      paragraph[correctionStatsSymbol] = computeCorrectionStats(getParagraphCorrectionSets(paragraph));
+      paragraph[spellingStatsSymbol] = computeSpellingStats(tokenData.map(({token}) => token));
+    }
+    if (updateHistory) {
+      historyItems.push({
+        element: paragraph,
+        mutated
+      });
+    }
+  }
+  if (updateHistory) {
+    history.update(historyItems, getSelectionOffsets(container));
+  }
+  renderCorrectionStats();
+  renderSpellingStats();
   setTimeout(() => {
     attachSelectionEvents();
   }, 0);
-  updateSnapshots();
-  const tokenSets = getTokenSets();
-  updateSpellingStats(tokenSets);
-  const correctionSets = spellcheck(container, ignoredLabels);
-  updateCorrectionStats(correctionSets);
-  renderStats();
   observer.takeRecords();
+}
+
+function updateForNewLabels() {
+  startPlannedMutation();
+  for (const paragraph of [...container.children]) {
+    updateTokens(paragraph, getTokenLabelUpdater());
+    paragraph[correctionStatsSymbol] = computeCorrectionStats(getParagraphCorrectionSets(paragraph));
+  }
+  renderCorrectionStats();
+  endPlannedMutation();
+}
+
+function onContentsChanged(records) {
+  update(records);
 }
 
 function attachPasteEvent() {
@@ -88,9 +144,12 @@ function attachPasteEvent() {
     event.preventDefault();
     const doInsert = () => {
       const contents = new DocumentFragment();
-      text.split(/\n/).forEach((line, index) => {
+      text.split(/\n/).forEach((line, index, lines) => {
         if (index === 0) {
-          contents.append(document.createTextNode(line));
+          const normalized = lines.length > 1 ? line.trim() : line;
+          if (normalized !== '') {
+            contents.append(document.createTextNode(normalized));
+          }
         } else {
           const paragraph = document.createElement(paragraphTag);
           const trimmed = line.trim();
@@ -100,14 +159,18 @@ function attachPasteEvent() {
           }
         }
       });
-      insertAtCursor(contents, container);
-    }
+      const multiline = contents.childNodes.length > 1;
+      startPlannedMutation();
+      insertAtCursor(container, contents, multiline);
+      const records = endPlannedMutation();
+      update(records, true, multiline);
+    };
     if (text.length > maxLengthWithoutCover) {
       coverContainer.dataset.type = 'processing';
-      coverContainer.classList.add('active');
+      setCoverState(true);
       setTimeout(() => {
         doInsert();
-        coverContainer.classList.remove('active');
+        setCoverState(false);
       }, 50); // 0 or even 1 is not enough for most browsers except Chrome
     } else {
       doInsert();
@@ -115,22 +178,37 @@ function attachPasteEvent() {
   });
 }
 
-function attachUndoEvent() {
+function attachHistoryEvents() {
   container.addEventListener('keydown', (event) => {
-    if (lastContents !== null && (['z', 'y'].includes(event.key.toLowerCase())) && (event.ctrlKey || event.metaKey)) {
+    let undo = false, redo = false;
+    if (event.ctrlKey || event.metaKey) {
+      if (event.key === 'z') {
+        undo = true;
+      } else if (event.key === 'Z' || event.key === 'y') {
+        redo = true;
+      }
+    }
+    if (undo || redo) {
       event.preventDefault();
       stopCorrecting();
       window.getSelection().removeAllRanges();
-      if (lastSelection !== null) {
-        const selectionStart = lastSelection.start;
-        const selectionEnd = lastSelection.end;
-        setTimeout(() => {
-          const start = getNodeAtOffset(container, selectionStart);
-          const end = selectionStart === selectionEnd ? start : getNodeAtOffset(container, selectionEnd);
-          setCursor(start.node, start.offset, end.node, end.offset);
-        }, 0);
+      startPlannedMutation();
+      const {elements, selection} = undo ? history.undo() : history.redo();
+      if (elements.length === 0) {
+        container.innerHTML = '';
+      } else {
+        container.prepend(elements[0]);
+        for (let i = 1; i < elements.length; i++) {
+          elements[i - 1].after(elements[i]);
+        }
+        const lastElement = elements[elements.length - 1];
+        while (lastElement.nextSibling !== null) {
+          lastElement.nextSibling.remove();
+        }
       }
-      container.innerHTML = lastContents.map((text) => `<${paragraphTag}>${text}</${paragraphTag}>`).join('');
+      const records = endPlannedMutation();
+      update(records, false);
+      setSelectionOffsets(container, selection);
     }
   });
 }
@@ -150,14 +228,16 @@ function attachCursorFixingEvent() {
         delta = 1;
         break;
     }
+
+    const currentSelection = history.getSelection();
     if (delta !== 0 && currentSelection !== null && currentSelection.start === currentSelection.end) {
       const selection = currentSelection.start;
       setTimeout(() => {
+        const currentSelection = history.getSelection();
         if (currentSelection !== null && currentSelection.start === selection && currentSelection.end === selection) {
           const correctSelection = selection + delta;
           if (correctSelection >= 0 && correctSelection <= container.textContent.length) {
-            const newSelection = getNodeAtOffset(container, correctSelection);
-            setCursor(newSelection.node, newSelection.offset);
+            setSelectionOffsets(container, {start: correctSelection, end: correctSelection});
           }
         }
       }, 0);
@@ -166,8 +246,7 @@ function attachCursorFixingEvent() {
 }
 
 function selectionChanged() {
-  updateCursorClasses();
-  updateCurrentSelection();
+  history.updateSelection(getSelectionOffsets(container));
 }
 
 function attachSelectionEvents() {
@@ -179,50 +258,22 @@ function detachSelectionEvents() {
 }
 
 export function startPlannedMutation() {
-  plannedMutationStackSize++;
-  if (plannedMutationStackSize > 1) {
-    return;
-  }
-  const list = observer.takeRecords();
-  if (list.length > 0) {
-    contentsChanged(list);
-  }
+  plannedMutationStack.push(observer.takeRecords());
 }
 
-export function endPlannedMutation(updateCursorClasses = true) {
-  plannedMutationStackSize--;
-  if (plannedMutationStackSize > 0) {
-    return;
-  }
-  if (updateCursorClasses) {
-    normalizeCursorClasses(container);
-  }
-  observer.takeRecords();
-}
-
-function updateCursorClasses() {
-  startPlannedMutation();
-  endPlannedMutation(true);
+export function endPlannedMutation() {
+  const records = plannedMutationStack.pop();
+  return [...records, ...observer.takeRecords()];
 }
 
 function watchSettings() {
-  ignoredLabels = [];
   settingsContainer.querySelectorAll('input[type=checkbox][data-ignore-label]').forEach((checkbox) => {
     const label = checkbox.dataset.ignoreLabel;
-    if (!checkbox.checked) {
-      ignoredLabels.push(label);
-    }
+    setLabelStatus(label, checkbox.checked);
     checkbox.addEventListener('change', () => {
-      const index = ignoredLabels.indexOf(label);
-      const doChange = checkbox.checked !== (index === -1);
-      if (doChange) {
-        if (index >= 0) {
-          ignoredLabels.splice(index, 1);
-        } else {
-          ignoredLabels.push(label);
-        }
-        contentsChanged();
-      }
+      stopCorrecting();
+      setLabelStatus(label, checkbox.checked);
+      updateForNewLabels();
     });
   });
 }
@@ -232,18 +283,20 @@ export function attachObserver(inputElement, statsElement, settingsElement, cove
   statsContainer = statsElement;
   settingsContainer = settingsElement;
   coverContainer = coverElement;
-  attachPasteEvent();
-  observer = new MutationObserver(contentsChanged);
+  unmutatedParagraphs = new WeakSet();
+  history = new History(paragraphTag);
+  observer = new MutationObserver(onContentsChanged);
   observer.observe(inputElement, {
     childList: true,
     characterData: true,
     attributes: true,
     subtree: true
   });
+  attachPasteEvent();
   attachSelectionEvents();
-  watchSettings();
-  contentsChanged();
-  attachUndoEvent();
+  attachHistoryEvents();
   attachCursorFixingEvent();
-  coverContainer.classList.remove('active');
+  watchSettings();
+  update();
+  setCoverState(false);
 }

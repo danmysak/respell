@@ -1,8 +1,6 @@
 import {isWhitespace, isWord} from "./tokenizer.js";
 import {correctionTypes} from "./correction.js";
-
-let correctionStats = null;
-let spellingStats = null;
+import {reduceObjects} from "./data-manipulation.js";
 
 const numberTemplate = '{{number}} {text}'; // With a non-breaking space
 
@@ -83,19 +81,17 @@ function getNumberType(number) {
   return numberTypes.MANY;
 }
 
-function gatherCumulativeCorrectionStats(correctionSets) {
+export function computeCorrectionStats(correctionSets) {
   const correctionStats = Object.fromEntries(Object.values(correctionTypes).map((type) => [type, 0]));
-  for (const set of correctionSets) {
-    for (const corrections of set) {
-      if (corrections !== null) {
-        correctionStats[corrections[0].type]++;
-      }
+  for (const corrections of correctionSets) {
+    if (corrections.length > 0) {
+      correctionStats[corrections[0].type]++;
     }
   }
   return correctionStats;
 }
 
-function gatherSpellingStats(tokens) {
+export function computeSpellingStats(tokens) {
   let sentences = 0;
   let words = 0;
   let characters = 0;
@@ -125,39 +121,17 @@ function gatherSpellingStats(tokens) {
   if (words > 0 && (lastSentenceHasCapitalizedWords || sentences === 0)) {
     sentences++;
   }
-  return {sentences, words, characters, wordCharacters};
-}
-
-function gatherCumulativeSpellingStats(tokenSets) {
-  const cumulativeStats = {
-    paragraphs: 0,
-    sentences: 0,
-    words: 0,
-    characters: 0,
-    wordCharacters: 0
+  return {
+    paragraphs: sentences > 0 ? 1 : 0,
+    sentences,
+    words,
+    characters,
+    wordCharacters
   };
-  for (const set of tokenSets) {
-    const setStats = gatherSpellingStats(set);
-    if (setStats.sentences > 0) {
-      cumulativeStats.paragraphs++;
-      cumulativeStats.sentences += setStats.sentences;
-      cumulativeStats.words += setStats.words;
-      cumulativeStats.characters += setStats.characters;
-      cumulativeStats.wordCharacters += setStats.wordCharacters;
-    }
-  }
-  return cumulativeStats;
 }
 
-export function updateCorrectionStats(correctionSets) {
-  correctionStats = gatherCumulativeCorrectionStats(correctionSets);
-}
-
-export function updateSpellingStats(tokenSets) {
-  spellingStats = gatherCumulativeSpellingStats(tokenSets);
-}
-
-function getLabels(templates, stats) {
+function getLabels(templates, statSets) {
+  const stats = statSets.reduce(reduceObjects);
   const labels = {};
   Object.keys(templates).forEach((type) => {
     const template = templates[type];
@@ -185,10 +159,10 @@ function getLabels(templates, stats) {
   return labels;
 }
 
-export function getCorrectionLabels() {
-  return getLabels(correctionTemplates, correctionStats);
+export function getCorrectionLabels(statSets) {
+  return getLabels(correctionTemplates, statSets);
 }
 
-export function getSpellingLabels() {
-  return getLabels(spellingTemplates, spellingStats);
+export function getSpellingLabels(statSets) {
+  return getLabels(spellingTemplates, statSets);
 }

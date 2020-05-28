@@ -1,9 +1,9 @@
 import {isWhitespace} from "./tokenizer.js";
 
 export class TokenChain {
-  constructor(containers, extractor = (token) => token) {
-    this.containers = containers;
-    this.tokens = containers.map((container) => this.normalizeToken(extractor(container)));
+  constructor(tokens) {
+    this.originalTokens = tokens;
+    this.tokens = tokens.map((token) => this.normalizeToken(token));
     this.nonWhitespaceIndices = this.tokens.flatMap((token, index) => isWhitespace(token) ? [] : [index]);
     this.currentIndex = -1;
     this.closestLeftNonWhitespace = -1;
@@ -15,7 +15,7 @@ export class TokenChain {
   }
 
   hasMore() {
-    return this.currentIndex + 1 < this.containers.length;
+    return this.currentIndex + 1 < this.tokens.length;
   }
 
   next() {
@@ -30,12 +30,16 @@ export class TokenChain {
     }
   }
 
-  getCurrentContainer() {
-    return this.containers[this.currentIndex];
+  getTokens(normalized = true) {
+    return normalized ? this.tokens : this.originalTokens;
   }
 
-  getCurrentToken() {
-    return this.tokens[this.currentIndex];
+  getCurrentIndex() {
+    return this.currentIndex;
+  }
+
+  getCurrentToken(normalized = true) {
+    return this.getTokens(normalized)[this.currentIndex];
   }
 
   extractFromList(list, index) {

@@ -1,8 +1,7 @@
-import {getTokenCorrections, findNextCorrection} from "./spellchecker.js";
+import {getTokenCorrectionPresentations, accept} from "./spellchecker.js";
 import {startPlannedMutation, endPlannedMutation} from "./observer.js";
-import {isWhitespace} from "../spelling/tokenizer.js";
 
-export const tooltipTag = 'TOKEN-TOOLTIP';
+const tooltipTag = 'TOKEN-TOOLTIP';
 const correctionContainerTag = 'TOKEN-CORRECTION-CONTAINER';
 const replacementTag = 'TOKEN-REPLACEMENT';
 const extraChangeTag = 'TOKEN-EXTRA-CHANGE';
@@ -10,7 +9,6 @@ const descriptionTag = 'TOKEN-DESCRIPTION';
 
 const tokenCorrectingClassName = 'correction-current';
 const containerCorrectingClassName = 'input-correcting';
-const containerCorrectingKeyboardClassName = 'input-correcting-keyboard';
 const containerCorrectingRedisplayClassName = 'input-correcting-redisplay';
 const replacementClassName = 'replacement';
 const defaultReplacementClassName = 'default-replacement';
@@ -25,32 +23,12 @@ const tooltipMargin = parseFloat(window.getComputedStyle(document.body).getPrope
 
 function addClasses() {
   currentToken.classList.add(tokenCorrectingClassName);
-  container.parentElement.classList.add(containerCorrectingClassName);
-  // We put this class on the parent element in order not to trigger an extra change for the input
+  container.classList.add(containerCorrectingClassName);
 }
 
 function removeClasses() {
-  container.parentElement.classList.remove(containerCorrectingClassName);
+  container.classList.remove(containerCorrectingClassName);
   currentToken.classList.remove(tokenCorrectingClassName);
-}
-
-function getCorrectionAffixes(prefix, removeToken, getAdjacentSibling) {
-  if (removeToken) {
-    const sibling = getAdjacentSibling(currentToken);
-    if (sibling !== null) {
-      if (isWhitespace(sibling.textContent)) {
-        const adjacentNonWhitespace = getAdjacentSibling(sibling);
-        if (adjacentNonWhitespace !== null) {
-          return [
-            (prefix ? '' : ' ') + adjacentNonWhitespace.textContent + (prefix ? ' ' : ''),
-            adjacentNonWhitespace.textContent
-          ];
-        }
-      }
-      return [sibling.textContent, ''];
-    }
-  }
-  return ['', ''];
 }
 
 function fixTooltipPositioning(tooltip) {
@@ -85,29 +63,23 @@ function displayTooltip() {
   const tooltip = document.createElement(tooltipTag);
   tooltip.setAttribute('contenteditable', 'false');
   tooltip.tabIndex = -1;
-  currentCorrections.forEach((correction, correctionIndex) => {
+  currentCorrections.forEach(({id, presentation}, correctionIndex) => {
     const correctionContainer = document.createElement(correctionContainerTag);
-    const [oldCorrectionPrefix, newCorrectionPrefix] = getCorrectionAffixes(
-      true, correction.removePreviousToken, (element) => element.previousElementSibling
-    );
-    const [oldCorrectionSuffix, newCorrectionSuffix] = getCorrectionAffixes(
-      false, correction.removeNextToken, (element) => element.nextElementSibling
-    );
     const replacement = document.createElement(replacementTag);
-    replacement.classList.add(`${replacementClassName}-${correction.type}`);
+    replacement.classList.add(`${replacementClassName}-${presentation.type}`);
     const oldToken = document.createElement(`${replacementTag}-OLD`);
-    oldToken.textContent = oldCorrectionPrefix + currentToken.textContent + oldCorrectionSuffix;
+    oldToken.textContent = presentation.changeFrom;
     replacement.append(oldToken);
     const newToken = document.createElement(`${replacementTag}-NEW`);
-    [correction.replacement, ...correction.alternatives].forEach((replacement, replacementIndex) => {
+    presentation.changeTo.forEach((replacement, replacementIndex) => {
       if (replacementIndex > 0) {
         const slash = document.createTextNode(' / ');
         newToken.append(slash);
       }
       const button = document.createElement('button');
-      button.innerText = newCorrectionPrefix + replacement + newCorrectionSuffix;
+      button.innerText = replacement;
       button.addEventListener('click', () => {
-        performReplacement(false, correctionIndex, replacement);
+        performReplacement(correctionIndex, replacementIndex);
       });
       if (correctionIndex === 0 && replacementIndex === 0) {
         button.classList.add(defaultReplacementClassName);
@@ -116,12 +88,12 @@ function displayTooltip() {
     });
     replacement.append(newToken);
     correctionContainer.append(replacement);
-    if (correction.requiresExtraChange) {
+    if (presentation.requiresExtraChange) {
       const extraChange = document.createElement(extraChangeTag);
       correctionContainer.append(extraChange);
     }
     const description = document.createElement(descriptionTag);
-    description.innerHTML = formatDescription(correction.description);
+    description.innerHTML = formatDescription(presentation.description);
     correctionContainer.append(description);
     tooltip.append(correctionContainer);
   });
@@ -140,7 +112,7 @@ function startCorrecting(token, corrections) {
   addClasses();
   displayTooltip();
   attachEvents();
-  endPlannedMutation(false);
+  endPlannedMutation();
 }
 
 export function stopCorrecting() {
@@ -151,44 +123,27 @@ export function stopCorrecting() {
   detachEvents();
   removeTooltip();
   removeClasses();
-  endPlannedMutation(false);
+  endPlannedMutation();
   currentToken = null;
   currentCorrections = null;
 }
 
 function checkForRedisplay(token) {
   // We need this for the underline color transition to start from grayed out
-  container.parentElement.classList.add(containerCorrectingRedisplayClassName);
+  container.classList.add(containerCorrectingRedisplayClassName);
   setTimeout(() => {
     if (!currentToken && [...document.querySelectorAll(':hover')].includes(token)) {
       considerCorrecting(token);
     }
-    container.parentElement.classList.remove(containerCorrectingRedisplayClassName);
+    container.classList.remove(containerCorrectingRedisplayClassName);
   }, 0);
 }
 
-function performReplacement(byKeyboard, index = 0, replacement = null) {
+function performReplacement(correctionIndex = 0, replacementIndex = 0) {
   const token = currentToken;
-  const correction = currentCorrections[index];
+  const correctionId = currentCorrections[correctionIndex].id;
   stopCorrecting();
-  token.textContent = replacement || correction.replacement;
-  if (token.previousElementSibling !== null && correction.removePreviousToken) {
-    token.previousElementSibling.remove();
-  }
-  if (token.nextElementSibling !== null && correction.removeNextToken) {
-    token.nextElementSibling.remove();
-  }
-  if (byKeyboard && document.activeElement === token) {
-    const correction = findNextCorrection(token);
-    if (correction !== null) {
-      // We need the following line for the underline color transition to start from grayed out
-      container.parentElement.classList.add(containerCorrectingKeyboardClassName);
-      setTimeout(() => {
-        correction.focus();
-        container.parentElement.classList.remove(containerCorrectingKeyboardClassName);
-      }, 0);
-    }
-  }
+  accept(token, correctionId, replacementIndex);
   checkForRedisplay(token);
 }
 
@@ -197,14 +152,14 @@ function onMouseDown(event) {
     return;
   }
   event.preventDefault();
-  performReplacement(false);
+  performReplacement();
 }
 
 function onKeyDown(event) {
   switch (event.code) {
     case 'Enter':
       event.preventDefault();
-      performReplacement(true);
+      performReplacement();
       break;
     case 'Escape':
       event.preventDefault();
@@ -239,8 +194,8 @@ function detachEvents() {
 }
 
 function considerCorrecting(element) {
-  const corrections = getTokenCorrections(element);
-  if (corrections === null) {
+  const corrections = getTokenCorrectionPresentations(element);
+  if (corrections === null || corrections.length === 0) {
     return;
   }
   if (currentToken) {
@@ -255,7 +210,7 @@ function considerCorrecting(element) {
 function onTouchStart(event) {
   if (currentToken === event.target) {
     event.preventDefault(); // Otherwise browsers can either fire mouse events or not
-    performReplacement(false);
+    performReplacement();
   } else {
     const lastToken = currentToken;
     considerCorrecting(event.target);

@@ -1,6 +1,4 @@
-import {requestIntraToken} from "../spelling/tokenizer.js";
-
-export const cursorPlaceholder = requestIntraToken();
+export const cursorPlaceholder = '[[CURSOR]]';
 
 export function setCursor(startNode, startOffset, endNode = startNode, endOffset = startOffset) {
   const range = document.createRange();
@@ -27,17 +25,17 @@ export function getRangeIfCollapsedAndInside(node) {
   return getRangeIfInside(node, true);
 }
 
-export function insertAtCursor(contents, parentNode) {
+export function insertAtCursor(parentNode, contents, collapseToStart = false) {
   const range = getRangeIfInside(parentNode);
   if (range === null) {
     return false;
   }
   range.deleteContents();
   range.insertNode(contents);
-  range.collapse(false);
+  range.collapse(collapseToStart);
 }
 
-export function getParentOffset(parent, node, offset) {
+function getParentOffset(parent, node, offset) {
   let currentNode, currentOffset;
   if (node.nodeType === Node.TEXT_NODE) {
     currentNode = node;
@@ -64,7 +62,22 @@ export function getParentOffset(parent, node, offset) {
   return currentOffset;
 }
 
-export function getNodeAtOffset(parent, offset) {
+export function getSelectionOffsets(container) {
+  const range = getRangeIfInside(container);
+  if (range === null) {
+    return null;
+  }
+  const start = getParentOffset(container, range.startContainer, range.startOffset);
+  const end = range.endContainer === range.startContainer && range.endOffset === range.startOffset
+    ? start
+    : getParentOffset(container, range.endContainer, range.endOffset);
+  return {
+    start,
+    end
+  };
+}
+
+function getNodeAtOffset(parent, offset) {
   let currentNode = parent;
   let currentOffset = offset;
   while (true) {
@@ -97,6 +110,15 @@ export function getNodeAtOffset(parent, offset) {
       }
     }
   }
+}
+
+export function setSelectionOffsets(container, offsets) {
+  if (offsets === null) {
+    return;
+  }
+  const start = getNodeAtOffset(container, offsets.start);
+  const end = offsets.end === offsets.start ? start : getNodeAtOffset(container, offsets.end);
+  setCursor(start.node, start.offset, end.node, end.offset);
 }
 
 export function serializeCursor(container) {
