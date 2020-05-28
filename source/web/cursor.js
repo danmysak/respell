@@ -60,7 +60,7 @@ export function insertAtCursor(parentNode, contents, collapseToStart = false) {
     container = contents;
   }
   range.insertNode(container);
-  // collapseRangeIfInside wouldn't work in Safari because it leaves cursor at the beginning of the inserted contents
+  // collapseRangeIfInside wouldn't work because Safari leaves cursor at the beginning of the inserted contents
   const newRange = document.createRange();
   if (collapseToStart) {
     newRange.setStartBefore(firstNode);
