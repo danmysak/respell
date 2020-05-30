@@ -2,7 +2,7 @@ import {processToken} from "../spelling/processor.js";
 import {tokenize} from "../spelling/tokenizer.js";
 import {TokenChain} from "../spelling/token-chain.js";
 import {createCorrectionPresentation} from "../spelling/correction.js";
-import {endPlannedMutation, startPlannedMutation} from "./observer.js";
+import {endPlannedMutation, startPlannedMutation} from "./input-handler.js";
 import "../rules/rules.js";
 
 const correctionPrefix = 'correction-';
@@ -29,8 +29,10 @@ export function getTokenCorrectionPresentations(element) {
 }
 
 export function getParagraphCorrections(paragraph) {
-  return paragraph[paragraphDataSymbol].tokenData.map(({element, corrections}) => ({
+  return paragraph[paragraphDataSymbol].tokenData.map(({element, start, end, corrections}) => ({
     element,
+    start,
+    end,
     corrections: filterCorrections(corrections).map(({correction}) => ({correction}))
   }));
 }

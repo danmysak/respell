@@ -1,4 +1,4 @@
-import {update, startPlannedMutation, endPlannedMutation} from "../observer.js";
+import {update, startPlannedMutation, endPlannedMutation} from "../input-handler.js";
 import {stopCorrecting} from "../corrector.js";
 import {setSelectionOffsets} from "../cursor.js";
 

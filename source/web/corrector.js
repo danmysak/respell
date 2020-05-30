@@ -1,7 +1,8 @@
 import {tooltipTag} from "./common-tags.js";
 import {getTokenCorrectionPresentations, accept} from "./spellchecker.js";
-import {startPlannedMutation, endPlannedMutation} from "./observer.js";
+import {startPlannedMutation, endPlannedMutation} from "./input-handler.js";
 import {createTooltip, fixTooltipPositioning, focusFirstOption} from "./tooltip.js";
+import {setCursorAdjacent} from "./cursor.js";
 
 const tokenCorrectingClassName = 'correction-current';
 const containerCorrectingClassName = 'input-correcting';
@@ -39,6 +40,11 @@ function removeTooltip() {
 }
 
 function startCorrecting(token, corrections, byKeyboard) {
+  if (byKeyboard) {
+    // This is needed to avoid endless loop with Shift + Tabs when there are some corrections before the last cursor
+    // position (it might be useful otherwise as well, but doesn't seem to have any actual effect)
+    setCursorAdjacent(token, false);
+  }
   currentToken = token;
   currentCorrections = corrections;
   currentByKeyboard = byKeyboard;
@@ -90,19 +96,24 @@ function onMouseDown(event) {
 }
 
 function onKeyDown(event) {
+  const insideTooltip = () => event.target.closest(tooltipTag) !== null;
   switch (event.code) {
     case 'Enter':
-      if (!currentByKeyboard) { // Otherwise the active button will trigger the replacement
+      if (!insideTooltip() || event.target.tagName === tooltipTag) {
         event.preventDefault();
         performReplacement();
       }
       break;
     case 'Escape':
       event.preventDefault();
+      const putCursorAfterToken = currentByKeyboard ? currentToken : null;
       stopCorrecting();
+      if (putCursorAfterToken) {
+        setCursorAdjacent(putCursorAfterToken, true);
+      }
       break;
     default:
-      if (event.target.closest(tooltipTag) === null) {
+      if (!insideTooltip()) {
         stopCorrecting();
       }
       break;
@@ -116,7 +127,8 @@ function onFocusOut(event) {
 }
 
 function attachEvents() {
-  document.addEventListener('keydown', onKeyDown);
+  document.addEventListener('keydown', onKeyDown, true); // This event must fire as early as possible, in particular
+                                                         // before the tab listener of the text input
   currentToken.addEventListener('mousedown', onMouseDown);
   currentToken.addEventListener('mouseleave', stopCorrecting);
   currentToken.addEventListener('focusout', onFocusOut);
@@ -126,7 +138,7 @@ function detachEvents() {
   currentToken.removeEventListener('focusout', onFocusOut);
   currentToken.removeEventListener('mouseleave', stopCorrecting);
   currentToken.removeEventListener('mousedown', onMouseDown);
-  document.removeEventListener('keydown', onKeyDown);
+  document.removeEventListener('keydown', onKeyDown, true);
 }
 
 function considerCorrecting(element, byKeyboard = false) {

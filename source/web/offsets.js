@@ -1,5 +1,6 @@
-export function getParentOffset(parent, node, offset) {
+export function getParentWithOffset(condition, node, offset) {
   let currentNode, currentOffset;
+  const result = (offset, parent) => ({offset, parent});
   if (node.nodeType === Node.TEXT_NODE) {
     currentNode = node;
     currentOffset = offset;
@@ -12,9 +13,12 @@ export function getParentOffset(parent, node, offset) {
       currentOffset = currentNode.textContent.length;
     }
   } else { // Shouldn't happen
-    return 0;
+    return result(0, null);
   }
-  while (currentNode !== parent) {
+  while (!condition(currentNode)) {
+    if (currentNode.parentNode === null) {
+      return result(currentOffset, null);
+    }
     let currentSibling = currentNode.parentNode.firstChild;
     while (currentSibling !== currentNode) {
       currentOffset += currentSibling.textContent.length;
@@ -22,7 +26,11 @@ export function getParentOffset(parent, node, offset) {
     }
     currentNode = currentNode.parentNode;
   }
-  return currentOffset;
+  return result(currentOffset, currentNode);
+}
+
+export function getParentOffset(parent, node, offset) {
+  return getParentWithOffset((node) => node === parent, node, offset).offset;
 }
 
 export function getNodeAtOffset(parent, offset) {

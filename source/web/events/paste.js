@@ -1,6 +1,6 @@
 import {paragraphTag} from "../common-tags.js";
 import {insertAtCursor} from "../cursor.js";
-import {update, endPlannedMutation, startPlannedMutation} from "../observer.js";
+import {update, endPlannedMutation, startPlannedMutation} from "../input-handler.js";
 import {setOverlayState} from "../overlay.js";
 
 const maxLengthWithoutOverlay = 1000;

@@ -1,7 +1,8 @@
 import {paragraphTag} from "./common-tags.js";
-import {attachPasteEvent} from "./events/paste.js";
-import {attachCursorFixingEvent} from "./events/cursor-fixing.js";
 import {attachHistoryEvents} from "./events/history.js";
+import {attachTabEvent} from "./events/tab.js";
+import {attachCursorFixingEvent} from "./events/cursor-fixing.js";
+import {attachPasteEvent} from "./events/paste.js";
 import {normalize} from "./normalizer.js";
 import {merge, updateTokens} from "./merger.js";
 import {getSelectionOffsets, setSelectionOffsets, insertAtCursor} from "./cursor.js";
@@ -21,14 +22,13 @@ const spellingStatsSymbol = Symbol('spelling-stats');
 let observer = null;
 let container = null;
 let statsContainer = null;
-let settingsContainer = null;
+let paragraphs = null;
 let unmutatedParagraphs = null;
 let history = null;
 let plannedMutationStack = [];
 
 function renderStats(labelGetter, statsSymbol) {
   const irrelevantClass = 'stats-irrelevant';
-  const paragraphs = [...container.children];
   const labels = labelGetter(paragraphs.map((paragraph) => paragraph[statsSymbol]));
   for (const type of Object.keys(labels)) {
     const label = labels[type];
@@ -85,9 +85,9 @@ export function update({records = null, updateHistory = true, removeEmptyMutated
     return;
   }
   detachSelectionEvents();
-  normalize(container, unmutatedParagraphs);
   const historyItems = [];
-  for (const paragraph of [...container.children]) {
+  paragraphs = [];
+  for (const paragraph of normalize(container, unmutatedParagraphs)) {
     let mutated = !unmutatedParagraphs.has(paragraph);
     if (mutated) {
       if (removeEmptyMutated && paragraph.textContent.trim() === '') {
@@ -103,6 +103,7 @@ export function update({records = null, updateHistory = true, removeEmptyMutated
       setCorrectionStatsData(paragraph);
       paragraph[spellingStatsSymbol] = computeSpellingStats(tokenData.map(({token}) => token));
     }
+    paragraphs.push(paragraph);
     if (updateHistory) {
       historyItems.push({
         element: paragraph,
@@ -123,7 +124,7 @@ export function update({records = null, updateHistory = true, removeEmptyMutated
 
 function updateForNewLabels() {
   startPlannedMutation();
-  for (const paragraph of [...container.children]) {
+  for (const paragraph of paragraphs) {
     updateTokens(paragraph, getTokenLabelUpdater());
     setCorrectionStatsData(paragraph);
   }
@@ -156,8 +157,8 @@ export function endPlannedMutation() {
   return [...records, ...observer.takeRecords()];
 }
 
-function watchSettings() {
-  settingsContainer.querySelectorAll('input[type=checkbox][data-ignore-label]').forEach((checkbox) => {
+function watchSettings(settingCheckboxes) {
+  settingCheckboxes.forEach((checkbox) => {
     const label = checkbox.dataset.ignoreLabel;
     setLabelStatus(label, checkbox.checked);
     checkbox.addEventListener('change', () => {
@@ -168,11 +169,30 @@ function watchSettings() {
   });
 }
 
-export function attachObserver(inputElement, statsElement, settingsElement) {
+export function findCorrection(anchorParagraph, condition, ahead = true) {
+  const shift = ahead ? 1 : -1;
+  let paragraphIndex = paragraphs.indexOf(anchorParagraph);
+  while (paragraphIndex >= 0 && paragraphIndex < paragraphs.length) {
+    const paragraph = paragraphs[paragraphIndex];
+    const data = getParagraphCorrections(paragraph);
+    let dataIndex = ahead ? 0 : data.length - 1;
+    while (dataIndex >= 0 && dataIndex < data.length) {
+      const item = data[dataIndex];
+      if (item.corrections.length > 0 && condition(item, paragraph)) {
+        return item;
+      }
+      dataIndex += shift;
+    }
+    paragraphIndex += shift;
+  }
+  return null;
+}
+
+export function attachObservers(inputElement, statsElement, settingCheckboxes) {
   container = inputElement;
   statsContainer = statsElement;
-  settingsContainer = settingsElement;
   unmutatedParagraphs = new WeakSet();
+  paragraphs = [];
   history = new History(paragraphTag);
   observer = new MutationObserver(onContentsChanged);
   observer.observe(inputElement, {
@@ -182,9 +202,10 @@ export function attachObserver(inputElement, statsElement, settingsElement) {
     subtree: true
   });
   attachHistoryEvents(inputElement, history);
+  attachTabEvent(inputElement, settingCheckboxes);
   attachCursorFixingEvent(inputElement, history);
   attachPasteEvent(inputElement);
   attachSelectionEvents();
-  watchSettings();
+  watchSettings(settingCheckboxes);
   update();
 }

@@ -8,6 +8,18 @@ function setCursorRange(range) {
   selection.addRange(range);
 }
 
+export function setCursorAdjacent(node, after = true) {
+  const range = document.createRange();
+  if (after) {
+    range.setStartAfter(node);
+    range.setEndAfter(node);
+  } else {
+    range.setStartBefore(node);
+    range.setEndBefore(node);
+  }
+  setCursorRange(range);
+}
+
 export function setCursor(startNode, startOffset, endNode = startNode, endOffset = startOffset) {
   const range = document.createRange();
   range.setStart(startNode, startOffset);
@@ -63,15 +75,11 @@ export function insertAtCursor(parentNode, contents, collapseToStart = false) {
   }
   range.insertNode(container);
   // collapseRangeIfInside wouldn't work because Safari leaves cursor at the beginning of the inserted contents
-  const newRange = document.createRange();
   if (collapseToStart) {
-    newRange.setStartBefore(firstNode);
-    newRange.setEndBefore(firstNode);
+    setCursorAdjacent(firstNode, false);
   } else {
-    newRange.setStartAfter(lastNode);
-    newRange.setEndAfter(lastNode);
+    setCursorAdjacent(lastNode, true);
   }
-  setCursorRange(newRange);
   return true;
 }
 

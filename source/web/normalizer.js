@@ -82,4 +82,5 @@ export function normalize(inputElement, paragraphsToSkip) {
                                   // trailing '\n' as actual text rather than as end-of-contenteditable-element)
   paragraphize(inputElement, paragraphsToSkip);
   restoreCursor(inputElement);
+  return [...inputElement.children];
 }
