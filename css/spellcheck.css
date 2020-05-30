@@ -1,0 +1,84 @@
+.input {
+    min-width: 0; /* This is to prevent the input from expanding the grid when it contains a very long word */
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+}
+
+t-t {
+    color: var(--correction-color);
+    display: inline-block; /* We will have to resort to this until hyphens: nowrap is implemented in browsers */
+    max-width: 100%;
+    position: relative;
+}
+
+.input, .input t-t {
+    transition: color var(--correction-transition-duration);
+}
+
+.input t-t {
+    cursor: pointer;
+}
+
+.input t-t.correction-none {
+    cursor: inherit;
+}
+
+.correction-none, .correction-new {
+    --correction-color: var(--input-background-color);
+    color: var(--text-color); /* "inherit" doesn't play nicely with transitions */
+}
+
+.correction-mistake:not(.correction-new) {
+    --correction-color: var(--mistake-color);
+}
+
+.correction-improvement:not(.correction-new) {
+    --correction-color: var(--improvement-color);
+}
+
+.correction-uncertain:not(.correction-new) {
+    --correction-color: var(--uncertain-color);
+}
+
+t-t::after {
+    content: "";
+    display: block;
+    position: absolute;
+    z-index: -1;
+    background-color: var(--correction-color);
+    transition: background-color var(--correction-transition-duration);
+
+    --mask-image: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8' standalone='no'%3F%3E%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='60' viewBox='0 0 120 60'%3E%3Cpath stroke-width='15' stroke='%23000000' fill='none' d='M0,40 c24,0 36,-20 60,-20 c24,0 36,20 60,20'/%3E%3C/svg%3E");
+
+    left: 0;
+    height: 3px;
+    bottom: 0;
+    width: 100%;
+    -webkit-mask-image: var(--mask-image);
+    mask-image: var(--mask-image);
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: repeat-x;
+    mask-repeat: repeat-x;
+}
+
+.input p:empty {
+    height: calc(var(--text-font-size) * var(--line-height));
+}
+
+.input-correcting, .input-correcting t-t:not(.correction-current),
+.input-correcting-redisplay, .input-correcting-redisplay t-t:not(.correction-current) {
+    color: var(--background-text-color);
+}
+
+.input-correcting t-t:not(.correction-current)::after,
+.input-correcting-redisplay t-t:not(.correction-current)::after {
+    background-color: var(--background-text-color);
+}
+
+.input-correcting t-t.correction-none::after,
+.input-correcting-redisplay t-t.correction-none::after,
+.input-correcting t-t.correction-new::after,
+.input-correcting-redisplay t-t.correction-new::after {
+    background-color: var(--input-background-color);
+}

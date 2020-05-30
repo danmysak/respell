@@ -1,0 +1,34 @@
+a {
+    color: rgb(var(--blue));
+}
+
+a.quoted {
+    text-decoration: none;
+}
+
+a:visited {
+    color: #8A68AC;
+}
+
+a:hover {
+    color: #B93F31;
+}
+
+.no-break {
+    white-space: nowrap;
+}
+
+.checkbox-container {
+    display: inline-flex;
+    align-items: baseline;
+}
+
+.checkbox-container + .checkbox-container {
+    margin-top: 6px;
+}
+
+.checkbox-container .checkbox {
+    position: relative;
+    top: 2px;
+    margin-right: 4px;
+}

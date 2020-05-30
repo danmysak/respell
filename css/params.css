@@ -1,0 +1,37 @@
+:root {
+    --page-vertical-padding: 18px;
+    --left-width: 187px;
+    --center-width-ratio: 530fr;
+    --right-width-ratio: 187fr;
+    --main-padding: 18px;
+    --middle-line-horizontal-margin: 4px;
+    --main-font-size: 14px;
+    --text-font-size: 16px;
+    --correction-font-size: 18px;
+    --subcaption-font-size: 12px;
+    --subcaption-margin-bottom: 18px;
+    --line-height: 1.25;
+    --replacement-line-height: 1.5;
+    --tooltip-width: 300px;
+    --tooltip-margin: 10px; /* Number of pixels between the tooltip's border and the edges of the page */
+    --tooltip-top-margin: 4px; /* Gap between the text being corrected and the tooltip */
+    --tooltip-border-width: 3px;
+    --block-spacing: 32px;
+
+    --blue: 49, 117, 185;
+    --text-color: #2A2A2A;
+    --background-text-color: #BBBBBB;
+    --mistake-color: #B83F31;
+    --improvement-color: #579B2D;
+    --uncertain-color: rgb(var(--blue));
+    --line-color: black;
+    --input-background-color: white;
+    --tooltip-background-color: #FAFAF8;
+    --tooltip-border-color: #BEA2AE;
+    --overlay-background-color: var(--tooltip-background-color);
+    --overlay-text-color: var(--background-text-color);
+
+    --correction-transition-duration: 0.3s;
+    --replacement-highlight-duration: 0.1s;
+    --focus-and-overlay-transition-duration: 0.15s;
+}

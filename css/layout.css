@@ -1,0 +1,128 @@
+html {
+    margin: 0;
+    font-family: "Times New Roman", Times, serif;
+    font-size: var(--main-font-size);
+    line-height: var(--line-height);
+    background-color: #F3F0E4;
+    color: var(--text-color);
+    padding-bottom: 0; /* This is required for the tooltip scripts to expand the page height correctly when needed */
+    min-width: calc(var(--tooltip-width) + 2 * var(--tooltip-margin));
+}
+
+body {
+    --column-gap: 24px;
+    display: grid;
+    grid-column-gap: var(--column-gap);
+    padding: var(--page-vertical-padding) var(--column-gap);
+    grid-template-columns: var(--left-width) var(--center-width-ratio) var(--right-width-ratio);
+    grid-template-rows: min-content min-content 1fr;
+    grid-template-areas:
+            ".    heading      heading"
+            "info instructions .      "
+            "info input        tools ";
+}
+
+h1, h2, h3, p {
+    margin-top: 0;
+}
+
+h1, .instructions, .info, .tools {
+    padding: 0 var(--main-padding);
+}
+
+.info {
+    padding-right: 0;
+}
+
+h1, h3 {
+    color: #64595F;
+    font-weight: normal;
+}
+
+h1 {
+    font-size: 24px;
+}
+
+h3 {
+    font-size: var(--subcaption-font-size);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    overflow: hidden;
+    white-space: nowrap;
+    margin-bottom: var(--subcaption-margin-bottom);
+    --middle-line-left-width: 28px;
+}
+
+h3::before, h3::after {
+    content: "";
+    display: inline-block;
+    height: 1px;
+    vertical-align: middle;
+    position: relative;
+    top: -1px;
+    background-color: var(--line-color);
+    opacity: 0.1;
+}
+
+h3::before {
+    width: var(--middle-line-left-width);
+    margin-right: var(--middle-line-horizontal-margin);
+}
+
+h3::after {
+    width: 100%;
+    margin-left: var(--middle-line-horizontal-margin);
+}
+
+.instructions h2, .info h2, main h2 {
+    display: none;
+}
+
+.explanation {
+    cursor: help;
+    border-bottom: 1px dotted;
+    position: relative;
+}
+
+.explanation:hover::after {
+    content: attr(data-title);
+    display: block;
+    position: absolute;
+    background-color: var(--tooltip-background-color);
+    padding: 6px 10px;
+    border: 1px solid var(--text-color);
+    border-radius: 4px;
+    z-index: 2;
+    width: 150px;
+    right: -20px;
+    top: calc(100% + 4px);
+}
+
+.info h3 {
+    margin-left: calc(var(--main-padding) * -1);
+}
+
+.info article:not(:last-child) {
+    margin-bottom: var(--block-spacing);
+}
+
+header {
+    display: contents;
+}
+
+h1 {
+    grid-area: heading;
+}
+
+.info {
+    grid-area: info;
+    margin-top: calc(var(--main-font-size) - var(--subcaption-font-size));
+}
+
+.instructions {
+    grid-area: instructions;
+}
+
+main {
+    display: contents;
+}

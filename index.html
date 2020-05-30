@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Перевірка ортографії за новим правописом</title>
 
-    <link rel="stylesheet" href="css/normalize.css">
     <link rel="stylesheet" href="css/styles.css">
 
     <!-- Favicons -->
@@ -43,10 +42,10 @@
     <h2>Уведення тексту</h2>
     <div class="input" contenteditable="true" spellcheck="false"><p>Сподіваємося, проект Respell дозволить користувачам ефективніше привести свої тексти до нової орфографії й додасть продуктивності в остаточному засвоєнні нового правопису.</p></div>
     <div class="input-bg"></div>
-    <div class="input-cover active" data-type="loading"></div>
-    <aside class="tweaks">
-        <div class="tweaks-container">
-            <div class="tweaks-subcontainer settings-container">
+    <div class="input-overlay active" data-type="loading"></div>
+    <aside class="tools">
+        <div class="tools-container">
+            <div class="tools-subcontainer settings-container">
                 <h3>Налаштування</h3>
                 <label class="checkbox-container">
                     <input autocomplete="off" type="checkbox" class="checkbox" checked="checked" data-ignore-label="feminitives" />
@@ -61,7 +60,7 @@
                     <span class="checkbox-label">Відмінювати <span class="explanation" data-title="«Із&nbsp;Жаном-Жаком», «для&nbsp;Мехмеда-бея», «у&nbsp;Ніколі», «над&nbsp;Руф’ю»">окремі іншомовні імена</span></span>
                 </label>
             </div>
-            <div class="tweaks-subcontainer stats-container">
+            <div class="tools-subcontainer stats-container">
                 <h3>Статистика</h3>
                 <dl>
                     <div class="stats-important">

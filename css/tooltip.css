@@ -1,0 +1,163 @@
+token-tooltip {
+    cursor: default;
+    box-sizing: border-box;
+    position: absolute;
+    top: calc(100% + var(--tooltip-top-margin));
+    left: calc(0px - var(--tooltip-width));
+    right: calc(0px - var(--tooltip-width));
+    width: var(--tooltip-width);
+    margin: auto;
+    color: var(--text-color);
+    background-color: var(--tooltip-background-color);
+    border: var(--tooltip-border-width) solid var(--tooltip-border-color);
+    border-radius: 15px;
+    padding: 8px 12px;
+    z-index: 1;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    --tooltip-horizontal-shift: 0;
+    transform: translateX(var(--tooltip-horizontal-shift));
+    outline: none;
+}
+
+token-tooltip.animated {
+    animation: token-tooltip-fade-in var(--correction-transition-duration) forwards;
+}
+
+token-tooltip::before {
+    content: "";
+    display: block;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(0px - var(--tooltip-border-width) - var(--tooltip-top-margin));
+    height: var(--tooltip-top-margin);
+    background-color: rgba(255, 255, 255, 0);
+}
+
+token-correction-container:not(:first-child)::before {
+    content: "";
+    display: block;
+    height: 1px;
+    background-color: var(--tooltip-border-color);
+    margin: var(--tooltip-margin) auto;
+    width: 100%;
+}
+
+token-replacement {
+    display: block;
+    text-align: center;
+    line-height: var(--replacement-line-height);
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+
+token-replacement-old {
+    color: var(--background-text-color);
+}
+
+token-replacement-old::after {
+    display: inline-block;
+    color: var(--text-color);
+}
+
+token-extra-change::after {
+    content: "Ця зміна може вимагати додаткових граматичних правок у тексті";
+    display: block;
+    font-size: smaller;
+    background-color: #F5EDD6;
+    border-radius: 5px;
+    border: 1px dashed var(--tooltip-border-color);
+    padding: 4px 8px;
+    text-align: center;
+}
+
+token-description {
+    font-style: italic;
+    display: block;
+    margin-top: 6px;
+}
+
+.replacement-mistake token-replacement-old {
+    text-decoration: line-through;
+}
+
+.replacement-improvement token-replacement-old::after {
+    content: "\00A0\02194\0020"; /* Left-right arrow surrounded by a non-breaking and regular spaces */
+}
+
+.replacement-mistake token-replacement-old::after, .replacement-uncertain token-replacement-old::after {
+    content: "\00A0\02192\0020"; /* Right arrow surrounded by a non-breaking and regular spaces */
+}
+
+.replacement-uncertain token-replacement-old::after {
+    color: var(--background-text-color);
+}
+
+token-replacement-new {
+    --replacement-color: var(--improvement-color);
+    --replacement-intensity: 1.4;
+    color: var(--replacement-color);
+    font-weight: bold;
+    font-size: var(--correction-font-size);
+}
+
+.replacement-uncertain token-replacement-new {
+    --replacement-color: var(--uncertain-color);
+    --replacement-intensity: 1;
+}
+
+.replacement-uncertain token-replacement-new::after {
+    content: "?";
+    display: inline-block;
+    opacity: 0.3;
+    margin-left: 2px;
+}
+
+token-replacement-new button {
+    background: none;
+    border: none;
+    padding: 0 3px 2px 3px;
+    margin: 0;
+    color: inherit;
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: bold;
+    cursor: pointer;
+    position: relative;
+    /* We need to set the outline properties explicitly for the outline not to be clipped due to overflow: hidden */
+    outline-width: 3px;
+    outline-offset: -2px;
+}
+
+token-replacement-new button::before {
+    content: "";
+    display: block;
+    position: absolute;
+    height: 1px;
+    border-radius: 3px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--replacement-color);
+    opacity: calc(0.25 * var(--replacement-intensity));
+    transition-property: height, opacity;
+    transition-duration: var(--replacement-highlight-duration);
+}
+
+token-replacement-new button:hover::before,
+t-t:hover token-tooltip:not(:hover) token-replacement-new button.default-replacement::before {
+    opacity: calc(0.1 * var(--replacement-intensity));
+    height: 100%;
+}
+
+@keyframes token-tooltip-fade-in {
+    from {
+        opacity: 0;
+        transform: translate(var(--tooltip-horizontal-shift), 4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate(var(--tooltip-horizontal-shift), 0);
+    }
+}

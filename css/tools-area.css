@@ -1,0 +1,60 @@
+.tools {
+    grid-area: tools;
+    z-index: 2;
+}
+
+.tools h3 {
+    --middle-line-left-width: calc(var(--main-padding) - var(--middle-line-horizontal-margin));
+    margin-left: calc(0px - var(--main-padding));
+}
+
+.tools-container {
+    position: sticky;
+    top: 0;
+    padding-top: calc(var(--main-padding) + var(--text-font-size) - var(--subcaption-font-size));
+    padding-bottom: var(--main-padding);
+}
+
+.tools-subcontainer + .tools-subcontainer {
+    margin-top: var(--block-spacing);
+}
+
+.settings-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.stats-spelling {
+    color: #645B60;
+    margin-top: calc(var(--main-font-size) * 1.5);
+}
+
+.stats-extra {
+    margin-left: 8px;
+    display: inline-block;
+    color: var(--background-text-color);
+}
+
+.stats-container dt {
+    display: none;
+}
+
+.stats-container dd {
+    margin: 0 0 4px 0;
+}
+
+.stats-mistake strong {
+    color: var(--mistake-color);
+}
+
+.stats-improvement strong {
+    color: var(--improvement-color);
+}
+
+.stats-uncertain strong {
+    color: var(--uncertain-color);
+}
+
+.stats-irrelevant {
+    color: var(--background-text-color);
+}

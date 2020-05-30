@@ -1,4 +1,9 @@
-import {normalize, merge, updateTokens, paragraphTag} from "./normalizer.js";
+import {paragraphTag} from "./common-tags.js";
+import {attachPasteEvent} from "./events/paste.js";
+import {attachCursorFixingEvent} from "./events/cursor-fixing.js";
+import {attachHistoryEvents} from "./events/history.js";
+import {normalize} from "./normalizer.js";
+import {merge, updateTokens} from "./merger.js";
 import {getSelectionOffsets, setSelectionOffsets, insertAtCursor} from "./cursor.js";
 import {History} from "./history.js";
 import {spellcheck, getParagraphCorrections, setLabelStatus, getTokenLabelUpdater} from "./spellchecker.js";
@@ -17,20 +22,9 @@ let observer = null;
 let container = null;
 let statsContainer = null;
 let settingsContainer = null;
-let coverContainer = null;
-let plannedMutationStack = [];
-
 let unmutatedParagraphs = null;
-
 let history = null;
-
-function setCoverState(active) {
-  if (active) {
-    coverContainer.classList.add('active');
-  } else {
-    coverContainer.classList.remove('active');
-  }
-}
+let plannedMutationStack = [];
 
 function renderStats(labelGetter, statsSymbol) {
   const irrelevantClass = 'stats-irrelevant';
@@ -86,7 +80,7 @@ function setCorrectionStatsData(paragraph) {
   paragraph[correctionStatsSymbol] = computeCorrectionStats(getParagraphCorrections(paragraph));
 }
 
-function update({records = null, updateHistory = true, removeEmptyMutated = false, withAnimations = true} = {}) {
+export function update({records = null, updateHistory = true, removeEmptyMutated = false, withAnimations = true} = {}) {
   if (!processUpdatedRecords(records)) {
     return;
   }
@@ -141,116 +135,6 @@ function onContentsChanged(records) {
   update({records});
 }
 
-function attachPasteEvent() {
-  const maxLengthWithoutCover = 1000;
-  container.addEventListener('paste', (event) => {
-    const text = event.clipboardData.getData('text/plain');
-    event.preventDefault();
-    const doInsert = (withAnimations) => {
-      const contents = [];
-      text.split(/\n/).forEach((line, index, lines) => {
-        if (index === 0) {
-          const normalized = lines.length > 1 ? line.trim() : line;
-          if (normalized !== '') {
-            contents.push(document.createTextNode(normalized));
-          }
-        } else {
-          const paragraph = document.createElement(paragraphTag);
-          const trimmed = line.trim();
-          if (trimmed !== '') {
-            paragraph.textContent = trimmed;
-            contents.push(paragraph);
-          }
-        }
-      });
-      const multiline = contents.length > 1;
-      startPlannedMutation();
-      insertAtCursor(container, contents, multiline);
-      const records = endPlannedMutation();
-      update({records, removeEmptyMutated: multiline, withAnimations});
-    };
-    if (text.length > maxLengthWithoutCover) {
-      coverContainer.dataset.type = 'processing';
-      setCoverState(true);
-      setTimeout(() => {
-        doInsert(false);
-        setCoverState(false);
-      }, 50); // 0 or even 1 is not enough for most browsers except Chrome; getComputedStyle doesn't help either
-    } else {
-      doInsert(true);
-    }
-  });
-}
-
-function attachHistoryEvents() {
-  container.addEventListener('keydown', (event) => {
-    let undo = false, redo = false;
-    if (event.ctrlKey || event.metaKey) {
-      if (event.key === 'z') {
-        undo = true;
-      } else if (event.key === 'Z' || event.key === 'y') {
-        redo = true;
-      }
-    }
-    if (undo || redo) {
-      event.preventDefault();
-      stopCorrecting();
-      window.getSelection().removeAllRanges();
-      startPlannedMutation();
-      const {elements, selection} = undo ? history.undo() : history.redo();
-      if (elements.length === 0) {
-        container.innerHTML = '';
-      } else {
-        container.prepend(elements[0]);
-        for (let i = 1; i < elements.length; i++) {
-          elements[i - 1].after(elements[i]);
-        }
-        const lastElement = elements[elements.length - 1];
-        while (lastElement.nextSibling !== null) {
-          lastElement.nextSibling.remove();
-        }
-      }
-      const records = endPlannedMutation();
-      update({records, updateHistory: false});
-      setSelectionOffsets(container, selection);
-    }
-  });
-}
-
-function attachCursorFixingEvent() {
-  // Working around the following Firefox bug: https://bugzilla.mozilla.org/show_bug.cgi?id=1636248
-  container.addEventListener('keydown', (event) => {
-    if (event.ctrlKey || event.altKey || event.shiftKey || event.metaKey) {
-      return;
-    }
-    let delta = 0;
-    switch (event.key) {
-      case 'ArrowLeft':
-        delta = -1;
-        break;
-      case 'ArrowRight':
-        delta = 1;
-        break;
-    }
-
-    const currentSelection = history.getSelection();
-    if (delta !== 0 && currentSelection !== null && currentSelection.start === currentSelection.end) {
-      const selection = currentSelection.start;
-      const node = currentSelection.extraInfo.startContainer;
-      setTimeout(() => {
-        const currentSelection = history.getSelection();
-        if (currentSelection !== null && currentSelection.start === selection && currentSelection.end === selection
-          && currentSelection.extraInfo.startContainer === node) {
-          const correctSelection = selection + delta;
-          if (correctSelection >= 0 && correctSelection <= container.textContent.length) {
-            setSelectionOffsets(container, {start: correctSelection, end: correctSelection});
-          }
-        }
-      }, 0);
-    }
-  });
-}
-
 function selectionChanged() {
   history.updateSelection(getSelectionOffsets(container));
 }
@@ -284,11 +168,10 @@ function watchSettings() {
   });
 }
 
-export function attachObserver(inputElement, statsElement, settingsElement, coverElement) {
+export function attachObserver(inputElement, statsElement, settingsElement) {
   container = inputElement;
   statsContainer = statsElement;
   settingsContainer = settingsElement;
-  coverContainer = coverElement;
   unmutatedParagraphs = new WeakSet();
   history = new History(paragraphTag);
   observer = new MutationObserver(onContentsChanged);
@@ -298,11 +181,10 @@ export function attachObserver(inputElement, statsElement, settingsElement, cove
     attributes: true,
     subtree: true
   });
-  attachPasteEvent();
+  attachHistoryEvents(inputElement, history);
+  attachCursorFixingEvent(inputElement, history);
+  attachPasteEvent(inputElement);
   attachSelectionEvents();
-  attachHistoryEvents();
-  attachCursorFixingEvent();
   watchSettings();
   update();
-  setCoverState(false);
 }

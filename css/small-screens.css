@@ -1,0 +1,44 @@
+/*
+All these rules need to live here for the time being, because there is no apparent way to share the max-width
+parameter between multiple CSS files.
+*/
+
+@media (max-width: 959px) {
+    body {
+        --column-gap: 10px;
+        grid-template-columns: auto;
+        grid-template-rows: auto;
+        grid-template-areas:
+                "heading"
+                "instructions"
+                "input"
+                "tools"
+                "info";
+    }
+
+    .input-bg, .input-overlay {
+        grid-area: 3 / 1 / 5 / 2;
+    }
+
+    .tools h3 {
+        margin-right: calc(0px - var(--main-padding));
+    }
+
+    .tools-container {
+        position: static;
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+
+    .info {
+        margin-top: var(--block-spacing);
+    }
+
+    .info h3 {
+        --middle-line-left-width: calc(var(--main-padding) - var(--middle-line-horizontal-margin));
+    }
+
+    .info p {
+        padding-right: var(--main-padding);
+    }
+}

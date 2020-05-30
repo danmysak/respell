@@ -23,13 +23,13 @@ function filterCorrections(corrections) {
 }
 
 export function getTokenCorrectionPresentations(element) {
-  const data = element[tokenDataSymbol];
-  return !data ? null : filterCorrections(data.corrections)
+  const {data, tokenIndex} = element[tokenDataSymbol] || {};
+  return !data ? null : filterCorrections(data.tokenData[tokenIndex].corrections)
     .map(({presentation, id}) => ({presentation, id}));
 }
 
 export function getParagraphCorrections(paragraph) {
-  return paragraph[paragraphDataSymbol].correctionSets.map(({element, corrections}) => ({
+  return paragraph[paragraphDataSymbol].tokenData.map(({element, corrections}) => ({
     element,
     corrections: filterCorrections(corrections).map(({correction}) => ({correction}))
   }));
@@ -58,11 +58,17 @@ export function spellcheck(paragraph, withAnimations, replacer) {
   const tokens = tokenize(paragraph.textContent);
   const tokenChain = new TokenChain(tokens);
   const normalizedTokens = tokenChain.getTokens();
-  const correctionSets = [];
+  let start = 0;
+  const tokenData = [];
   while (tokenChain.hasMore()) {
     tokenChain.next();
-    correctionSets.push({
+    const currentToken = tokenChain.getCurrentToken(false);
+    const end = start + currentToken.length;
+    tokenData.push({
       element: null, // To be assigned later
+      token: currentToken,
+      start,
+      end,
       corrections: processToken(tokenChain).map(({correction, labels}, index) => ({
         presentation: createCorrectionPresentation(correction, tokens, normalizedTokens, tokenChain.getCurrentIndex()),
         correction,
@@ -70,27 +76,29 @@ export function spellcheck(paragraph, withAnimations, replacer) {
         id: index
       }))
     });
+    start = end;
   }
-  paragraph[paragraphDataSymbol] = {
-    correctionSets
+  const data = {
+    replacer,
+    tokenData
   };
+  paragraph[paragraphDataSymbol] = data;
   return tokens.map((token, index) => ({
     token,
-    callback: correctionSets[index].corrections.length === 0 ? null : (element, isNew) => {
-      correctionSets[index].element = element;
+    callback: tokenData[index].corrections.length === 0 ? null : (element, isNew) => {
+      tokenData[index].element = element;
       element[tokenDataSymbol] = {
-        corrections: correctionSets[index].corrections,
-        tokens,
-        tokenIndex: index,
-        replacer
+        data,
+        tokenIndex: index
       };
       setTokenAttributes(element);
       if (withAnimations && isNew) {
-        element.classList.add(correctionPrefix + newCorrection);
+        const newCorrectionClassName = correctionPrefix + newCorrection;
+        element.classList.add(newCorrectionClassName);
         setTimeout(() => {
           startPlannedMutation();
           window.getComputedStyle(element).color; // Forces Firefox to respect the color transition
-          element.classList.remove(correctionPrefix + newCorrection);
+          element.classList.remove(newCorrectionClassName);
           endPlannedMutation();
         }, 0);
       }
@@ -99,16 +107,17 @@ export function spellcheck(paragraph, withAnimations, replacer) {
 }
 
 export function accept(tokenElement, correctionId, replacementIndex) {
-  const data = tokenElement[tokenDataSymbol];
-  const correction = data.corrections.find(({id}) => id === correctionId).correction;
-  const tokens = data.tokens;
-  const tokenIndex = data.tokenIndex;
-  let left = 0;
-  for (let index = 0; index < tokenIndex; index++) {
-    left += tokens[index].length;
-  }
-  const leftOffset = correction.removePreviousToken && tokenIndex > 0 ? tokens[tokenIndex - 1].length : 0;
-  const right = left + tokens[tokenIndex].length;
-  const rightOffset = correction.removeNextToken && tokenIndex + 1 < tokens.length ? tokens[tokenIndex + 1].length : 0;
-  data.replacer(left - leftOffset, right + rightOffset, correction.replacements[replacementIndex]);
+  const {data, tokenIndex} = tokenElement[tokenDataSymbol];
+  const {replacer, tokenData} = data;
+  const {start, end, corrections} = tokenData[tokenIndex];
+  const correction = corrections.find(({id}) => id === correctionId).correction;
+  const getOffset = (shouldRemove, shift) => {
+    const index = tokenIndex + shift;
+    return shouldRemove && index >= 0 && index < tokenData.length ? tokenData[index].token.length : 0;
+  };
+  replacer(
+    start - getOffset(correction.removePreviousToken, -1),
+    end + getOffset(correction.removeNextToken, 1),
+    correction.replacements[replacementIndex]
+  );
 }
