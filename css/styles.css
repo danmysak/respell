@@ -192,20 +192,20 @@ t-t {
     cursor: inherit;
 }
 
-.correction-none {
+.correction-none, .correction-new {
     --correction-color: var(--input-background-color);
-    color: var(--text-color);
+    color: var(--text-color); /* "inherit" doesn't play nicely with transitions */
 }
 
-.correction-mistake {
+.correction-mistake:not(.correction-new) {
     --correction-color: var(--mistake-color);
 }
 
-.correction-improvement {
+.correction-improvement:not(.correction-new) {
     --correction-color: var(--improvement-color);
 }
 
-.correction-uncertain {
+.correction-uncertain:not(.correction-new) {
     --correction-color: var(--uncertain-color);
 }
 
@@ -286,7 +286,9 @@ main {
 }
 
 .input-correcting t-t.correction-none::after,
-.input-correcting-redisplay t-t.correction-none::after {
+.input-correcting-redisplay t-t.correction-none::after,
+.input-correcting t-t.correction-new::after,
+.input-correcting-redisplay t-t.correction-new::after {
     background-color: var(--input-background-color);
 }
 
@@ -556,7 +558,8 @@ token-replacement-new button::before {
     transition-duration: var(--replacement-highlight-duration);
 }
 
-token-replacement-new button:hover::before, token-tooltip:not(:hover) token-replacement-new button.default-replacement::before {
+token-replacement-new button:hover::before,
+t-t:hover token-tooltip:not(:hover) token-replacement-new button.default-replacement::before {
     opacity: calc(0.1 * var(--replacement-intensity));
     height: 100%;
 }

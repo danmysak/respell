@@ -164,7 +164,7 @@ export function merge(paragraph, data) {
         }
         element.prepend(...textNodesToPrepend);
         currentNode = element.nextSibling;
-        callback(element);
+        callback(element, true);
       } else { // currentNode is an element
         removeAttributes(currentNode);
         currentNode.prepend(...textNodesToPrepend);
@@ -179,7 +179,7 @@ export function merge(paragraph, data) {
             element.append(element.nextSibling);
           }
         }
-        callback(element);
+        callback(element, false);
       }
     }
   }

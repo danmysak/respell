@@ -83,9 +83,9 @@ function getNumberType(number) {
 
 export function computeCorrectionStats(correctionSets) {
   const correctionStats = Object.fromEntries(Object.values(correctionTypes).map((type) => [type, 0]));
-  for (const corrections of correctionSets) {
+  for (const {corrections} of correctionSets) {
     if (corrections.length > 0) {
-      correctionStats[corrections[0].type]++;
+      correctionStats[corrections[0].correction.type]++;
     }
   }
   return correctionStats;

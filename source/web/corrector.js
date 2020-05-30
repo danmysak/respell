@@ -18,6 +18,7 @@ const tooltipMarginProperty = '--tooltip-margin';
 let container = null;
 let currentToken = null;
 let currentCorrections = null;
+let currentByKeyboard = null;
 let pageBottomPadding = 0;
 const tooltipMargin = parseFloat(window.getComputedStyle(document.body).getPropertyValue(tooltipMarginProperty));
 
@@ -49,7 +50,7 @@ function fixTooltipPositioning(tooltip) {
     tooltip.style.setProperty(tooltipHorizontalShiftProperty, `${-rightShift}px`);
   }
   tooltip.classList.add('animated'); // We need this class, and must set it exactly now, because otherwise the fade-in
-                                     // animation would use an outdated value of the tooltipHorizontalShiftProperty.
+                                     // animation would use an outdated value of the tooltipHorizontalShiftProperty
 }
 
 function formatDescription(text) {
@@ -62,7 +63,8 @@ function formatDescription(text) {
 function displayTooltip() {
   const tooltip = document.createElement(tooltipTag);
   tooltip.setAttribute('contenteditable', 'false');
-  tooltip.tabIndex = -1;
+  tooltip.tabIndex = -1; // This way focus doesn't go out of the token element, and we don't close the tooltip
+                         // when user interacts with the tooltip's text
   currentCorrections.forEach(({id, presentation}, correctionIndex) => {
     const correctionContainer = document.createElement(correctionContainerTag);
     const replacement = document.createElement(replacementTag);
@@ -99,15 +101,25 @@ function displayTooltip() {
   });
   currentToken.append(tooltip);
   fixTooltipPositioning(tooltip);
+  currentToken.tabIndex = -1; // This must be done irrespective of currentByKeyboard because we don't want the user
+                              // to be able to focus on the token by shift-tabbing from a button
+  if (currentByKeyboard) {
+    const defaultButton = tooltip.querySelector(`.${defaultReplacementClassName}`);
+    if (defaultButton) { // Unless we have corrections without replacement options, should always be true
+      defaultButton.focus();
+    }
+  }
 }
 
 function removeTooltip() {
+  currentToken.tabIndex = 0;
   currentToken.querySelector(tooltipTag).remove();
 }
 
-function startCorrecting(token, corrections) {
+function startCorrecting(token, corrections, byKeyboard) {
   currentToken = token;
   currentCorrections = corrections;
+  currentByKeyboard = byKeyboard;
   startPlannedMutation();
   addClasses();
   displayTooltip();
@@ -158,15 +170,17 @@ function onMouseDown(event) {
 function onKeyDown(event) {
   switch (event.code) {
     case 'Enter':
-      event.preventDefault();
-      performReplacement();
+      if (!currentByKeyboard) { // Otherwise the active button will trigger the replacement
+        event.preventDefault();
+        performReplacement();
+      }
       break;
     case 'Escape':
       event.preventDefault();
       stopCorrecting();
       break;
     default:
-      if (event.target.tagName !== tooltipTag) { // Allow the user to copy tooltip text with keyboard
+      if (event.target.closest(tooltipTag) === null) {
         stopCorrecting();
       }
       break;
@@ -193,7 +207,7 @@ function detachEvents() {
   document.removeEventListener('keydown', onKeyDown);
 }
 
-function considerCorrecting(element) {
+function considerCorrecting(element, byKeyboard = false) {
   const corrections = getTokenCorrectionPresentations(element);
   if (corrections === null || corrections.length === 0) {
     return;
@@ -204,7 +218,7 @@ function considerCorrecting(element) {
     }
     stopCorrecting();
   }
-  startCorrecting(element, corrections);
+  startCorrecting(element, corrections, byKeyboard);
 }
 
 function onTouchStart(event) {
@@ -225,6 +239,6 @@ function onTouchStart(event) {
 export function attachCorrector(inputElement) {
   container = inputElement;
   inputElement.addEventListener('mouseover', (event) => considerCorrecting(event.target));
-  inputElement.addEventListener('focusin', (event) => considerCorrecting(event.target));
+  inputElement.addEventListener('focusin', (event) => considerCorrecting(event.target, true));
   inputElement.addEventListener('touchstart', onTouchStart);
 }

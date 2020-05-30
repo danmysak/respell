@@ -2,10 +2,12 @@ import {processToken} from "../spelling/processor.js";
 import {tokenize} from "../spelling/tokenizer.js";
 import {TokenChain} from "../spelling/token-chain.js";
 import {createCorrectionPresentation} from "../spelling/correction.js";
+import {endPlannedMutation, startPlannedMutation} from "./observer.js";
 import "../rules/rules.js";
 
 const correctionPrefix = 'correction-';
 const emptyCorrection = 'none';
+const newCorrection = 'new';
 
 const paragraphDataSymbol = Symbol('paragraph-data');
 const tokenDataSymbol = Symbol('token-data');
@@ -26,15 +28,19 @@ export function getTokenCorrectionPresentations(element) {
     .map(({presentation, id}) => ({presentation, id}));
 }
 
-export function getParagraphCorrectionSets(paragraph) {
-  return paragraph[paragraphDataSymbol].correctionSets.map(
-    (corrections) => filterCorrections(corrections).map(({correction}) => correction)
-  );
+export function getParagraphCorrections(paragraph) {
+  return paragraph[paragraphDataSymbol].correctionSets.map(({element, corrections}) => ({
+    element,
+    corrections: filterCorrections(corrections).map(({correction}) => ({correction}))
+  }));
 }
 
-function computeTokenCurrentClass(tokenElement) {
+function setTokenAttributes(tokenElement) {
   const presentations = getTokenCorrectionPresentations(tokenElement);
-  return correctionPrefix + (presentations.length === 0 ? emptyCorrection : presentations[0].presentation.type);
+  tokenElement.classList.add(
+    correctionPrefix + (presentations.length === 0 ? emptyCorrection : presentations[0].presentation.type)
+  );
+  tokenElement.tabIndex = presentations.length === 0 ? -1 : 0;
 }
 
 export function getTokenLabelUpdater() {
@@ -44,38 +50,50 @@ export function getTokenLabelUpdater() {
         element.classList.remove(className);
       }
     }
-    element.classList.add(computeTokenCurrentClass(element));
+    setTokenAttributes(element);
   };
 }
 
-export function spellcheck(paragraph, replacer) {
+export function spellcheck(paragraph, withAnimations, replacer) {
   const tokens = tokenize(paragraph.textContent);
   const tokenChain = new TokenChain(tokens);
   const normalizedTokens = tokenChain.getTokens();
   const correctionSets = [];
   while (tokenChain.hasMore()) {
     tokenChain.next();
-    correctionSets.push(processToken(tokenChain).map(({correction, labels}, index) => ({
-      presentation: createCorrectionPresentation(correction, tokens, normalizedTokens, tokenChain.getCurrentIndex()),
-      correction,
-      labels,
-      id: index
-    })));
+    correctionSets.push({
+      element: null, // To be assigned later
+      corrections: processToken(tokenChain).map(({correction, labels}, index) => ({
+        presentation: createCorrectionPresentation(correction, tokens, normalizedTokens, tokenChain.getCurrentIndex()),
+        correction,
+        labels,
+        id: index
+      }))
+    });
   }
   paragraph[paragraphDataSymbol] = {
     correctionSets
   };
   return tokens.map((token, index) => ({
     token,
-    callback: correctionSets[index].length === 0 ? null : (element) => {
+    callback: correctionSets[index].corrections.length === 0 ? null : (element, isNew) => {
+      correctionSets[index].element = element;
       element[tokenDataSymbol] = {
-        corrections: correctionSets[index],
+        corrections: correctionSets[index].corrections,
         tokens,
         tokenIndex: index,
         replacer
       };
-      element.classList.add(computeTokenCurrentClass(element));
-      element.tabIndex = 0;
+      setTokenAttributes(element);
+      if (withAnimations && isNew) {
+        element.classList.add(correctionPrefix + newCorrection);
+        setTimeout(() => {
+          startPlannedMutation();
+          window.getComputedStyle(element).color; // Forces Firefox to respect the color transition
+          element.classList.remove(correctionPrefix + newCorrection);
+          endPlannedMutation();
+        }, 0);
+      }
     }
   }));
 }

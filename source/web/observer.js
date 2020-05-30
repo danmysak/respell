@@ -1,7 +1,7 @@
 import {normalize, merge, updateTokens, paragraphTag} from "./normalizer.js";
 import {getSelectionOffsets, setSelectionOffsets, insertAtCursor} from "./cursor.js";
 import {History} from "./history.js";
-import {spellcheck, getParagraphCorrectionSets, setLabelStatus, getTokenLabelUpdater} from "./spellchecker.js";
+import {spellcheck, getParagraphCorrections, setLabelStatus, getTokenLabelUpdater} from "./spellchecker.js";
 import {stopCorrecting} from "./corrector.js";
 import {
   computeCorrectionStats,
@@ -82,7 +82,11 @@ function processUpdatedRecords(records) {
   return treeModified;
 }
 
-function update(records = null, updateHistory = true, removeEmptyMutated = false) {
+function setCorrectionStatsData(paragraph) {
+  paragraph[correctionStatsSymbol] = computeCorrectionStats(getParagraphCorrections(paragraph));
+}
+
+function update({records = null, updateHistory = true, removeEmptyMutated = false, withAnimations = true} = {}) {
   if (!processUpdatedRecords(records)) {
     return;
   }
@@ -97,12 +101,12 @@ function update(records = null, updateHistory = true, removeEmptyMutated = false
         continue;
       }
       unmutatedParagraphs.add(paragraph);
-      const tokenData = spellcheck(paragraph, (start, end, replacement) => {
+      const tokenData = spellcheck(paragraph, withAnimations, (start, end, replacement) => {
         setSelectionOffsets(paragraph, {start, end});
         insertAtCursor(paragraph, document.createTextNode(replacement));
       });
       merge(paragraph, tokenData);
-      paragraph[correctionStatsSymbol] = computeCorrectionStats(getParagraphCorrectionSets(paragraph));
+      setCorrectionStatsData(paragraph);
       paragraph[spellingStatsSymbol] = computeSpellingStats(tokenData.map(({token}) => token));
     }
     if (updateHistory) {
@@ -127,14 +131,14 @@ function updateForNewLabels() {
   startPlannedMutation();
   for (const paragraph of [...container.children]) {
     updateTokens(paragraph, getTokenLabelUpdater());
-    paragraph[correctionStatsSymbol] = computeCorrectionStats(getParagraphCorrectionSets(paragraph));
+    setCorrectionStatsData(paragraph);
   }
   renderCorrectionStats();
   endPlannedMutation();
 }
 
 function onContentsChanged(records) {
-  update(records);
+  update({records});
 }
 
 function attachPasteEvent() {
@@ -142,7 +146,7 @@ function attachPasteEvent() {
   container.addEventListener('paste', (event) => {
     const text = event.clipboardData.getData('text/plain');
     event.preventDefault();
-    const doInsert = () => {
+    const doInsert = (withAnimations) => {
       const contents = [];
       text.split(/\n/).forEach((line, index, lines) => {
         if (index === 0) {
@@ -163,17 +167,17 @@ function attachPasteEvent() {
       startPlannedMutation();
       insertAtCursor(container, contents, multiline);
       const records = endPlannedMutation();
-      update(records, true, multiline);
+      update({records, removeEmptyMutated: multiline, withAnimations});
     };
     if (text.length > maxLengthWithoutCover) {
       coverContainer.dataset.type = 'processing';
       setCoverState(true);
       setTimeout(() => {
-        doInsert();
+        doInsert(false);
         setCoverState(false);
-      }, 50); // 0 or even 1 is not enough for most browsers except Chrome
+      }, 50); // 0 or even 1 is not enough for most browsers except Chrome; getComputedStyle doesn't help either
     } else {
-      doInsert();
+      doInsert(true);
     }
   });
 }
@@ -207,7 +211,7 @@ function attachHistoryEvents() {
         }
       }
       const records = endPlannedMutation();
-      update(records, false);
+      update({records, updateHistory: false});
       setSelectionOffsets(container, selection);
     }
   });
