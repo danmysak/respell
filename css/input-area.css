@@ -175,7 +175,7 @@
 }
 
 .input-navigation-previous button::after {
-    content: "\02191"; /* Bottom arrow */
+    content: "\02191"; /* Top arrow */
     width: var(--input-navigation-arrow-width);
     text-align: left;
 }
