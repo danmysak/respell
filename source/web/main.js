@@ -22,5 +22,8 @@ function initialize() {
   registerOverlay(overlay);
   attachObservers(inputElement, statsContainer, settingCheckboxes, navigationElements);
   attachCorrector(inputElement, navigationContainer);
+  document.querySelectorAll('.explanation').forEach((element) => element.addEventListener('touchstart', (event) => {
+    event.preventDefault();
+  }));
   setOverlayState(false);
 }

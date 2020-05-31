@@ -20,6 +20,7 @@ a:hover {
 
 .checkbox-container {
     display: inline-flex;
+    width: fit-content;
     align-items: baseline;
 }
 
