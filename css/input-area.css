@@ -19,6 +19,7 @@
     padding: var(--main-padding);
     outline: none;
     font-size: var(--text-font-size);
+    position: relative;
 }
 
 .input-navigation {
@@ -86,7 +87,10 @@
 .input-navigation-next:not(.active),
 .input-navigation.input-navigation-correcting .input-navigation-previous,
 .input-navigation.input-navigation-correcting .input-navigation-next {
-    transform: translateY(calc(100% * var(--input-navigation-direction)));
+    transform: translateY(calc(
+        var(--input-navigation-direction)
+        * (100% + var(--input-navigation-blur-radius) + var(--input-navigation-spread-radius))
+    ));
     visibility: hidden;
 }
 

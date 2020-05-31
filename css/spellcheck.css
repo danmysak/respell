@@ -4,15 +4,48 @@
     overflow-wrap: break-word;
 }
 
+.input::after {
+    content: "";
+    display: block;
+    position: absolute;
+    z-index: 2;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    background: var(--input-background-color);
+    transition-property: opacity, visibility;
+    transition-duration: var(--correction-transition-duration);
+    opacity: 0;
+    visibility: hidden;
+}
+
+.input.input-correcting::after {
+    opacity: 0.6;
+    visibility: visible;
+}
+
 t-t {
     color: var(--correction-color);
+    --token-color-timing-function: ease;
     display: inline-block; /* We will have to resort to this until hyphens: nowrap is implemented in browsers */
     max-width: 100%;
     position: relative;
+    z-index: 0;
+    transition: color, z-index;
+    transition-duration: var(--correction-transition-duration);
+    transition-timing-function: var(--token-color-timing-function), step-end;
 }
 
-.input, .input t-t {
-    transition: color var(--correction-transition-duration);
+t-t.correction-current {
+    z-index: 3;
+    transition-timing-function: var(--token-color-timing-function), step-start;
+}
+
+.input-correcting t-t:not(.correction-current) { /* For when directly switching from one token to another */
+    z-index: 1;
+    transition-timing-function: var(--token-color-timing-function), step-start;
 }
 
 .input t-t {
@@ -64,21 +97,4 @@ t-t::after {
 
 .input p:empty {
     height: var(--text-computed-line-height);
-}
-
-.input-correcting, .input-correcting t-t:not(.correction-current),
-.input-correcting-redisplay, .input-correcting-redisplay t-t:not(.correction-current) {
-    color: var(--background-text-color);
-}
-
-.input-correcting t-t:not(.correction-current)::after,
-.input-correcting-redisplay t-t:not(.correction-current)::after {
-    background-color: var(--background-text-color);
-}
-
-.input-correcting t-t.correction-none::after,
-.input-correcting-redisplay t-t.correction-none::after,
-.input-correcting t-t.correction-new::after,
-.input-correcting-redisplay t-t.correction-new::after {
-    background-color: var(--input-background-color);
 }

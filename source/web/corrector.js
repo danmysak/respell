@@ -6,7 +6,6 @@ import {setCursorAdjacent} from "./cursor.js";
 
 const tokenCorrectingClassName = 'correction-current';
 const containerCorrectingClassName = 'input-correcting';
-const containerCorrectingRedisplayClassName = 'input-correcting-redisplay';
 const navigationCorrectingClassName = 'input-navigation-correcting';
 
 let container = null;
@@ -72,23 +71,11 @@ export function stopCorrecting() {
   currentCorrections = null;
 }
 
-function checkForRedisplay(token) {
-  // We need this for the underline color transition to start from grayed out
-  container.classList.add(containerCorrectingRedisplayClassName);
-  setTimeout(() => {
-    if (!currentToken && [...document.querySelectorAll(':hover')].includes(token)) {
-      considerCorrecting(token);
-    }
-    container.classList.remove(containerCorrectingRedisplayClassName);
-  }, 0);
-}
-
 function performReplacement(correctionIndex = 0, replacementIndex = 0) {
   const token = currentToken;
   const correctionId = currentCorrections[correctionIndex].id;
   stopCorrecting();
   accept(token, correctionId, replacementIndex);
-  checkForRedisplay(token);
 }
 
 function onMouseDown(event) {
