@@ -7,16 +7,22 @@
     --middle-line-horizontal-margin: 4px;
     --main-font-size: 14px;
     --text-font-size: 16px;
+    --input-navigation-font-size: 14px;
     --correction-font-size: 18px;
     --subcaption-font-size: 12px;
     --subcaption-margin-bottom: 18px;
     --line-height: 1.25;
     --replacement-line-height: 1.5;
+    --button-line-height: 1.15;
     --tooltip-width: 300px;
     --tooltip-margin: 10px; /* Number of pixels between the tooltip's border and the edges of the page */
     --tooltip-top-margin: 4px; /* Gap between the text being corrected and the tooltip */
     --tooltip-border-width: 3px;
+    --input-navigation-padding: 8px;
     --block-spacing: 32px;
+    --input-border-radius: 10px;
+
+    --text-computed-line-height: calc(var(--text-font-size) * var(--line-height));
 
     --blue: 49, 117, 185;
     --text-color: #2A2A2A;
@@ -30,8 +36,9 @@
     --tooltip-border-color: #BEA2AE;
     --overlay-background-color: var(--tooltip-background-color);
     --overlay-text-color: var(--background-text-color);
+    --input-navigation-color: var(--text-color);
 
     --correction-transition-duration: 0.3s;
-    --replacement-highlight-duration: 0.1s;
+    --button-highlight-duration: 0.1s;
     --focus-and-overlay-transition-duration: 0.15s;
 }

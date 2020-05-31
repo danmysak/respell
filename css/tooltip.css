@@ -127,6 +127,7 @@ token-replacement-new button {
     /* We need to set the outline properties explicitly for the outline not to be clipped due to overflow: hidden */
     outline-width: 3px;
     outline-offset: -2px;
+    line-height: var(--button-line-height);
 }
 
 token-replacement-new button::before {
@@ -141,7 +142,7 @@ token-replacement-new button::before {
     background-color: var(--replacement-color);
     opacity: calc(0.25 * var(--replacement-intensity));
     transition-property: height, opacity;
-    transition-duration: var(--replacement-highlight-duration);
+    transition-duration: var(--button-highlight-duration);
 }
 
 token-replacement-new button:hover::before,

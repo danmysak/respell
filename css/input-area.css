@@ -1,14 +1,6 @@
-.input {
-    grid-area: input;
-    padding: var(--main-padding);
-    outline: none;
-    font-size: var(--text-font-size);
-    z-index: 3;
-}
-
 .input-bg, .input-overlay {
     grid-area: 3 / 2 / 4 / 4;
-    border-radius: 10px;
+    border-radius: var(--input-border-radius);
 }
 
 .input-bg {
@@ -21,8 +13,181 @@
     --shadow-opacity: 0.15;
 }
 
-.input-overlay {
+.input {
+    z-index: 3;
+    grid-area: input;
+    padding: var(--main-padding);
+    outline: none;
+    font-size: var(--text-font-size);
+}
+
+.input-navigation {
+    grid-area: input;
+    border-radius: var(--input-border-radius);
+    display: grid;
+    grid-template-areas:
+            "previous . .   "
+            ".        . .   "
+            ".        . next";
+    grid-template-rows: min-content 1fr min-content;
+    grid-template-columns: max-content 1fr max-content;
+
+    --input-navigation-shadow-color: black;
+    --input-navigation-blur-radius: 6px;
+    --input-navigation-spread-radius: -3px;
+    --input-navigation-spread-shift: 1px;
+    --input-navigation-vertical-shift: -2px; /* For visually centering the lower case labels */
+    --input-navigation-arrow-width: 1.5ch;
+
+    --input-navigation-button-vertical-padding: 0px;
+    --input-navigation-padding-top: calc(var(--input-navigation-padding) + var(--input-navigation-vertical-shift));
+    --input-navigation-padding-bottom: var(--input-navigation-padding);
+    --input-navigation-control-height: calc(
+        var(--input-navigation-padding-top) + var(--input-navigation-padding-bottom)
+        + 2 * var(--input-navigation-button-vertical-padding)
+        + var(--button-line-height) * var(--input-navigation-font-size)
+    );
+}
+
+.input-navigation-previous:not([hidden]), .input-navigation-next:not([hidden]) {
+    display: inline-block;
+}
+
+.input-navigation-previous, .input-navigation-next {
+    position: sticky;
     z-index: 4;
+    /* The following properties just duplicate the element's natural height, but this way it can be read by JS */
+    height: var(--input-navigation-control-height);
+    box-sizing: border-box;
+    /* */
+    transition-property: transform, visibility;
+    transition-duration: var(--correction-transition-duration);
+    padding: var(--input-navigation-padding-top) var(--input-navigation-padding)
+             var(--input-navigation-padding-bottom) var(--input-navigation-padding);
+}
+
+.input-navigation-previous {
+    grid-area: previous;
+    top: 0;
+    margin-bottom: var(--input-navigation-control-height);
+    /* This choice of value for margin-bottom is not particularly meaningful, but we have to set it to *some* value */
+    --input-navigation-direction: -1;
+}
+
+.input-navigation-next {
+    grid-area: next;
+    bottom: 0;
+    margin-top: var(--input-navigation-control-height);
+    /* This choice of value for margin-top is not particularly meaningful, but we have to set it to *some* value */
+    --input-navigation-direction: 1;
+}
+
+.input-navigation-previous:not(.active),
+.input-navigation-next:not(.active),
+.input-navigation.input-navigation-correcting .input-navigation-previous,
+.input-navigation.input-navigation-correcting .input-navigation-next {
+    transform: translateY(calc(100% * var(--input-navigation-direction)));
+    visibility: hidden;
+}
+
+.input-navigation-previous::before, .input-navigation-next::before {
+    content: "";
+    display: block;
+    position: absolute;
+    z-index: -1;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    background-color: var(--input-background-color);
+    opacity: 0.95;
+}
+
+.input-navigation-previous::before {
+    border-radius: var(--input-border-radius) 0;
+    box-shadow: var(--input-navigation-spread-shift) var(--input-navigation-spread-shift)
+        calc(var(--input-navigation-blur-radius) - var(--input-navigation-spread-shift))
+        var(--input-navigation-spread-radius) var(--input-navigation-shadow-color);
+}
+
+.input-navigation-next::before {
+    border-radius: var(--input-border-radius) var(--input-border-radius) 0 0;
+    box-shadow: 0 0 var(--input-navigation-blur-radius)
+        var(--input-navigation-spread-radius) var(--input-navigation-shadow-color);
+}
+
+.input-navigation button {
+    background: none;
+    border: none;
+    padding: var(--input-navigation-button-vertical-padding) 2px;
+    margin: 0;
+    color: var(--input-navigation-color);
+    font-family: inherit;
+    font-size: var(--input-navigation-font-size);
+    font-style: italic;
+    line-height: var(--button-line-height);
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    outline: none;
+}
+
+.input-navigation-previous button {
+    flex-direction: row-reverse;
+}
+
+.input-navigation-next button {
+    flex-direction: row;
+}
+
+.input-navigation button::before {
+    content: "";
+    display: block;
+    position: absolute;
+    height: 1px;
+    border-radius: 2px;
+    bottom: 0;
+    width: calc(100% - var(--input-navigation-arrow-width));
+    background-color: var(--input-navigation-color);
+    opacity: 0.4;
+    transition-property: width, height, opacity;
+    transition-duration: var(--button-highlight-duration);
+}
+
+.input-navigation-previous button::before {
+    right: 0;
+}
+
+.input-navigation-next button::before {
+    left: 0;
+}
+
+.input-navigation button:hover::before {
+    opacity: 0.15;
+    width: 100%;
+    height: 100%;
+}
+
+.input-navigation-previous button::after, .input-navigation-next button::after {
+    display: inline-block;
+    position: relative;
+    top: -1px;
+}
+
+.input-navigation-previous button::after {
+    content: "\02191"; /* Bottom arrow */
+    width: var(--input-navigation-arrow-width);
+    text-align: left;
+}
+
+.input-navigation-next button::after {
+    content: "\02193"; /* Bottom arrow */
+    width: var(--input-navigation-arrow-width);
+    text-align: right;
+}
+
+.input-overlay {
+    z-index: 5;
     background-color: var(--overlay-background-color);
     color: var(--overlay-text-color);
     font-size: 24px;

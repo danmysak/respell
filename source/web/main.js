@@ -11,11 +11,16 @@ if (document.readyState === 'loading') {
 function initialize() {
   const inputElement = document.querySelector('.input');
   const statsContainer = document.querySelector('.stats-container');
-  const settingCheckboxes = document.querySelectorAll('.settings-container input[type=checkbox][data-ignore-label]');
+  const navigationContainer = document.querySelector('.input-navigation');
   const overlay = document.querySelector('.input-overlay');
+  const settingCheckboxes = document.querySelectorAll('.settings-container input[type=checkbox][data-ignore-label]');
+  const navigationElements = [
+    document.querySelector('.input-navigation-previous'),
+    document.querySelector('.input-navigation-next')
+  ];
   inputElement.focus(); // Setting the autofocus attribute doesn't seem to work in Firefox
   registerOverlay(overlay);
-  attachObservers(inputElement, statsContainer, settingCheckboxes);
-  attachCorrector(inputElement);
+  attachObservers(inputElement, statsContainer, settingCheckboxes, navigationElements);
+  attachCorrector(inputElement, navigationContainer);
   setOverlayState(false);
 }

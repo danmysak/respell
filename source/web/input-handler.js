@@ -3,6 +3,7 @@ import {attachHistoryEvents} from "./events/history.js";
 import {attachTabEvent} from "./events/tab.js";
 import {attachCursorFixingEvent} from "./events/cursor-fixing.js";
 import {attachPasteEvent} from "./events/paste.js";
+import {attachNavigationEvents, triggerNavigationEvents} from "./events/navigation.js";
 import {normalize} from "./normalizer.js";
 import {merge, updateTokens} from "./merger.js";
 import {getSelectionOffsets, setSelectionOffsets, insertAtCursor} from "./cursor.js";
@@ -119,6 +120,7 @@ export function update({records = null, updateHistory = true, removeEmptyMutated
   setTimeout(() => {
     attachSelectionEvents();
   }, 0);
+  triggerNavigationEvents();
   observer.takeRecords();
 }
 
@@ -129,6 +131,7 @@ function updateForNewLabels() {
     setCorrectionStatsData(paragraph);
   }
   renderCorrectionStats();
+  triggerNavigationEvents();
   endPlannedMutation();
 }
 
@@ -169,9 +172,13 @@ function watchSettings(settingCheckboxes) {
   });
 }
 
+export function getParagraphs() {
+  return paragraphs;
+}
+
 export function findCorrection(anchorParagraph, condition, ahead = true) {
   const shift = ahead ? 1 : -1;
-  let paragraphIndex = paragraphs.indexOf(anchorParagraph);
+  let paragraphIndex = typeof anchorParagraph === 'number' ? anchorParagraph : paragraphs.indexOf(anchorParagraph);
   while (paragraphIndex >= 0 && paragraphIndex < paragraphs.length) {
     const paragraph = paragraphs[paragraphIndex];
     const data = getParagraphCorrections(paragraph);
@@ -188,7 +195,7 @@ export function findCorrection(anchorParagraph, condition, ahead = true) {
   return null;
 }
 
-export function attachObservers(inputElement, statsElement, settingCheckboxes) {
+export function attachObservers(inputElement, statsElement, settingCheckboxes, navigationElements) {
   container = inputElement;
   statsContainer = statsElement;
   unmutatedParagraphs = new WeakSet();
@@ -205,6 +212,7 @@ export function attachObservers(inputElement, statsElement, settingCheckboxes) {
   attachTabEvent(inputElement, settingCheckboxes);
   attachCursorFixingEvent(inputElement, history);
   attachPasteEvent(inputElement);
+  attachNavigationEvents(inputElement, navigationElements);
   attachSelectionEvents();
   watchSettings(settingCheckboxes);
   update();

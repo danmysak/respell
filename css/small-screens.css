@@ -20,6 +20,13 @@ parameter between multiple CSS files.
         grid-area: 3 / 1 / 5 / 2;
     }
 
+    .input-navigation-next::before {
+        box-shadow: calc(0px - var(--input-navigation-spread-shift)) calc(0px - var(--input-navigation-spread-shift))
+            calc(var(--input-navigation-blur-radius) - var(--input-navigation-spread-shift))
+            var(--input-navigation-spread-radius) var(--input-navigation-shadow-color);
+        border-top-right-radius: 0;
+    }
+
     .tools h3 {
         margin-right: calc(0px - var(--main-padding));
     }

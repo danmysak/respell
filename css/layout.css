@@ -19,7 +19,7 @@ body {
     grid-template-areas:
             ".    heading      heading"
             "info instructions .      "
-            "info input        tools ";
+            "info input        tools  ";
 }
 
 h1, h2, h3, p {

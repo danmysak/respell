@@ -7,8 +7,10 @@ import {setCursorAdjacent} from "./cursor.js";
 const tokenCorrectingClassName = 'correction-current';
 const containerCorrectingClassName = 'input-correcting';
 const containerCorrectingRedisplayClassName = 'input-correcting-redisplay';
+const navigationCorrectingClassName = 'input-navigation-correcting';
 
 let container = null;
+let navigationContainer = null;
 let currentToken = null;
 let currentCorrections = null;
 let currentByKeyboard = null;
@@ -16,9 +18,11 @@ let currentByKeyboard = null;
 function addClasses() {
   currentToken.classList.add(tokenCorrectingClassName);
   container.classList.add(containerCorrectingClassName);
+  navigationContainer.classList.add(navigationCorrectingClassName);
 }
 
 function removeClasses() {
+  navigationContainer.classList.remove(navigationCorrectingClassName);
   container.classList.remove(containerCorrectingClassName);
   currentToken.classList.remove(tokenCorrectingClassName);
 }
@@ -170,8 +174,9 @@ function onTouchStart(event) {
   }
 }
 
-export function attachCorrector(inputElement) {
+export function attachCorrector(inputElement, navigationElement) {
   container = inputElement;
+  navigationContainer = navigationElement;
   inputElement.addEventListener('mouseover', (event) => considerCorrecting(event.target));
   inputElement.addEventListener('focusin', (event) => considerCorrecting(event.target, true));
   inputElement.addEventListener('touchstart', onTouchStart);

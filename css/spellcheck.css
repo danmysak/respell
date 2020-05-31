@@ -63,7 +63,7 @@ t-t::after {
 }
 
 .input p:empty {
-    height: calc(var(--text-font-size) * var(--line-height));
+    height: var(--text-computed-line-height);
 }
 
 .input-correcting, .input-correcting t-t:not(.correction-current),
