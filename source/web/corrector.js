@@ -71,11 +71,11 @@ export function stopCorrecting() {
   currentCorrections = null;
 }
 
-function performReplacement(correctionIndex = 0, replacementIndex = 0) {
+function performReplacement(byKeyboard, correctionIndex = 0, replacementIndex = 0) {
   const token = currentToken;
   const correctionId = currentCorrections[correctionIndex].id;
   stopCorrecting();
-  accept(token, correctionId, replacementIndex);
+  accept(token, correctionId, replacementIndex, byKeyboard);
 }
 
 function onMouseDown(event) {
@@ -83,7 +83,7 @@ function onMouseDown(event) {
     return;
   }
   event.preventDefault();
-  performReplacement();
+  performReplacement(false);
 }
 
 function onKeyDown(event) {
@@ -92,7 +92,7 @@ function onKeyDown(event) {
     case 'Enter':
       if (!insideTooltip() || event.target.tagName === tooltipTag) {
         event.preventDefault();
-        performReplacement();
+        performReplacement(true);
       }
       break;
     case 'Escape':
@@ -149,7 +149,7 @@ function considerCorrecting(element, byKeyboard = false) {
 function onTouchStart(event) {
   if (currentToken === event.target) {
     event.preventDefault(); // Otherwise browsers can either fire mouse events or not
-    performReplacement();
+    performReplacement(false);
   } else {
     const lastToken = currentToken;
     considerCorrecting(event.target);

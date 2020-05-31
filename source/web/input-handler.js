@@ -96,9 +96,12 @@ export function update({records = null, updateHistory = true, removeEmptyMutated
         continue;
       }
       unmutatedParagraphs.add(paragraph);
-      const tokenData = spellcheck(paragraph, withAnimations, (start, end, replacement) => {
+      const tokenData = spellcheck(paragraph, withAnimations, (start, end, replacement, byKeyboard) => {
         setSelectionOffsets(paragraph, {start, end});
         insertAtCursor(paragraph, document.createTextNode(replacement));
+        if (!byKeyboard) {
+          setTimeout(() => container.blur(), 0); // Instant blur doesn't seem to work
+        }
       });
       merge(paragraph, tokenData);
       setCorrectionStatsData(paragraph);

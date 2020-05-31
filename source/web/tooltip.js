@@ -63,8 +63,12 @@ export function createTooltip(currentCorrections, performReplacement) {
       }
       const button = document.createElement('button');
       button.innerText = replacement;
+      let byKeyboard = true;
+      button.addEventListener('mouseup', () => {
+        byKeyboard = false;
+      });
       button.addEventListener('click', () => {
-        performReplacement(correctionIndex, replacementIndex);
+        performReplacement(byKeyboard, correctionIndex, replacementIndex);
       });
       if (correctionIndex === 0 && replacementIndex === 0) {
         button.classList.add(defaultReplacementClassName);

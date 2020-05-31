@@ -108,7 +108,7 @@ export function spellcheck(paragraph, withAnimations, replacer) {
   }));
 }
 
-export function accept(tokenElement, correctionId, replacementIndex) {
+export function accept(tokenElement, correctionId, replacementIndex, byKeyboard) {
   const {data, tokenIndex} = tokenElement[tokenDataSymbol];
   const {replacer, tokenData} = data;
   const {start, end, corrections} = tokenData[tokenIndex];
@@ -120,6 +120,7 @@ export function accept(tokenElement, correctionId, replacementIndex) {
   replacer(
     start - getOffset(correction.removePreviousToken, -1),
     end + getOffset(correction.removeNextToken, 1),
-    correction.replacements[replacementIndex]
+    correction.replacements[replacementIndex],
+    byKeyboard
   );
 }
