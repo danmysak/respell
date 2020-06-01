@@ -22,8 +22,10 @@ function initialize() {
   registerOverlay(overlay);
   attachObservers(inputElement, statsContainer, settingCheckboxes, navigationElements);
   attachCorrector(inputElement, navigationContainer);
-  document.querySelectorAll('.explanation').forEach((element) => element.addEventListener('touchstart', (event) => {
-    event.preventDefault();
+  document.querySelectorAll('.explanation').forEach((element) => element.addEventListener('touchend', (event) => {
+    if (event.cancelable) {
+      event.preventDefault();
+    }
   }));
   setOverlayState(false);
 }
