@@ -97,10 +97,16 @@ export function update({records = null, updateHistory = true, removeEmptyMutated
       }
       unmutatedParagraphs.add(paragraph);
       const tokenData = spellcheck(paragraph, withAnimations, (start, end, replacement, byKeyboard) => {
+        if (!byKeyboard) { // Preventing momentary keyboard appearance on mobile devices with unwanted content scroll
+          container.setAttribute('contenteditable', false);
+        }
         setSelectionOffsets(paragraph, {start, end});
         insertAtCursor(paragraph, document.createTextNode(replacement));
         if (!byKeyboard) {
-          setTimeout(() => container.blur(), 0); // Instant blur doesn't seem to work
+          setTimeout(() => {
+            container.setAttribute('contenteditable', true);
+            container.blur();
+          }, 0); // Instant blur doesn't seem to work
         }
       });
       merge(paragraph, tokenData);
