@@ -48,11 +48,14 @@ function removeTooltip() {
   currentToken.querySelector(expanderTag).remove();
 }
 
-function startCorrecting(token, corrections, byKeyboard) {
+function startCorrecting(token, corrections, byKeyboard, byTouch) {
   if (byKeyboard) {
     // This is needed to avoid endless loop with Shift + Tabs when there are some corrections before the last cursor
     // position (it might be useful otherwise as well, but doesn't seem to have any actual effect)
     setCursorAdjacent(token, false);
+  }
+  if (byTouch) {
+    container.blur(); // To avoid having blinking cursor above the tooltip
   }
   currentToken = token;
   currentCorrections = corrections;
@@ -138,7 +141,7 @@ function detachEvents() {
   document.removeEventListener('keydown', onKeyDown, true);
 }
 
-function considerCorrecting(element, byKeyboard = false) {
+function considerCorrecting(element, byKeyboard = false, byTouch = false) {
   const corrections = getTokenCorrectionPresentations(element);
   if (corrections === null || corrections.length === 0) {
     return;
@@ -149,7 +152,7 @@ function considerCorrecting(element, byKeyboard = false) {
     }
     stopCorrecting();
   }
-  startCorrecting(element, corrections, byKeyboard);
+  startCorrecting(element, corrections, byKeyboard, byTouch);
 }
 
 function onTouchStart(event) {
@@ -159,7 +162,7 @@ function onTouchStart(event) {
     performReplacement(false);
   } else {
     const lastToken = currentToken;
-    considerCorrecting(target);
+    considerCorrecting(target, false, true);
     if (currentToken !== lastToken) {
       event.preventDefault(); // To prevent subsequent firing of mouse events
     } else if (currentToken !== null && !currentToken.contains(target)) {
