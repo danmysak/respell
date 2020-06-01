@@ -61,7 +61,7 @@
     height: var(--input-navigation-control-height);
     box-sizing: border-box;
     /* */
-    transition-property: transform, visibility;
+    transition-property: transform, opacity;
     transition-duration: var(--correction-transition-duration);
     padding: var(--input-navigation-padding-top) var(--input-navigation-padding)
              var(--input-navigation-padding-bottom) var(--input-navigation-padding);
@@ -91,7 +91,9 @@
         var(--input-navigation-direction)
         * (100% + var(--input-navigation-blur-radius) + var(--input-navigation-spread-radius))
     ));
-    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    /* Setting visibility: hidden (with transition) makes the elements sometimes jump on Safari and iOS */
 }
 
 .input-navigation-previous::before, .input-navigation-next::before {
