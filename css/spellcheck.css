@@ -80,6 +80,14 @@ t-t.correction-uncertain:not(.correction-new) {
     --correction-color: var(--uncertain-color);
 }
 
+t-t {
+    --token-border-distance: 1px;
+}
+
+.input t-t {
+    --token-border-distance: 2px;
+}
+
 t-t::after {
     content: "";
     display: block;
@@ -92,7 +100,7 @@ t-t::after {
 
     left: 0;
     height: 3px;
-    bottom: -2px;
+    bottom: calc(0px - var(--token-border-distance));
     width: 100%;
     -webkit-mask-image: var(--mask-image);
     mask-image: var(--mask-image);
