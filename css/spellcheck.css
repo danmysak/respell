@@ -29,13 +29,17 @@
 t-t {
     color: var(--correction-color);
     --token-color-timing-function: ease;
-    display: inline-block; /* We will have to resort to this until hyphens: nowrap is implemented in browsers */
     max-width: 100%;
     position: relative;
     z-index: 0;
     transition: color, z-index;
     transition-duration: var(--correction-transition-duration);
     transition-timing-function: var(--token-color-timing-function), step-end;
+}
+
+t-t.correction-hyphenated {
+    white-space: nowrap; /* This could have simply been added to all correction tokens, except for a Chrome bug:
+                            https://bugs.chromium.org/p/chromium/issues/detail?id=1088314 */
 }
 
 t-t.correction-current {
@@ -56,20 +60,20 @@ t-t.correction-current {
     cursor: inherit;
 }
 
-.correction-none, .correction-new {
+t-t.correction-none, t-t.correction-new {
     --correction-color: var(--input-background-color);
     color: var(--text-color); /* "inherit" doesn't play nicely with transitions */
 }
 
-.correction-mistake:not(.correction-new) {
+t-t.correction-mistake:not(.correction-new) {
     --correction-color: var(--mistake-color);
 }
 
-.correction-improvement:not(.correction-new) {
+t-t.correction-improvement:not(.correction-new) {
     --correction-color: var(--improvement-color);
 }
 
-.correction-uncertain:not(.correction-new) {
+t-t.correction-uncertain:not(.correction-new) {
     --correction-color: var(--uncertain-color);
 }
 
@@ -85,7 +89,7 @@ t-t::after {
 
     left: 0;
     height: 3px;
-    bottom: 0;
+    bottom: -2px;
     width: 100%;
     -webkit-mask-image: var(--mask-image);
     mask-image: var(--mask-image);
@@ -97,4 +101,16 @@ t-t::after {
 
 .input p:empty {
     height: var(--text-computed-line-height);
+}
+
+token-expander {
+    /* Could have simply been t-t.correction-current::before if not for
+       https://bugs.chromium.org/p/chromium/issues/detail?id=1088320 */
+    position: absolute;
+    z-index: -1; /* This must be behind the token itself for mouseover event not to retrigger after Escape is pressed */
+    left: -1ch;
+    right: -1ch;
+    top: 0;
+    bottom: calc(0px - var(--tooltip-top-margin));
+    cursor: pointer;
 }

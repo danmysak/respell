@@ -1,4 +1,4 @@
-import {tooltipTag} from "./common-tags.js";
+import {tooltipTag, expanderTag} from "./common-tags.js";
 import {getTokenCorrectionPresentations, accept} from "./spellchecker.js";
 import {startPlannedMutation, endPlannedMutation} from "./input-handler.js";
 import {createTooltip, fixTooltipPositioning, focusFirstOption} from "./tooltip.js";
@@ -14,6 +14,10 @@ let currentToken = null;
 let currentCorrections = null;
 let currentByKeyboard = null;
 
+function normalizeTarget(element) {
+  return element !== null && element.tagName === expanderTag ? element.parentElement : element;
+}
+
 function addClasses() {
   currentToken.classList.add(tokenCorrectingClassName);
   container.classList.add(containerCorrectingClassName);
@@ -27,6 +31,7 @@ function removeClasses() {
 }
 
 function displayTooltip() {
+  currentToken.append(document.createElement(expanderTag));
   const tooltip = createTooltip(currentCorrections, performReplacement);
   currentToken.append(tooltip);
   fixTooltipPositioning(tooltip);
@@ -40,6 +45,7 @@ function displayTooltip() {
 function removeTooltip() {
   currentToken.tabIndex = 0;
   currentToken.querySelector(tooltipTag).remove();
+  currentToken.querySelector(expanderTag).remove();
 }
 
 function startCorrecting(token, corrections, byKeyboard) {
@@ -79,7 +85,7 @@ function performReplacement(byKeyboard, correctionIndex = 0, replacementIndex = 
 }
 
 function onMouseDown(event) {
-  if (event.target !== currentToken) {
+  if (normalizeTarget(event.target) !== currentToken) {
     return;
   }
   event.preventDefault();
@@ -147,15 +153,16 @@ function considerCorrecting(element, byKeyboard = false) {
 }
 
 function onTouchStart(event) {
-  if (currentToken === event.target) {
+  const target = normalizeTarget(event.target);
+  if (currentToken === target) {
     event.preventDefault(); // Otherwise browsers can either fire mouse events or not
     performReplacement(false);
   } else {
     const lastToken = currentToken;
-    considerCorrecting(event.target);
+    considerCorrecting(target);
     if (currentToken !== lastToken) {
       event.preventDefault(); // To prevent subsequent firing of mouse events
-    } else if (currentToken !== null && !currentToken.contains(event.target)) {
+    } else if (currentToken !== null && !currentToken.contains(target)) {
       stopCorrecting();
     }
   }

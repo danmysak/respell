@@ -8,6 +8,7 @@ import "../rules/rules.js";
 const correctionPrefix = 'correction-';
 const emptyCorrection = 'none';
 const newCorrection = 'new';
+const hyphenatedCorrection = 'hyphenated';
 
 const paragraphDataSymbol = Symbol('paragraph-data');
 const tokenDataSymbol = Symbol('token-data');
@@ -42,6 +43,9 @@ function setTokenAttributes(tokenElement) {
   tokenElement.classList.add(
     correctionPrefix + (presentations.length === 0 ? emptyCorrection : presentations[0].presentation.type)
   );
+  if (tokenElement.textContent.includes('-') && tokenElement.textContent.length <= 40) {
+    tokenElement.classList.add(correctionPrefix + hyphenatedCorrection);
+  }
   tokenElement.tabIndex = presentations.length === 0 ? -1 : 0;
 }
 

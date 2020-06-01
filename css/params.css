@@ -16,7 +16,7 @@
     --button-line-height: 1.15;
     --tooltip-width: 300px;
     --tooltip-margin: 10px; /* Number of pixels between the tooltip's border and the edges of the page */
-    --tooltip-top-margin: 4px; /* Gap between the text being corrected and the tooltip */
+    --tooltip-top-margin: 5px; /* Gap between the text being corrected and the tooltip */
     --tooltip-border-width: 3px;
     --input-navigation-padding: 8px;
     --block-spacing: 32px;
