@@ -171,10 +171,18 @@ function onTouchStart(event) {
   }
 }
 
+function onGlobalTouchStart(event) {
+  if (!container.contains(event.target)) { // Otherwise onTouchStart will take care of the event
+    stopCorrecting();
+  }
+}
+
 export function attachCorrector(inputElement, navigationElement) {
   container = inputElement;
   navigationContainer = navigationElement;
   inputElement.addEventListener('mouseover', (event) => considerCorrecting(event.target));
   inputElement.addEventListener('focusin', (event) => considerCorrecting(event.target, true));
   inputElement.addEventListener('touchstart', onTouchStart);
+  document.addEventListener('touchstart', onGlobalTouchStart); // We make it a separate handler because otherwise
+                             // the 'passive' property should have been fiddled, plus it helps avoid extra checks
 }
