@@ -28,13 +28,8 @@
 
 t-t {
     color: var(--correction-color);
-    --token-color-timing-function: ease;
     max-width: 100%;
     position: relative;
-    z-index: 0;
-    transition: color, z-index;
-    transition-duration: var(--correction-transition-duration);
-    transition-timing-function: var(--token-color-timing-function), step-end;
 }
 
 t-t.correction-hyphenated {
@@ -42,12 +37,20 @@ t-t.correction-hyphenated {
                             https://bugs.chromium.org/p/chromium/issues/detail?id=1088314 */
 }
 
-t-t.correction-current {
+.input t-t {
+    --token-color-timing-function: ease;
+    z-index: 0;
+    transition-property: color, z-index;
+    transition-duration: var(--correction-transition-duration);
+    transition-timing-function: var(--token-color-timing-function), step-end;
+}
+
+.input t-t.correction-current {
     z-index: 3;
     transition-timing-function: var(--token-color-timing-function), step-start;
 }
 
-.input-correcting t-t:not(.correction-current) { /* For when directly switching from one token to another */
+.input.input-correcting t-t:not(.correction-current) { /* For when directly switching from one token to another */
     z-index: 1;
     transition-timing-function: var(--token-color-timing-function), step-start;
 }
