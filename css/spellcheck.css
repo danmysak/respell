@@ -13,6 +13,7 @@
     top: 0;
     right: 0;
     bottom: 0;
+    border-radius: var(--input-border-radius);
     pointer-events: none;
     background: var(--input-background-color);
     transition-property: opacity, visibility;
