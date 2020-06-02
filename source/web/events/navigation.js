@@ -5,6 +5,7 @@ const extraBuffer = 4; // In pixels
 
 const buttonSelector = 'button';
 const activeClassName = 'active';
+const hiddenClassName = 'hidden';
 
 let container = null;
 let previousContainer = null;
@@ -18,8 +19,16 @@ let visibilityUpdateScheduled = false;
 
 function visibilityUpdate() {
   const rect = container.getBoundingClientRect();
-  previousContainer.hidden = rect.top >= 0;
-  nextContainer.hidden = rect.bottom < document.documentElement.clientHeight;
+  if (rect.top >= 0) {
+    previousContainer.classList.add(hiddenClassName)
+  } else {
+    previousContainer.classList.remove(hiddenClassName);
+  }
+  if (rect.bottom < document.documentElement.clientHeight) {
+    nextContainer.classList.add(hiddenClassName);
+  } else {
+    nextContainer.classList.remove(hiddenClassName);
+  }
   visibilityUpdateScheduled = false;
 }
 

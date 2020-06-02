@@ -50,11 +50,8 @@
     );
 }
 
-.input-navigation-previous:not([hidden]), .input-navigation-next:not([hidden]) {
-    display: inline-block;
-}
-
 .input-navigation-previous, .input-navigation-next {
+    display: inline-block;
     position: sticky;
     z-index: 4;
     /* The following properties just duplicate the element's natural height, but this way it can be read by JS */
@@ -65,6 +62,10 @@
     transition-duration: var(--correction-transition-duration);
     padding: var(--input-navigation-padding-top) var(--input-navigation-padding)
              var(--input-navigation-padding-bottom) var(--input-navigation-padding);
+}
+
+.input-navigation-previous.hidden, .input-navigation-next.hidden {
+    visibility: hidden; /* display: none exhibits jumping behavior of the page in iOS */
 }
 
 .input-navigation-previous {
@@ -93,7 +94,8 @@
     ));
     opacity: 0;
     pointer-events: none;
-    /* Setting visibility: hidden (with transition) makes the elements sometimes jump on Safari and iOS */
+    /* Setting visibility: hidden (with transition) makes the elements sometimes jump on Safari and iOS; note that the
+    "hidden" class had also to be changed because of Safari/iOS bugs - from display: none to visibility: hidden */
 }
 
 .input-navigation-previous::before, .input-navigation-next::before {
