@@ -22,9 +22,9 @@ export function merge(paragraph, data) {
   let currentNode = paragraph.firstChild;
   let currentOffset = 0;
 
-  const textifyAhead = (chars, splitLast = false) => {
+  const textifyAhead = (chars = Infinity, splitLast = false) => {
     let charsLeft = chars;
-    while (charsLeft > 0) {
+    while (charsLeft > 0 && currentNode !== null) {
       const leftInNode = currentNode.textContent.length - currentOffset;
       if (currentNode.nodeType === Node.ELEMENT_NODE) { // currentOffset must be 0 in this case
         if (leftInNode <= charsLeft) {
@@ -98,7 +98,7 @@ export function merge(paragraph, data) {
       }
     }
   }
-
+  textifyAhead();
   setSelectionOffsets(paragraph, selection);
 }
 
