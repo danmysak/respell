@@ -26,11 +26,7 @@
     grid-area: input;
     border-radius: var(--input-border-radius);
     display: grid;
-    grid-template-areas:
-            "previous . .   "
-            ".        . .   "
-            ".        . next";
-    grid-template-rows: min-content 1fr min-content;
+    grid-template-areas: "previous . next";
     grid-template-columns: max-content 1fr max-content;
 
     --input-navigation-shadow-color: black;
@@ -70,17 +66,21 @@
 
 .input-navigation-previous {
     grid-area: previous;
+    align-self: start;
     top: 0;
     margin-bottom: var(--input-navigation-control-height);
-    /* This choice of value for margin-bottom is not particularly meaningful, but we have to set it to *some* value */
+    /* This choice of value for margin-bottom is not particularly meaningful, but we have to set it to *some* value;
+    beware that this partly determines the minimum height of the input field (because they are part of the same grid) */
     --input-navigation-direction: -1;
 }
 
 .input-navigation-next {
     grid-area: next;
+    align-self: end;
     bottom: 0;
     margin-top: var(--input-navigation-control-height);
-    /* This choice of value for margin-top is not particularly meaningful, but we have to set it to *some* value */
+    /* This choice of value for margin-top is not particularly meaningful, but we have to set it to *some* value;
+    beware that this partly determines the minimum height of the input field (because they are part of the same grid) */
     --input-navigation-direction: 1;
 }
 
