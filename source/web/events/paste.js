@@ -30,7 +30,9 @@ export function attachPasteEvent(container) {
       startPlannedMutation();
       insertAtCursor(container, contents, multiline);
       const records = endPlannedMutation();
-      update({records, removeEmptyMutated: multiline, withAnimations});
+      update({records, removeEmptyMutated: true, withAnimations});
+      // The only case when removeEmptyMutated: true would give an incorrect result is when the user pastes
+      // some whitespace into a paragraph that only contains more whitespace (or is empty). This case may be ignored.
     };
     if (text.length > maxLengthWithoutOverlay) {
       setOverlayState('processing');
