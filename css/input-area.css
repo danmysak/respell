@@ -232,3 +232,22 @@
     --shadow-color: var(--blue);
     --shadow-opacity: 0.6;
 }
+
+.input-store {
+    display: none;
+}
+
+remove-initial-content {
+    cursor: pointer;
+    padding: 0 0.5ch;
+}
+
+remove-initial-content svg {
+    height: calc(0.75 * var(--text-font-size));
+    fill: var(--background-text-color);
+    transition: fill var(--button-highlight-duration);
+}
+
+remove-initial-content:hover svg {
+    fill: var(--text-color);
+}

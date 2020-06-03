@@ -101,7 +101,3 @@ export function merge(paragraph, data) {
   textifyAhead();
   setSelectionOffsets(paragraph, selection);
 }
-
-export function updateTokens(paragraph, callback) {
-  [...paragraph.children].forEach((token) => callback(token));
-}

@@ -78,26 +78,6 @@ h3::after {
     display: none;
 }
 
-.explanation {
-    cursor: help;
-    border-bottom: 1px dotted;
-    position: relative;
-}
-
-.explanation:hover::after {
-    content: attr(data-title);
-    display: block;
-    position: absolute;
-    background-color: var(--tooltip-background-color);
-    padding: 6px 10px;
-    border: 1px solid var(--text-color);
-    border-radius: 4px;
-    z-index: 2;
-    width: 150px;
-    right: -20px;
-    top: calc(100% + 4px);
-}
-
 .info h3 {
     margin-left: calc(var(--main-padding) * -1);
 }

@@ -49,15 +49,18 @@ function setTokenAttributes(tokenElement) {
   tokenElement.tabIndex = presentations.length === 0 ? -1 : 0;
 }
 
-export function getTokenLabelUpdater() {
-  return (element) => {
+export function updateTokens(paragraph) {
+  paragraph[paragraphDataSymbol].tokenData.forEach(({element}) => {
+    if (element === null) {
+      return;
+    }
     for (const className of [...element.classList]) {
       if (className.startsWith(correctionPrefix)) {
         element.classList.remove(className);
       }
     }
     setTokenAttributes(element);
-  };
+  });
 }
 
 export function spellcheck(paragraph, withAnimations, replacer) {

@@ -1,14 +1,14 @@
-import {paragraphTag} from "./common-tags.js";
+import {paragraphTag, removeInitialContentTag} from "./common-tags.js";
 import {attachHistoryEvents} from "./events/history.js";
 import {attachTabEvent} from "./events/tab.js";
 import {attachCursorFixingEvent} from "./events/cursor-fixing.js";
 import {attachPasteEvent} from "./events/paste.js";
 import {attachNavigationEvents, triggerNavigationEvents} from "./events/navigation.js";
 import {normalize} from "./normalizer.js";
-import {merge, updateTokens} from "./merger.js";
+import {merge} from "./merger.js";
 import {getSelectionOffsets, setSelectionOffsets, insertAtCursor} from "./cursor.js";
 import {History} from "./history.js";
-import {spellcheck, getParagraphCorrections, setLabelStatus, getTokenLabelUpdater} from "./spellchecker.js";
+import {spellcheck, getParagraphCorrections, setLabelStatus, updateTokens} from "./spellchecker.js";
 import {stopCorrecting} from "./corrector.js";
 import {
   computeCorrectionStats,
@@ -20,16 +20,20 @@ import {
 const correctionStatsSymbol = Symbol('correction-stats');
 const spellingStatsSymbol = Symbol('spelling-stats');
 
+const irrelevantStatsClassName = 'stats-irrelevant';
+
 let observer = null;
 let container = null;
+let storeContainer = null;
 let statsContainer = null;
 let paragraphs = null;
 let unmutatedParagraphs = null;
 let history = null;
 let plannedMutationStack = [];
 
+let initialContentMode = null;
+
 function renderStats(labelGetter, statsSymbol) {
-  const irrelevantClass = 'stats-irrelevant';
   const labels = labelGetter(paragraphs.map((paragraph) => paragraph[statsSymbol]));
   for (const type of Object.keys(labels)) {
     const label = labels[type];
@@ -41,9 +45,9 @@ function renderStats(labelGetter, statsSymbol) {
     }
     element.innerHTML = html.join('');
     if (label.zero) {
-      element.classList.add(irrelevantClass);
+      element.classList.add(irrelevantStatsClassName);
     } else {
-      element.classList.remove(irrelevantClass);
+      element.classList.remove(irrelevantStatsClassName);
     }
   }
 }
@@ -57,9 +61,6 @@ function renderSpellingStats() {
 }
 
 function processUpdatedRecords(records) {
-  if (records === null) { // Initialization call
-    return true;
-  }
   let treeModified = false;
   records.forEach((record) => {
     if (record.type === 'attributes' && record.target === container) {
@@ -81,9 +82,38 @@ function setCorrectionStatsData(paragraph) {
   paragraph[correctionStatsSymbol] = computeCorrectionStats(getParagraphCorrections(paragraph));
 }
 
-export function update({records = null, updateHistory = true, removeEmptyMutated = false, withAnimations = true} = {}) {
-  if (!processUpdatedRecords(records)) {
-    return;
+function startInitialContentMode() {
+  initialContentMode = true;
+  if (paragraphs.length > 0 && container.textContent.length > 0) {
+    const initialContentButton = storeContainer.querySelector(removeInitialContentTag);
+    const removeContent = (event) => {
+      event.preventDefault();
+      stopCorrecting();
+      container.innerHTML = '';
+    };
+    initialContentButton.addEventListener('touchend', removeContent); // To prevent explanation's hover from triggering
+    initialContentButton.addEventListener('click', removeContent);
+    paragraphs[paragraphs.length - 1].append(initialContentButton);
+  }
+}
+
+function endInitialContentMode() {
+  initialContentMode = false;
+  const initialContentButton = container.querySelector(removeInitialContentTag);
+  if (initialContentButton !== null) { // It could have been deleted by the user somehow or not added in the first place
+    initialContentButton.remove();
+  }
+}
+
+export function update({records = null, initial = false, updateHistory = true,
+                        removeEmptyMutated = false, withAnimations = true} = {}) {
+  if (!initial) {
+    if (!processUpdatedRecords(records)) {
+      return;
+    }
+    if (initialContentMode) {
+      endInitialContentMode();
+    }
   }
   detachSelectionEvents();
   const historyItems = [];
@@ -124,6 +154,9 @@ export function update({records = null, updateHistory = true, removeEmptyMutated
   if (updateHistory) {
     history.update(historyItems, getSelectionOffsets(container));
   }
+  if (initial) {
+    startInitialContentMode();
+  }
   renderCorrectionStats();
   renderSpellingStats();
   setTimeout(() => {
@@ -136,7 +169,7 @@ export function update({records = null, updateHistory = true, removeEmptyMutated
 function updateForNewLabels() {
   startPlannedMutation();
   for (const paragraph of paragraphs) {
-    updateTokens(paragraph, getTokenLabelUpdater());
+    updateTokens(paragraph);
     setCorrectionStatsData(paragraph);
   }
   renderCorrectionStats();
@@ -204,8 +237,9 @@ export function findCorrection(anchorParagraph, condition, ahead = true) {
   return null;
 }
 
-export function attachObservers(inputElement, statsElement, settingCheckboxes, navigationElements) {
+export function attachObservers(inputElement, inputStore, statsElement, settingCheckboxes, navigationElements) {
   container = inputElement;
+  storeContainer = inputStore;
   statsContainer = statsElement;
   unmutatedParagraphs = new WeakSet();
   paragraphs = [];
@@ -224,5 +258,5 @@ export function attachObservers(inputElement, statsElement, settingCheckboxes, n
   attachNavigationEvents(inputElement, navigationElements);
   attachSelectionEvents();
   watchSettings(settingCheckboxes);
-  update();
+  update({initial: true});
 }
