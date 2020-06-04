@@ -38,7 +38,10 @@ export function attachHistoryEvents(container, history) {
         const records = endPlannedMutation();
         update({records, updateHistory: false, withAnimations: false});
         setSelectionOffsets(container, selection);
-        setTimeout(() => scrollSelectionIntoView(container), 0); // Let's not force reflow during the update
+        setTimeout(() => {
+          const lineHeight = parseFloat(window.getComputedStyle(container).getPropertyValue('line-height'));
+          scrollSelectionIntoView(container, lineHeight);
+        }, 0); // Let's not force reflow during the update
       }
     }
   });

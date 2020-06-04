@@ -134,16 +134,15 @@ export function restoreCursor(container) {
   }
 }
 
-export function scrollSelectionIntoView(container) {
+export function scrollSelectionIntoView(container, lineHeight) {
   const range = getRangeIfInside(container);
   if (range === null) {
     return;
   }
   const cutoffLines = 2;
-  const textLineHeight = parseFloat(window.getComputedStyle(container).getPropertyValue('line-height'));
   const viewportHeight = document.documentElement.clientHeight;
-  const top = cutoffLines * textLineHeight;
-  const bottom = viewportHeight - (cutoffLines + 1) * textLineHeight;
+  const top = cutoffLines * lineHeight;
+  const bottom = viewportHeight - (cutoffLines + 1) * lineHeight;
   const rect = range.getBoundingClientRect();
   let scrollDelta = null;
   if (rect.top < top) {
