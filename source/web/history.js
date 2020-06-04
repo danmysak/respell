@@ -8,7 +8,7 @@ export class History {
     this.items = items;
     this.elementIndex.clear();
     this.items.forEach(({element}, index) => {
-      this.elementIndex[element] = index;
+      this.elementIndex.set(element, index);
     });
   }
 
@@ -35,18 +35,23 @@ export class History {
     changes.sort((a, b) => a.indices[targetId] - b.indices[targetId]);
     const items = [];
     for (const {indices, diff: {prefixLength, suffixLength, middle}} of changes) {
+      if (indices[targetId] === null) {
+        continue;
+      }
       const sourceIndex = indices[sourceId];
-      let element, text = null;
+      let element;
+      let text = null;
       if (sourceIndex === null) {
         element = document.createElement(this.tag);
-        element.textContent = middle;
+        element.textContent = middle[targetId];
       } else {
-        const element = this.items[sourceIndex].elementIndex;
+        element = this.items[sourceIndex].element;
         const oldText = this.items[sourceIndex].text;
         if (prefixLength + suffixLength === 0) {
           text = oldText;
         } else {
-          element.textContent = oldText.slice(0, prefixLength) + middle + oldText.slice(oldText.length - suffixLength);
+          element.textContent =
+            oldText.slice(0, prefixLength) + middle[targetId] + oldText.slice(oldText.length - suffixLength);
         }
       }
       items.push({
@@ -91,7 +96,7 @@ export class History {
       });
     };
     data.forEach(({element, mutated}, index) => {
-      const lastIndex = this.elementIndex[element];
+      const lastIndex = this.elementIndex.get(element);
       const text = mutated || lastIndex === undefined ? element.textContent : this.items[lastIndex].text;
       if (lastIndex === undefined) {
         addChange(null, index, text);
@@ -104,7 +109,7 @@ export class History {
         text
       });
     });
-    for (const [element, lastIndex] of this.elementIndex) {
+    for (const [element, lastIndex] of this.elementIndex.entries()) {
       addChange(lastIndex, null, null);
     }
     if (this.state < this.changeSets.length) {
@@ -139,6 +144,10 @@ export class History {
     return this.applyChange(this.changeSets[this.state], 1, 0, this.selections[this.state]);
   }
 
+  canUndo() {
+    return this.initialized && this.state > 0;
+  }
+
   redo() {
     if (!this.initialized) {
       return null;
@@ -148,5 +157,9 @@ export class History {
     }
     this.state++;
     return this.applyChange(this.changeSets[this.state - 1], 0, 1, this.selections[this.state]);
+  }
+
+  canRedo() {
+    return this.initialized && this.state < this.changeSets.length;
   }
 }
