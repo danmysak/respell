@@ -2,16 +2,17 @@ import {update, startPlannedMutation, endPlannedMutation} from "../input-handler
 import {stopCorrecting} from "../corrector.js";
 import {setSelectionOffsets} from "../cursor.js";
 
+const undoKey = 'KeyZ';
+const redoKey = 'KeyY';
+
 export function attachHistoryEvents(container, history) {
-  container.addEventListener('keydown', (event) => {
+  document.addEventListener('keydown', (event) => {
     let undo = false;
     let redo = false;
     if (event.ctrlKey || event.metaKey) {
-      const key = event.key.toLowerCase();
-      // Shift can either make event.key uppercase or not depending on what other keys are pressed
-      if (key === 'z' && !event.shiftKey) {
+      if (event.code === undoKey && !event.shiftKey) {
         undo = true;
-      } else if ((key === 'z' && event.shiftKey) || (key === 'y')) {
+      } else if ((event.code === undoKey && event.shiftKey) || (event.code === redoKey)) {
         redo = true;
       }
     }

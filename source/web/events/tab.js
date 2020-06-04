@@ -33,7 +33,8 @@ export function attachTabEvent(container, settingCheckboxes) {
       offset = null;
     } else {
       ({parent: paragraph, offset} = getParentWithOffset(
-        (node) => node.nodeType === Node.ELEMENT_NODE && node.tagName === paragraphTag, node, nodeOffset
+        (node) => node.nodeType === Node.ELEMENT_NODE && node.tagName === paragraphTag,
+        node, nodeOffset
       ));
     }
     const correction = findCorrection(paragraph, ({start, end}, currentParagraph) => {

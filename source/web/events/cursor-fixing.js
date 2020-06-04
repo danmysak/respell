@@ -17,12 +17,15 @@ export function attachCursorFixingEvent(container, history) {
     }
 
     const currentSelection = history.getSelection();
-    if (delta !== 0 && currentSelection !== null && currentSelection.start === currentSelection.end) {
-      const selection = currentSelection.start;
+    if (delta !== 0 && currentSelection !== null
+      && currentSelection.start.containerOffset === currentSelection.end.containerOffset) {
+      const selection = currentSelection.start.containerOffset;
       const node = currentSelection.extraInfo.startContainer;
       setTimeout(() => {
         const currentSelection = history.getSelection();
-        if (currentSelection !== null && currentSelection.start === selection && currentSelection.end === selection
+        if (currentSelection !== null
+          && currentSelection.start.containerOffset === selection
+          && currentSelection.end.containerOffset === selection
           && currentSelection.extraInfo.startContainer === node) {
           const correctSelection = selection + delta;
           if (correctSelection >= 0 && correctSelection <= container.textContent.length) {

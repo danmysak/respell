@@ -12,7 +12,14 @@ export class History {
     });
   }
 
-  computeDiff(source, target) {
+  computeDiff(source, target, guaranteedEqual = false) {
+    if (guaranteedEqual) {
+      return {
+        prefixLength: source.length,
+        suffixLength: 0,
+        middle: ['', '']
+      };
+    }
     const minLength = Math.min(source.length, target.length);
     let left = 0;
     while (left < minLength && source[left] === target[left]) {
@@ -47,7 +54,7 @@ export class History {
       } else {
         element = this.items[sourceIndex].element;
         const oldText = this.items[sourceIndex].text;
-        if (prefixLength + suffixLength === 0) {
+        if (prefixLength + suffixLength === oldText.length && middle[targetId].length === 0) {
           text = oldText;
         } else {
           element.textContent =
@@ -86,12 +93,13 @@ export class History {
 
     const items = [];
     const changes = [];
-    const addChange = (sourceIndex, targetIndex, targetText) => {
+    const addChange = (sourceIndex, targetIndex, targetText, guaranteedEqualText = false) => {
       changes.push({
         indices: [sourceIndex, targetIndex],
         diff: this.computeDiff(
           sourceIndex === null ? '' : this.items[sourceIndex].text,
-          targetIndex === null ? '' : targetText
+          targetIndex === null ? '' : targetText,
+          guaranteedEqualText
         )
       });
     };
@@ -102,7 +110,7 @@ export class History {
         addChange(null, index, text);
       } else {
         this.elementIndex.delete(element);
-        addChange(lastIndex, index, text);
+        addChange(lastIndex, index, text, !mutated);
       }
       items.push({
         element,

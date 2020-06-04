@@ -83,18 +83,14 @@ export function insertAtCursor(parentNode, contents, collapseToStart = false) {
   return true;
 }
 
-export function getSelectionOffsets(container) {
+export function getSelectionOffsets(container, simpleOffsets = false) {
   const range = getRangeIfInside(container);
   if (range === null) {
     return null;
   }
-  const start = getParentOffset(container, range.startContainer, range.startOffset);
-  const end = range.endContainer === range.startContainer && range.endOffset === range.startOffset
-    ? start
-    : getParentOffset(container, range.endContainer, range.endOffset);
   return {
-    start,
-    end,
+    start: getParentOffset(container, range.startContainer, range.startOffset, simpleOffsets),
+    end: getParentOffset(container, range.endContainer, range.endOffset, simpleOffsets),
     extraInfo: {
       startContainer: range.startContainer,
       endContainer: range.endContainer
@@ -107,7 +103,7 @@ export function setSelectionOffsets(container, offsets) {
     return;
   }
   const start = getNodeAtOffset(container, offsets.start);
-  const end = offsets.end === offsets.start ? start : getNodeAtOffset(container, offsets.end);
+  const end = getNodeAtOffset(container, offsets.end);
   setCursor(start.node, start.offset, end.node, end.offset);
 }
 

@@ -1,6 +1,6 @@
 export function getParentWithOffset(condition, node, offset) {
   let currentNode, currentOffset;
-  const result = (offset, parent) => ({offset, parent});
+  const result = (parent, offset) => ({parent, offset});
   if (node.nodeType === Node.TEXT_NODE) {
     currentNode = node;
     currentOffset = offset;
@@ -13,27 +13,46 @@ export function getParentWithOffset(condition, node, offset) {
       currentOffset = currentNode.textContent.length;
     }
   } else { // Shouldn't happen
-    return result(0, null);
+    return result(null, 0);
   }
   while (!condition(currentNode)) {
-    if (currentNode.parentNode === null) {
-      return result(currentOffset, null);
+    if (currentNode.parentElement === null) {
+      return result(null, currentOffset);
     }
-    let currentSibling = currentNode.parentNode.firstChild;
+    let currentSibling = currentNode.parentElement.firstChild;
     while (currentSibling !== currentNode) {
       currentOffset += currentSibling.textContent.length;
       currentSibling = currentSibling.nextSibling;
     }
-    currentNode = currentNode.parentNode;
+    currentNode = currentNode.parentElement;
   }
-  return result(currentOffset, currentNode);
+  return result(currentNode, currentOffset);
 }
 
-export function getParentOffset(parent, node, offset) {
-  return getParentWithOffset((node) => node === parent, node, offset).offset;
+export function getParentOffset(container, node, offset, simpleOffset = false) {
+  const containerOffset = getParentWithOffset((node) => node === container, node, offset).offset;
+  if (simpleOffset) {
+    return containerOffset;
+  }
+  const {parent, offset: parentOffset} = getParentWithOffset((node) => node.parentElement === container, node, offset);
+  let skipChildren = 0;
+  if (parent !== null && parentOffset === 0) {
+    let currentSibling = parent.previousSibling;
+    while (currentSibling !== null) {
+      skipChildren++;
+      if (currentSibling.textContent.length > 0) {
+        break;
+      }
+      currentSibling = currentSibling.previousSibling;
+    }
+  }
+  return {
+    containerOffset,
+    skipChildren
+  };
 }
 
-export function getNodeAtOffset(parent, offset) {
+function getFirstNodeAtOffset(parent, offset) {
   let currentNode = parent;
   let currentOffset = offset;
   while (true) {
@@ -63,7 +82,41 @@ export function getNodeAtOffset(parent, offset) {
       return {
         node: currentNode,
         offset: 0
-      }
+      };
     }
+  }
+}
+
+export function getNodeAtOffset(container, containerOffsetData) {
+  let containerOffset;
+  let skipChildren;
+  if (typeof containerOffsetData === 'number') {
+    containerOffset = containerOffsetData;
+    skipChildren = 0;
+  } else {
+    ({containerOffset, skipChildren} = containerOffsetData);
+  }
+  const {node, offset} = getFirstNodeAtOffset(container, containerOffset);
+  if (skipChildren > 0 && node !== container) {
+    let currentNode = node;
+    while (currentNode.parentElement !== container) {
+      currentNode = currentNode.parentElement;
+    }
+    let leftToSkip = skipChildren;
+    let currentOffset = offset;
+    while (leftToSkip > 0 && currentNode.nextSibling !== null) {
+      leftToSkip--;
+      currentNode = currentNode.nextSibling;
+      currentOffset = 0;
+    }
+    return {
+      node: currentNode,
+      offset: currentOffset
+    };
+  } else {
+    return {
+      node,
+      offset
+    };
   }
 }

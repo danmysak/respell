@@ -8,7 +8,7 @@ function removeAttributes(element) {
 }
 
 export function merge(paragraph, data) {
-  const selection = getSelectionOffsets(paragraph);
+  const selection = getSelectionOffsets(paragraph, true);
   removeAttributes(paragraph);
 
   const splitNode = (node, at, insertAfter) => {
