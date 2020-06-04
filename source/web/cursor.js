@@ -133,3 +133,29 @@ export function restoreCursor(container) {
     return false;
   }
 }
+
+export function scrollSelectionIntoView(container) {
+  const range = getRangeIfInside(container);
+  if (range === null) {
+    return;
+  }
+  const cutoffLines = 2;
+  const textLineHeight = parseFloat(window.getComputedStyle(container).getPropertyValue('line-height'));
+  const viewportHeight = document.documentElement.clientHeight;
+  const top = cutoffLines * textLineHeight;
+  const bottom = viewportHeight - (cutoffLines + 1) * textLineHeight;
+  const rect = range.getBoundingClientRect();
+  let scrollDelta = null;
+  if (rect.top < top) {
+    scrollDelta = rect.top - top;
+  } else if (rect.top >= bottom) {
+    scrollDelta = rect.top - bottom;
+  }
+  if (scrollTo !== null) {
+    window.scrollTo({
+      left: window.pageXOffset,
+      top: window.pageYOffset + scrollDelta,
+      behavior: 'auto'
+    });
+  }
+}

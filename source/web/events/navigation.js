@@ -164,4 +164,8 @@ export function attachNavigationEvents(inputElement, [previous, next]) {
   window.addEventListener('scroll', reset);
   previous.querySelector(buttonSelector).addEventListener('click', () => scroll(false));
   next.querySelector(buttonSelector).addEventListener('click', () => scroll(true));
+
+  // The following lines are required so that subsequent keyboard events will be sent to the input and not to the button
+  previous.querySelector(buttonSelector).addEventListener('mousedown', (event) => event.preventDefault());
+  next.querySelector(buttonSelector).addEventListener('mousedown', (event) => event.preventDefault());
 }

@@ -1,6 +1,6 @@
 import {update, startPlannedMutation, endPlannedMutation} from "../input-handler.js";
 import {stopCorrecting} from "../corrector.js";
-import {setSelectionOffsets} from "../cursor.js";
+import {setSelectionOffsets, scrollSelectionIntoView} from "../cursor.js";
 
 const undoKey = 'KeyZ';
 const redoKey = 'KeyY';
@@ -38,6 +38,7 @@ export function attachHistoryEvents(container, history) {
         const records = endPlannedMutation();
         update({records, updateHistory: false, withAnimations: false});
         setSelectionOffsets(container, selection);
+        setTimeout(() => scrollSelectionIntoView(container), 0); // Let's not force reflow during the update
       }
     }
   });

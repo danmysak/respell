@@ -67,6 +67,7 @@ export class History {
       });
     }
     this.setItems(items);
+    this.currentSelection = selection;
     return {
       elements: items.map(({element}) => element),
       selection
