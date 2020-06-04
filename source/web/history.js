@@ -75,7 +75,8 @@ export class History {
 
   initialize(data, selection) {
     this.changeSets = [];
-    this.selections = [selection];
+    this.selections = [];
+    this.currentSelection = selection;
     this.state = 0;
     this.elementIndex = new Map();
     this.setItems(data.map(({element}) => ({
@@ -122,11 +123,12 @@ export class History {
     }
     if (this.state < this.changeSets.length) {
       this.changeSets.splice(this.state);
-      this.selections.splice(this.state + 1);
+      this.selections.splice(this.state);
     }
     this.state++;
     this.changeSets.push(changes);
-    this.selections.push(selection);
+    this.selections.push([this.currentSelection, selection]);
+    this.currentSelection = selection;
     this.setItems(items);
   }
 
@@ -134,11 +136,11 @@ export class History {
     if (!this.initialized) {
       return;
     }
-    this.selections[this.state] = selection;
+    this.currentSelection = selection;
   }
 
   getSelection() {
-    return this.initialized ? this.selections[this.state] : null;
+    return this.initialized ? this.currentSelection : null;
   }
 
   undo() {
@@ -149,7 +151,7 @@ export class History {
       return null;
     }
     this.state--;
-    return this.applyChange(this.changeSets[this.state], 1, 0, this.selections[this.state]);
+    return this.applyChange(this.changeSets[this.state], 1, 0, this.selections[this.state][0]);
   }
 
   canUndo() {
@@ -164,7 +166,7 @@ export class History {
       return false;
     }
     this.state++;
-    return this.applyChange(this.changeSets[this.state - 1], 0, 1, this.selections[this.state]);
+    return this.applyChange(this.changeSets[this.state - 1], 0, 1, this.selections[this.state - 1][1]);
   }
 
   canRedo() {

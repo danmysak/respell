@@ -131,6 +131,7 @@ export function update({records = null, initial = false, updateHistory = true,
           container.setAttribute('contenteditable', false);
         }
         setSelectionOffsets(paragraph, {start, end});
+        selectionChanged(); // Otherwise this selection is not captured by the temporarily detached handler
         insertAtCursor(paragraph, document.createTextNode(replacement));
         if (!byKeyboard) {
           setTimeout(() => {
@@ -161,7 +162,7 @@ export function update({records = null, initial = false, updateHistory = true,
   renderSpellingStats();
   setTimeout(() => {
     attachSelectionEvents();
-  }, 0);
+  }, 0); // If reattached synchronously, browser will fire the event for all changes that occurred during the update
   triggerNavigationEvents();
   observer.takeRecords();
 }
