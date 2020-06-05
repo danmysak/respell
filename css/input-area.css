@@ -237,17 +237,43 @@
     display: none;
 }
 
-remove-initial-content {
-    cursor: pointer;
-    padding: 0 0.5ch;
+.input {
+    --input-initial-button-padding: 0.5ch;
 }
 
-remove-initial-content svg {
+initial-buttons-prefix {
+    margin-right: calc(1.5 * var(--input-initial-button-padding)); /* Extra 0.5 is for the gap after the text */
+}
+
+initial-buttons-prefix::after {
+    /* This ridiculous hack is needed so that Safari stops thinking that the current line has an infinite width */
+    content: "";
+    display: inline;
+}
+
+initial-buttons-container {
+    white-space: nowrap;
+    display: inline-block;
+}
+
+.input-initial-button {
+    cursor: pointer;
+    padding: 0 var(--input-initial-button-padding);
+    margin-left: calc(0px - var(--input-initial-button-padding));
+    /* This way when a button is at the beginning of a line, it doesn't have a visible left margin */
+    margin-right: var(--input-initial-button-padding);
+}
+
+.input-initial-button:last-child {
+    margin-right: 0;
+}
+
+.input-initial-button svg {
     height: calc(0.75 * var(--text-font-size));
     fill: var(--background-text-color);
     transition: fill var(--button-highlight-duration);
 }
 
-remove-initial-content:hover svg {
+.input-initial-button:hover svg {
     fill: var(--text-color);
 }

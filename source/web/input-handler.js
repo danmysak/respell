@@ -1,4 +1,10 @@
-import {paragraphTag, removeInitialContentTag} from "./common-tags.js";
+import {
+  paragraphTag,
+  initialButtonsPrefixTag,
+  initialButtonsContainerTag,
+  removeInitialContentTag,
+  restoreLastTextTag
+} from "./common-tags.js";
 import {attachHistoryEvents} from "./events/history.js";
 import {attachTabEvent} from "./events/tab.js";
 import {attachCursorFixingEvent} from "./events/cursor-fixing.js";
@@ -21,6 +27,10 @@ const correctionStatsSymbol = Symbol('correction-stats');
 const spellingStatsSymbol = Symbol('spelling-stats');
 
 const irrelevantStatsClassName = 'stats-irrelevant';
+
+const settingsKeyPrefix = 'settings-labels-';
+const lastTextKey = 'last-text';
+const lastTextParagraphSeparator = '\n\n';
 
 let observer = null;
 let container = null;
@@ -82,40 +92,65 @@ function setCorrectionStatsData(paragraph) {
   paragraph[correctionStatsSymbol] = computeCorrectionStats(getParagraphCorrections(paragraph));
 }
 
-function startInitialContentMode() {
+function startInitialContentMode(serializedContent) {
   initialContentMode = true;
   if (paragraphs.length > 0 && container.textContent.length > 0) {
-    const initialContentButton = storeContainer.querySelector(removeInitialContentTag);
-    const removeContent = (event) => {
-      event.preventDefault();
-      stopCorrecting();
-      container.innerHTML = '';
+    const targetParagraph = paragraphs[paragraphs.length - 1];
+    targetParagraph.append(document.createElement(initialButtonsPrefixTag));
+    const buttonContainer = document.createElement(initialButtonsContainerTag);
+    targetParagraph.append(buttonContainer);
+    const addButton = (tag, callback) => {
+      const button = storeContainer.querySelector(tag);
+      const handler = (event) => {
+        event.preventDefault();
+        stopCorrecting();
+        callback();
+      };
+      button.addEventListener('touchend', handler); // To prevent an explanation's hover state from triggering
+      button.addEventListener('click', handler);
+      buttonContainer.append(button);
     };
-    initialContentButton.addEventListener('touchend', removeContent); // To prevent explanation's hover from triggering
-    initialContentButton.addEventListener('click', removeContent);
-    paragraphs[paragraphs.length - 1].append(initialContentButton);
+    addButton(removeInitialContentTag, () => {
+      container.innerHTML = '';
+    });
+    const lastText = localStorage.getItem(lastTextKey);
+    if (lastText !== null && lastText !== '' && lastText !== serializedContent) {
+      addButton(restoreLastTextTag, () => {
+        startPlannedMutation();
+        container.textContent = '';
+        lastText.split(lastTextParagraphSeparator).forEach((contents) => {
+          const paragraph = document.createElement(paragraphTag);
+          paragraph.textContent = contents;
+          container.append(paragraph);
+        });
+        setSelectionOffsets(container, {start: 0, end: 0}); // Otherwise the cursor remains before the first paragraph,
+                                                           // which causes an extra empty paragraph during normalization
+        const records = endPlannedMutation();
+        update({records, withAnimations: false});
+      });
+    }
   }
 }
 
 function endInitialContentMode() {
   initialContentMode = false;
-  const initialContentButton = container.querySelector(removeInitialContentTag);
-  if (initialContentButton !== null) { // It could have been deleted by the user somehow or not added in the first place
-    initialContentButton.remove();
+  for (const tag of [initialButtonsContainerTag, initialButtonsPrefixTag]) {
+    const element = container.querySelector(tag);
+    if (element !== null) {
+      element.remove();
+    }
   }
 }
 
 export function update({records = null, initial = false, updateHistory = true,
                         removeEmptyMutated = false, withAnimations = true} = {}) {
-  if (!initial) {
-    if (!processUpdatedRecords(records)) {
-      return;
-    }
-    if (initialContentMode) {
-      endInitialContentMode();
-    }
+  if (!initial && !processUpdatedRecords(records)) {
+    return;
   }
   detachSelectionEvents();
+  if (!initial && initialContentMode) {
+    endInitialContentMode();
+  }
   const historyItems = [];
   paragraphs = [];
   for (const paragraph of normalize(container, unmutatedParagraphs)) {
@@ -155,8 +190,11 @@ export function update({records = null, initial = false, updateHistory = true,
   if (updateHistory) {
     history.update(historyItems, getSelectionOffsets(container));
   }
+  const serializedContent = paragraphs.map((paragraph) => paragraph.textContent).join(lastTextParagraphSeparator);
   if (initial) {
-    startInitialContentMode();
+    startInitialContentMode(serializedContent);
+  } else {
+    localStorage.setItem(lastTextKey, serializedContent);
   }
   renderCorrectionStats();
   renderSpellingStats();
@@ -206,10 +244,18 @@ export function endPlannedMutation() {
 function watchSettings(settingCheckboxes) {
   settingCheckboxes.forEach((checkbox) => {
     const label = checkbox.dataset.ignoreLabel;
+    const settingsKey = settingsKeyPrefix + label;
+    const offValue = '0';
+    const onValue = '1';
+    const value = localStorage.getItem(settingsKey);
+    if (value !== null) {
+      checkbox.checked = value !== offValue;
+    }
     setLabelStatus(label, checkbox.checked);
     checkbox.addEventListener('change', () => {
       stopCorrecting();
       setLabelStatus(label, checkbox.checked);
+      localStorage.setItem(settingsKey, checkbox.checked ? onValue : offValue);
       updateForNewLabels();
     });
   });
