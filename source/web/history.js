@@ -12,6 +12,19 @@ export class History {
     });
   }
 
+  computeCommonLengths(source, target, equal = (a, b) => a === b) {
+    const minLength = Math.min(source.length, target.length);
+    let left = 0;
+    while (left < minLength && equal(source[left], target[left])) {
+      left++;
+    }
+    let right = 0;
+    while (left + right < minLength && equal(source[source.length - 1 - right], target[target.length - 1 - right])) {
+      right++;
+    }
+    return [left, right];
+  }
+
   computeDiff(source, target, guaranteedEqual = false) {
     if (guaranteedEqual) {
       return {
@@ -20,28 +33,28 @@ export class History {
         middle: ['', '']
       };
     }
-    const minLength = Math.min(source.length, target.length);
-    let left = 0;
-    while (left < minLength && source[left] === target[left]) {
-      left++;
-    }
-    let right = 0;
-    while (left + right < minLength && source[source.length - 1 - right] === target[target.length - 1 - right]) {
-      right++;
-    }
+    const [prefixLength, suffixLength] = this.computeCommonLengths(source, target);
     return {
-      prefixLength: left,
-      suffixLength: right,
-      middle: left + right === 0
-        ? [source, target]
-        : [source.slice(left, source.length - right), target.slice(left, target.length - right)]
+      prefixLength,
+      suffixLength,
+      middle: prefixLength + suffixLength === 0
+        ? [
+          source,
+          target
+        ] : [
+          source.slice(prefixLength, source.length - suffixLength),
+          target.slice(prefixLength, target.length - suffixLength)
+        ]
     };
   }
 
   applyChange(changes, sourceId, targetId, selection) {
-    changes.sort((a, b) => a.indices[targetId] - b.indices[targetId]);
+    changes.middle.sort((a, b) => a.indices[targetId] - b.indices[targetId]);
     const items = [];
-    for (const {indices, diff: {prefixLength, suffixLength, middle}} of changes) {
+    for (let index = 0; index < changes.prefixLength; index++) {
+      items.push(this.items[index]);
+    }
+    for (const {indices, diff: {prefixLength, suffixLength, middle}} of changes.middle) {
       if (indices[targetId] === null) {
         continue;
       }
@@ -65,6 +78,9 @@ export class History {
         element,
         text: text !== null ? text : element.textContent
       });
+    }
+    for (let index = this.items.length - changes.suffixLength; index < this.items.length; index++) {
+      items.push(this.items[index]);
     }
     this.setItems(items);
     this.currentSelection = selection;
@@ -94,9 +110,17 @@ export class History {
     }
 
     const items = [];
-    const changes = [];
+    const [prefixLength, suffixLength] = this.computeCommonLengths(
+      this.items, data,
+      ({element: itemElement}, {element: dataElement, mutated}) => !mutated && itemElement === dataElement
+    );
+    const changes = {
+      prefixLength,
+      suffixLength,
+      middle: []
+    };
     const addChange = (sourceIndex, targetIndex, targetText, guaranteedEqualText = false) => {
-      changes.push({
+      changes.middle.push({
         indices: [sourceIndex, targetIndex],
         diff: this.computeDiff(
           sourceIndex === null ? '' : this.items[sourceIndex].text,
@@ -112,7 +136,9 @@ export class History {
         addChange(null, index, text);
       } else {
         this.elementIndex.delete(element);
-        addChange(lastIndex, index, text, !mutated);
+        if (index >= prefixLength && index < data.length - suffixLength) {
+          addChange(lastIndex, index, text, !mutated);
+        }
       }
       items.push({
         element,
