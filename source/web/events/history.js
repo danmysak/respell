@@ -5,6 +5,22 @@ import {setSelectionOffsets, scrollSelectionIntoView} from "../cursor.js";
 const undoKey = 'KeyZ';
 const redoKey = 'KeyY';
 
+function mergeChildNodes(container, elements, history) {
+  const childNodes = [...container.childNodes];
+  const [top, bottom] = history.computeCommonLengths(childNodes, elements);
+  for (let i = childNodes.length - bottom - 1; i >= top; i--) {
+    childNodes[i].remove();
+  }
+  for (let i = top; i < elements.length - bottom; i++) {
+    const element = elements[i];
+    if (i === 0) {
+      container.prepend(element);
+    } else {
+      elements[i - 1].after(element);
+    }
+  }
+}
+
 export function attachHistoryEvents(container, history) {
   document.addEventListener('keydown', (event) => {
     let undo = false;
@@ -23,18 +39,7 @@ export function attachHistoryEvents(container, history) {
         window.getSelection().removeAllRanges();
         startPlannedMutation();
         const {elements, selection} = undo ? history.undo() : history.redo();
-        if (elements.length === 0) {
-          container.innerHTML = '';
-        } else {
-          container.prepend(elements[0]);
-          for (let i = 1; i < elements.length; i++) {
-            elements[i - 1].after(elements[i]);
-          }
-          const lastElement = elements[elements.length - 1];
-          while (lastElement.nextSibling !== null) {
-            lastElement.nextSibling.remove();
-          }
-        }
+        mergeChildNodes(container, elements, history);
         const records = endPlannedMutation();
         update({records, updateHistory: false, withAnimations: false});
         setSelectionOffsets(container, selection);
