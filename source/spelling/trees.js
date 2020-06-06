@@ -1,5 +1,5 @@
 import {simplifyApostrophe, normalizeApostrophe, normalizeCase} from "./typography.js";
-import {Correction} from "./correction.js";
+import {Correction, correctionTypes} from "./correction.js";
 
 const leaf = Symbol('leaf');
 
@@ -67,8 +67,9 @@ export function createTreeRule(correspondences, correctionType, description,
     if (lowerCase) {
       values = values.map((value) => normalizeCase(value, token));
     }
-    values = values.filter((value) => simplifyApostrophe(value) !== simplifyApostrophe(token));
-    return values.length === 0 ? null : new Correction(correctionType, values, description, {
+    const differingValues = values.filter((value) => simplifyApostrophe(value) !== simplifyApostrophe(token));
+    const actualCorrectionType = differingValues.length === values.length ? correctionType : correctionTypes.UNCERTAIN;
+    return differingValues.length === 0 ? null : new Correction(actualCorrectionType, differingValues, description, {
       requiresExtraChange: requiresExtraChange || false
     });
   };

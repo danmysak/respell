@@ -13,7 +13,7 @@ const middleName = "конан";
 const endings = {
   "еві": "ові",
   "ем": "ом",
-  "і": "и",
+  "і": ["і", "и"],
   "ів": "ів", // This is needed for the middle name rule
   "ь": "",
   "ю": ["у", "е"],
