@@ -70,4 +70,6 @@ import "./code/140b.js";
 import "./code/140c.js";
 import "./code/140d.js";
 import "./code/140e.js";
-import "./code/144a.js";
+import "./code/144.js";
+import "./code/144.3a.js";
+import "./code/144.3b.js";
