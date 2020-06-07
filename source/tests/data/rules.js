@@ -1099,4 +1099,9 @@ export const tests = [
 
   [144, 'Свєнціцький не такий вправний, як Свенціцька.', 'Свенцицький не такий вправний, як Свенцицька.', [correctionTypes.MISTAKE, correctionTypes.MISTAKE]],
   [144, 'ПАМ’ЯТІ СВЄНЦИЦЬКОГО', 'ПАМ’ЯТІ СВЕНЦИЦЬКОГО', correctionTypes.MISTAKE],
+
+  [[144, -32], 'Андрей Гуляшкий - болгарський письменник.', 'Андрей Гуляшки - болгарський письменник.', correctionTypes.MISTAKE],
+  [144, 'ГУЛЯШКОГО знають усі', 'ГУЛЯШКИ знають усі', correctionTypes.MISTAKE],
+  [144, 'Гуляшкому, Гуляшким, по Гуляшкім', 'Гуляшки, Гуляшки, по Гуляшки', [correctionTypes.MISTAKE, correctionTypes.MISTAKE, correctionTypes.MISTAKE]],
+  [_, 'Гуляшику з’їм', 'Гуляшику з’їм', _],
 ];
