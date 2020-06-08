@@ -1092,6 +1092,15 @@ export const tests = [
   [144, 'НА НАРЕЖНОГО ЧЕКАЮТЬ ДОВГО', 'НА НАРЄЖНОГО ЧЕКАЮТЬ ДОВГО', correctionTypes.MISTAKE],
   [_, 'Нарізав Наріжний Наріжного', 'Нарізав Наріжний Наріжного', _],
 
+  [144, 'Валентина Вцісло', 'Валентина Вцисло', correctionTypes.MISTAKE],
+  [144, 'На портреті зображений Марцін Марцінович.', 'На портреті зображений Марцин Марцинович.', [correctionTypes.MISTAKE, correctionTypes.MISTAKE]],
+  [144, 'А правильно писати Мсціслава як Мсьціслав?', 'А правильно писати Мсцислава як Мсцислав?', [correctionTypes.MISTAKE, correctionTypes.MISTAKE, correctionTypes.UNCERTAIN], false, 2],
+  [144, 'Зустрілися якось Францішек із Францішкою.', 'Зустрілися якось Францишек із Францишкою.', [correctionTypes.MISTAKE, correctionTypes.MISTAKE]],
+  [144, 'Сіцінський із Марцінським якось розговорилися про Карцінську.', 'Сіцинський із Марцинським якось розговорилися про Карцинську.', [correctionTypes.MISTAKE, correctionTypes.MISTAKE, correctionTypes.MISTAKE]],
+  [144, 'Цірліць зазвичай ходить із Ціхоцькими та Цішевською.', 'Цирліць зазвичай ходить із Цихоцькими та Цишевською.', [correctionTypes.MISTAKE, correctionTypes.MISTAKE, correctionTypes.MISTAKE]],
+  [144, 'Цібулька', 'Цибулька', correctionTypes.MISTAKE],
+  [_, 'Ці Ціхи та Переоцінки ні до чого не призведуть.', 'Ці Ціхи та Переоцінки ні до чого не призведуть.', _],
+
   [144, 'Відома людина наш Їржи Ґедройць.', 'Відома людина наш Їржі Ґедройць.', correctionTypes.MISTAKE],
 
   [144, 'Солженіцин', 'Солженицин', correctionTypes.MISTAKE],
