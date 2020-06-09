@@ -14,7 +14,8 @@ import {
 function createRule(description, letterCase, generalDecliner, lastPartUndecliner) {
   return (token, chain) => {
     const parts = token.split('-');
-    if (parts.length < 2 || parts.some((part) => part.length <= 1)) {
+    if (parts.length < 2 || parts.some((part) => part.length <= 1) || parts[0].toLowerCase() === 'ван') {
+      // "ван" should be spelled as a separate word and is handled by other rules
       return null;
     }
     if (determineLetterCase(token) !== letterCase) {

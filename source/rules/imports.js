@@ -32,6 +32,8 @@ import {
   determineLetterCase,
   isCapitalized,
   capitalize,
+  makeLowerCaseIfNotUppercase,
+  setCase,
   normalizeCase,
   simplifyApostrophe
 } from "../spelling/typography.js";
@@ -79,6 +81,8 @@ export {
   determineLetterCase,
   isCapitalized,
   capitalize,
+  makeLowerCaseIfNotUppercase,
+  setCase,
   normalizeCase,
   simplifyApostrophe,
 

@@ -21,6 +21,10 @@ export function capitalize(string) {
   return string.length === '' ? string : string[0].toUpperCase() + string.slice(1).toLowerCase();
 }
 
+export function makeLowerCaseIfNotUppercase(string) {
+  return setCase(string, determineLetterCase(string) === letterCases.UPPER ? letterCases.UPPER : letterCases.LOWER);
+}
+
 export function determineLetterCase(string) {
   if (string === '') {
     return letterCases.EMPTY;
@@ -45,15 +49,21 @@ export function isCapitalized(string) {
   return determineLetterCase(string) === letterCases.CAPITALIZED;
 }
 
-export function normalizeCase(string, model) {
-  switch (determineLetterCase(model)) {
+export function setCase(string, letterCase) {
+  switch (letterCase) {
     case letterCases.CAPITALIZED:
       return capitalize(string);
     case letterCases.UPPER:
       return string.toUpperCase();
     case letterCases.CAMEL:
       return string.split('-').map((part) => capitalize(part)).join('-');
+    case letterCases.LOWER:
+      return string.toLowerCase();
     default:
       return string;
   }
+}
+
+export function normalizeCase(string, model) {
+  return setCase(string, determineLetterCase(model));
 }
