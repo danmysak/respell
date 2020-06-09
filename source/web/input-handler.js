@@ -1,10 +1,4 @@
-import {
-  paragraphTag,
-  initialButtonsPrefixTag,
-  initialButtonsContainerTag,
-  removeInitialContentTag,
-  restoreLastTextTag
-} from "./common-tags.js";
+import {paragraphTag, initialButtonsPrefixTag, initialButtonsContainerTag} from "./common-tags.js";
 import {attachHistoryEvents} from "./events/history.js";
 import {attachTabEvent} from "./events/tab.js";
 import {attachCursorFixingEvent} from "./events/cursor-fixing.js";
@@ -27,6 +21,9 @@ const correctionStatsSymbol = Symbol('correction-stats');
 const spellingStatsSymbol = Symbol('spelling-stats');
 
 const irrelevantStatsClassName = 'stats-irrelevant';
+
+const removeInitialContentClassName = 'remove-initial-content';
+const restoreLastTextClassName = 'restore-last-text';
 
 const settingsKeyPrefix = 'settings-labels-';
 const lastTextKey = 'last-text';
@@ -99,8 +96,8 @@ function startInitialContentMode(serializedContent) {
     targetParagraph.append(document.createElement(initialButtonsPrefixTag));
     const buttonContainer = document.createElement(initialButtonsContainerTag);
     targetParagraph.append(buttonContainer);
-    const addButton = (tag, callback) => {
-      const button = storeContainer.querySelector(tag);
+    const addButton = (className, callback) => {
+      const button = storeContainer.querySelector(`.${className}`);
       const handler = (event) => {
         event.preventDefault();
         stopCorrecting();
@@ -110,12 +107,12 @@ function startInitialContentMode(serializedContent) {
       button.addEventListener('click', handler);
       buttonContainer.append(button);
     };
-    addButton(removeInitialContentTag, () => {
+    addButton(removeInitialContentClassName, () => {
       container.innerHTML = '';
     });
     const lastText = localStorage.getItem(lastTextKey);
     if (lastText !== null && lastText !== '' && lastText !== serializedContent) {
-      addButton(restoreLastTextTag, () => {
+      addButton(restoreLastTextClassName, () => {
         startPlannedMutation();
         container.textContent = '';
         lastText.split(lastTextParagraphSeparator).forEach((contents) => {

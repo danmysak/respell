@@ -257,11 +257,15 @@ initial-buttons-container {
 }
 
 .input-initial-button {
+    background: none;
+    border: none;
     cursor: pointer;
+    color: inherit;
+    font-family: inherit;
+    font-size: inherit;
     padding: 0 var(--input-initial-button-padding);
-    margin-left: calc(0px - var(--input-initial-button-padding));
     /* This way when a button is at the beginning of a line, it doesn't have a visible left margin */
-    margin-right: var(--input-initial-button-padding);
+    margin: 0 var(--input-initial-button-padding) 0 calc(0px - var(--input-initial-button-padding));
 }
 
 .input-initial-button:last-child {
@@ -274,6 +278,6 @@ initial-buttons-container {
     transition: fill var(--button-highlight-duration);
 }
 
-.input-initial-button:hover svg {
+.input-initial-button:hover svg, .input-initial-button:focus svg {
     fill: var(--text-color);
 }
