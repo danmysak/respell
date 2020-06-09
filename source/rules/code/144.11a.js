@@ -32,7 +32,7 @@ registerWordRule(createMaskRule({
         "*отт", "*позат", // "той"
         "*дост", "*нак", "*пок", "*св", // verbs
         "*конв", // nouns
-        "*толст", "*хан" // proper names
+        "милив", "милів", "мілив", "мілів", "толст", "хан" // proper names
       ], ending]
     ],
     type: correctionTypes.UNCERTAIN

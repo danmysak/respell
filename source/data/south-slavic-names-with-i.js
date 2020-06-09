@@ -188,7 +188,6 @@ export const southSlavicNamesWithI = [{
     "Мірсад",
     "Мітар",
     "Момір",
-    "Момчіл",
     "Предіслав",
     "Прибіслав", "Прібислав", "Прібіслав",
     "Ратимір", "Ратімир", "Ратімір",
@@ -205,7 +204,8 @@ export const southSlavicNamesWithI = [{
     "Хвалимір", "Хвалімир", "Хвалімір",
     "Хрістиян", "Хрістіян",
     "Хрістофор",
-    "Чедомір"
+    "Чедомір",
+    "Шімун"
   ]
 }, {
   // Masculine, ending in a hushing consonant
@@ -217,6 +217,13 @@ export const southSlavicNamesWithI = [{
     "Радіч"
   ]
 }, {
+  // Masculine, ending in "к"
+  paradigm: ["", "а", "ам", "ами", "ах", "и", "ів", "ові", "ом", "у"],
+  roots: [
+    "Відак",
+    "Калинік", "Каліник", "Калінік"
+  ]
+}, {
   // Masculine, ending in "й"
   paradigm: ["єві", "єм", "ї", "їв", "й", "ю", "я", "ям", "ями", "ях"],
   roots: [
@@ -226,7 +233,8 @@ export const southSlavicNamesWithI = [{
   // Masculine, either with null ending or ending in "о"
   paradigm: ["", "а", "ам", "ами", "ах", "е", "и", "і", "ів", "о", "ові", "ом", "у"],
   roots: [
-    "Киріл", "Кірил", "Кіріл"
+    "Киріл", "Кірил", "Кіріл",
+    "Момчіл"
   ]
 }, {
   // Masculine, ending in "о" (but not "ко")
@@ -234,8 +242,7 @@ export const southSlavicNamesWithI = [{
   roots: [
     "Гавріл", "Ґавріл",
     "Міхаїл", "Міхайл",
-    "Момчіл",
-    "Ріст",
+    // The name Ріст would produce false positives
     "Хріст"
   ]
 }, {
@@ -246,13 +253,6 @@ export const southSlavicNamesWithI = [{
     "Марінк",
     "Міленк",
     "Хінк"
-  ]
-}, {
-  // Masculine, ending in "к"
-  paradigm: ["", "а", "ам", "ами", "ах", "и", "ів", "ові", "ом", "у"],
-  roots: [
-    "Відак",
-    "Калинік", "Каліник", "Калінік"
   ]
 }, {
   // Indeclinable
@@ -277,7 +277,6 @@ export const southSlavicNamesWithI = [{
     "Стіпе",
     "Філотиє", "Філотіє",
     "Чіро",
-    "Шіме",
-    "Шімун"
+    "Шіме"
   ]
 }];
