@@ -1202,4 +1202,9 @@ export const tests = [
   [146, 'Пак Чі Вон, ПАК ЧИ ВОН, то Пак Ті вон або Пак Ти Вон', 'Пак Чівон, ПАК ЧІВОН, то Пак Чівон або Пак Чівон', [correctionTypes.MISTAKE, correctionTypes.MISTAKE, correctionTypes.MISTAKE, correctionTypes.MISTAKE, correctionTypes.MISTAKE, correctionTypes.MISTAKE, correctionTypes.MISTAKE], false, 2],
   [_, 'Тивонна плита. Пакування Тивонної плити.', 'Тивонна плита. Пакування Тивонної плити.', _],
   [_, 'Ті Вон. То Ті Вон.', 'Ті Вон. То Ті Вон.', _],
+
+  [146, 'Складне ім’я «Фрідрих-Вільгельм».', 'Складне ім’я «Фрідріх-Вільгельм».', correctionTypes.MISTAKE],
+  [146, 'Фридрих', 'Фрідріх', correctionTypes.MISTAKE],
+  [146, 'Набридли фридріхівські витребеньки!', 'Набридли фрідріхівські витребеньки!', correctionTypes.MISTAKE],
+  [146, 'ФРІДРИХ, Фридріх і справи Фридрихові', 'ФРІДРІХ, Фрідріх і справи Фрідріхові', [correctionTypes.MISTAKE, correctionTypes.MISTAKE, correctionTypes.MISTAKE]],
 ];
