@@ -368,11 +368,11 @@ export const tests = [
 
   [49, 'Чо Чі-вон', 'Чхве Чхвівон', [correctionTypes.MISTAKE, correctionTypes.MISTAKE]],
   [49, 'Нічого не зробиш без Чхе Чхи-Вона...', 'Нічого не зробиш без Чхве Чхвівона...', [correctionTypes.MISTAKE, correctionTypes.MISTAKE]],
-  [49, 'Чхво Чи Во́н тут ні до чого.', 'Чхве Чхвівон тут ні до чого.', [correctionTypes.MISTAKE, correctionTypes.MISTAKE, correctionTypes.MISTAKE], false, 2],
-  [49, 'Віддати Чхо Чхі Вонові належне', 'Віддати Чхве Чхвівонові належне', [correctionTypes.MISTAKE, correctionTypes.MISTAKE, correctionTypes.MISTAKE]],
+  [[49, 146], 'Чхво Чи Во́н тут ні до чого.', 'Чхве Чхвівон тут ні до чого.', [correctionTypes.MISTAKE, correctionTypes.MISTAKE, correctionTypes.MISTAKE], false, 2],
+  [[49, 146], 'Віддати Чхо Чхі Вонові належне', 'Віддати Чхве Чхвівонові належне', [correctionTypes.MISTAKE, correctionTypes.MISTAKE, correctionTypes.MISTAKE]],
   [49, 'ЧХВИ-ВОНІВСЬКИЙ СПАДОК', 'ЧХВІВОНІВСЬКИЙ СПАДОК', correctionTypes.MISTAKE],
-  [49, 'Його прізвище — Чхві Вон або Чхві-вон.', 'Його прізвище — Чхвівон або Чхвівон.', [correctionTypes.MISTAKE, correctionTypes.MISTAKE]],
-  [49, 'Привіт Чхивону!', 'Привіт Чхвівону!', correctionTypes.MISTAKE],
+  [[49, 146], 'Його прізвище — Чхві Вон або Чхві-вон.', 'Його прізвище — Чхвівон або Чхвівон.', [correctionTypes.MISTAKE, correctionTypes.MISTAKE]],
+  [49, 'Привіт Чхве Чхивону!', 'Привіт Чхве Чхвівону!', correctionTypes.MISTAKE],
   [_, 'Чхво чи Вон тут ні до чого.', 'Чхво чи Вон тут ні до чого.', _],
   [_, 'І чи Вон, чи Він його звали — не пам’ятаю.', 'І чи Вон, чи Він його звали — не пам’ятаю.', _],
   [_, 'Чо? Чи чіпав чхання?', 'Чо? Чи чіпав чхання?', _],
@@ -1195,4 +1195,11 @@ export const tests = [
   [[146, 49], 'Ван-дер-Куп, Ван-Дер-Куп та ВАН-ДЕР-КУП.', 'Ван дер Куп, ван дер Куп та ВАН ДЕР КУП.', [correctionTypes.MISTAKE, correctionTypes.MISTAKE, correctionTypes.MISTAKE]],
   [_, 'Іван-Барабан забив гол.', 'Іван-Барабан забив гол.', _],
   [_, 'Ван-ту-срі', 'Ван-ту-срі', _],
+
+  [[146, 49], 'Чі Вон, Чхі Вон, Чхві Вон', 'Чівон, Чхвівон, Чхвівон', [correctionTypes.MISTAKE, correctionTypes.MISTAKE, correctionTypes.MISTAKE, correctionTypes.MISTAKE]],
+  [146, 'Це Пак ТИВОНУ, Пак Тівон, ПАК Чивону, Пак Ти-вонові, Пак ТІ-ВОНЕ, Пак Чи-Вонам або Пак Чі-вонами', 'Це Пак ЧІВОНУ, Пак Чівон, ПАК Чівону, Пак Чівонові, Пак ЧІВОНЕ, Пак Чівонам або Пак Чівонами', [correctionTypes.MISTAKE, correctionTypes.MISTAKE, correctionTypes.MISTAKE, correctionTypes.MISTAKE, correctionTypes.MISTAKE, correctionTypes.MISTAKE, correctionTypes.MISTAKE]],
+  [146, 'Пак Ти вонів, ПАК Ті Вона, Пак ЧИ ВОНОВІ', 'Пак Чівонів, ПАК Чівона, Пак ЧІВОНОВІ', [correctionTypes.MISTAKE, correctionTypes.MISTAKE, correctionTypes.MISTAKE, correctionTypes.MISTAKE, correctionTypes.MISTAKE, correctionTypes.MISTAKE], false, 2],
+  [146, 'Пак Чі Вон, ПАК ЧИ ВОН, то Пак Ті вон або Пак Ти Вон', 'Пак Чівон, ПАК ЧІВОН, то Пак Чівон або Пак Чівон', [correctionTypes.MISTAKE, correctionTypes.MISTAKE, correctionTypes.MISTAKE, correctionTypes.MISTAKE, correctionTypes.MISTAKE, correctionTypes.MISTAKE, correctionTypes.MISTAKE], false, 2],
+  [_, 'Тивонна плита. Пакування Тивонної плити.', 'Тивонна плита. Пакування Тивонної плити.', _],
+  [_, 'Ті Вон. То Ті Вон.', 'Ті Вон. То Ті Вон.', _],
 ];

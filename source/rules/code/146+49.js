@@ -2,6 +2,7 @@ import {
   Correction,
   correctionTypes,
   registerWordRule,
+  createMaskRule,
   canBeSentenceBoundary,
   setCase,
   makeLowerCaseIfNotUppercase,
@@ -45,3 +46,37 @@ registerWordRule((token, chain) => {
     );
   }
 });
+
+registerWordRule(createMaskRule({
+  type: correctionTypes.MISTAKE,
+  description: 'Відповідно до § 49 та § 146 правопису, складові корейських імен «Вансо», «Чівон», «Чхвівон», «Гімун» ' +
+    'слід писати разом.',
+  preserveReplacementCase: true,
+  rules: [{
+    removePreviousToken: true,
+    rules: [{
+      previousMatches: ["Ван"],
+      matches: ["(с)о"],
+      replacement: "с"
+    }, {
+      previousMatches: ["Чхві", "Чхі", "Чі"],
+      matches: ["(в)он*"],
+      replacement: "в"
+    }, {
+      previousMatches: ["Гі", "Ґі"],
+      matches: ["(м)ун*"],
+      replacement: "м"
+    }]
+  }, {
+    rules: [{
+      matches: ["Ван(-с)о"],
+      replacement: "с"
+    }, {
+      matches: ["Чхві(-в)он*"],
+      replacement: "в"
+    }, {
+      matches: ["Гі(-м)ун*", "Ґі(-м)ун*"],
+      replacement: "м"
+    }]
+  }]
+}));

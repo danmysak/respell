@@ -20,8 +20,6 @@ registerWordRule(createMaskRule([{
   description: 'Відповідно до § 49 правопису, ім’я Ван Гога слід писати двома окремими словами, обидва з великої букви.'
 }]));
 
-const chiwonPrefixes = ["Ч|і", "Ч|хі", "Ч|и", "Ч|хи", "Ч|хви"];
-
 registerWordRule(createMaskRule({
   type: correctionTypes.MISTAKE,
   description: 'Відповідно до § 49 правопису, ім’я корейського діяча слід писати як «Чхве Чхвівон».',
@@ -30,47 +28,21 @@ registerWordRule(createMaskRule({
     nextMatches: ["Чі*", "Чх*"],
     replacement: "хве"
   }, {
-    matches: chiwonPrefixes.map((prefix) => prefix.replace('|', '(') + ')'),
+    rules: [{
+      matches: ["Ч(хі)", "Ч(хи)", "Ч(хви)"],
+    }, {
+      previousMatches: ["Чо", "Че", "Чхо", "Чхе", "Чхво", "Чхве"],
+      matches: ["Ч(і)", "Ч(и)"]
+    }],
     nextMatches: ["вон*"],
     replacement: "хві"
   }, {
-    matches: chiwonPrefixes.flatMap((prefix) => [
-      `${prefix.replace('|', '(')}в)он*`,
-      `${prefix.replace('|', '(')}-в)он*`
-    ]),
+    rules: [{
+      matches: ["Ч(хів)он*", "Ч(хі-в)он*", "Ч(хив)он*", "Ч(хи-в)он*", "Ч(хвив)он*", "Ч(хви-в)он*"],
+    }, {
+      previousMatches: ["Чо", "Че", "Чхо", "Чхе", "Чхво", "Чхве"],
+      matches: ["Ч(ів)он*", "Ч(і-в)он*", "Ч(ив)он*", "Ч(и-в)он*"]
+    }],
     replacement: "хвів"
-  }]
-}));
-
-registerWordRule(createMaskRule({
-  type: correctionTypes.MISTAKE,
-  description: 'Відповідно до § 49 правопису, складові корейських імен «Вансо», «Чхвівон», «Гімун» слід писати разом.',
-  preserveReplacementCase: true,
-  rules: [{
-    removePreviousToken: true,
-    rules: [{
-      previousMatches: ["Ван"],
-      matches: ["(с)о"],
-      replacement: "с"
-    }, {
-      previousMatches: ["Чхві", "Чхі", "Чі"],
-      matches: ["(в)он*"],
-      replacement: "в"
-    }, {
-      previousMatches: ["Гі", "Ґі"],
-      matches: ["(м)ун*"],
-      replacement: "м"
-    }]
-  }, {
-    rules: [{
-      matches: ["Ван(-с)о"],
-      replacement: "с"
-    }, {
-      matches: ["Чхві(-в)он*"],
-      replacement: "в"
-    }, {
-      matches: ["Гі(-м)ун*", "Ґі(-м)ун*"],
-      replacement: "м"
-    }]
   }]
 }));
