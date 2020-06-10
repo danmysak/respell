@@ -143,14 +143,23 @@ export function scrollSelectionIntoView(container, lineHeight) {
   const viewportHeight = document.documentElement.clientHeight;
   const top = cutoffLines * lineHeight;
   const bottom = viewportHeight - (cutoffLines + 1) * lineHeight;
-  const rect = range.getBoundingClientRect();
+  let rect = range.getBoundingClientRect();
+  if (rect.top === 0 && rect.bottom === 0) {
+    // For some reason, this may happen sometimes in both Chrome and Firefox, particularly when the range is collapsed
+    // and placed after the last node of a paragraph
+    if (range.startContainer.nodeType === Node.ELEMENT_NODE) {
+      rect = range.startContainer.getBoundingClientRect();
+    } else {
+      return;
+    }
+  }
   let scrollDelta = null;
   if (rect.top < top) {
     scrollDelta = rect.top - top;
   } else if (rect.top >= bottom) {
     scrollDelta = rect.top - bottom;
   }
-  if (scrollTo !== null) {
+  if (scrollDelta !== null) {
     window.scrollTo({
       left: window.pageXOffset,
       top: window.pageYOffset + scrollDelta,

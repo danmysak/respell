@@ -1,3 +1,5 @@
+import {tokenTag} from "./common-tags.js";
+
 export function getParentWithOffset(condition, node, offset) {
   let currentNode, currentOffset;
   const result = (parent, offset) => ({parent, offset});
@@ -87,6 +89,30 @@ function getFirstNodeAtOffset(parent, offset) {
   }
 }
 
+function expand({node, offset}) {
+  // If adjacent to a token element's opening/closing tag, selection needs to expand beyond it: otherwise the element
+  // will not be removed upon pressing Delete or, more importantly, when performing a correction. In particular, this
+  // may happen if the element is at the very beginning of a paragraph.
+  let currentNode = node;
+  let currentOffset = offset;
+  const up = () => {
+    currentOffset = [...currentNode.parentElement.childNodes].indexOf(currentNode) + (currentOffset === 0 ? 0 : 1);
+    currentNode = currentNode.parentElement;
+  };
+  if (currentNode.nodeType === Node.TEXT_NODE
+    && (currentOffset === 0 || currentOffset === currentNode.textContent.length)) {
+    up();
+  }
+  if (currentNode.nodeType === Node.ELEMENT_NODE && currentNode.tagName === tokenTag
+    && (currentOffset === 0 || currentOffset === currentNode.childNodes.length)) {
+    up();
+  }
+  return {
+    node: currentNode,
+    offset: currentOffset
+  };
+}
+
 export function getNodeAtOffset(container, containerOffsetData) {
   let containerOffset;
   let skipChildren;
@@ -96,7 +122,7 @@ export function getNodeAtOffset(container, containerOffsetData) {
   } else {
     ({containerOffset, skipChildren} = containerOffsetData);
   }
-  const {node, offset} = getFirstNodeAtOffset(container, containerOffset);
+  const {node, offset} = expand(getFirstNodeAtOffset(container, containerOffset));
   if (skipChildren > 0 && node !== container) {
     let currentNode = node;
     while (currentNode.parentElement !== container) {
