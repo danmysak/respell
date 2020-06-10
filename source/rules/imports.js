@@ -28,6 +28,7 @@ import {
 } from "../spelling/data-manipulation.js";
 import {
   parenthesizeFirst,
+  getFirstLetter,
   getLastLetter,
   determineLetterCase,
   isCapitalized,
@@ -77,6 +78,7 @@ export {
   getSoft,
 
   parenthesizeFirst,
+  getFirstLetter,
   getLastLetter,
   determineLetterCase,
   isCapitalized,

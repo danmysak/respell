@@ -5,6 +5,10 @@ export function parenthesizeFirst(items) {
   return applyOrMap(items, (item) => `(${item[0]})${item.slice(1)}`);
 }
 
+export function getFirstLetter(string) {
+  return string === '' ? '' : string[0];
+}
+
 export function getLastLetter(string) {
   return string === '' ? '' : string[string.length - 1];
 }
