@@ -26,20 +26,20 @@ registerWordRule((token, chain) => {
         'Варден», пишеться окремо, а в утворених від них прикметниках, відповідно, разом.'
     );
   } else {
-    let vanCase;
+    let vanCases = [];
     if (determineLetterCase(van) === letterCases.UPPER) {
-      vanCase = letterCases.UPPER;
+      vanCases.push(letterCases.UPPER);
     } else if (canBeSentenceBoundary(chain.getPreviousToken())) {
-      vanCase = letterCases.CAPITALIZED;
+      vanCases.push(letterCases.CAPITALIZED);
     } else {
-      vanCase = letterCases.LOWER;
+      vanCases.push(letterCases.LOWER, letterCases.CAPITALIZED);
     }
-    const replacement = [
+    const replacements = vanCases.map((vanCase) => [
       setCase('ван', vanCase),
       makeLowerCaseIfNotUppercase(der).replace('-', ''),
       name
-    ].filter((part) => part !== '').join(' ');
-    return new Correction(type, replacement,
+    ].filter((part) => part !== '').join(' '));
+    return new Correction(type, replacements,
       'Відповідно до § 146 та § 49 правопису, складова частина «ван» у таких іменах, як «ван Дейк» чи «ван дер ' +
         'Варден», пишеться окремо та з малої літери (якщо з малої літери цю частину пишуть у мові оригіналу).'
     );
