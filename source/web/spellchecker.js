@@ -46,7 +46,11 @@ function setTokenAttributes(tokenElement) {
   if (tokenElement.textContent.includes('-') && tokenElement.textContent.length <= 40) {
     tokenElement.classList.add(correctionPrefix + hyphenatedCorrection);
   }
-  tokenElement.tabIndex = presentations.length === 0 ? -1 : 0;
+  if (presentations.length === 0) {
+    tokenElement.removeAttribute('tabIndex');
+  } else {
+    tokenElement.tabIndex =  0;
+  }
 }
 
 export function updateTokens(paragraph) {
