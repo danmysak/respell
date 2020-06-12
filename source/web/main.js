@@ -19,7 +19,10 @@ function initialize() {
     document.querySelector('.input-navigation-next')
   ];
   const settingCheckboxes = document.querySelectorAll('.settings-container input[type=checkbox][data-ignore-label]');
-  inputElement.focus(); // Setting the autofocus attribute doesn't seem to work in Firefox
+  if (!window.matchMedia("(pointer: coarse)").matches) {
+    // On touch screens this is useless and can cause annoying scrolls
+    inputElement.focus();
+  }
   registerOverlay(overlay);
   attachObservers(inputElement, inputStore, statsContainer, settingCheckboxes, navigationElements);
   attachCorrector(inputElement, navigationContainer);
