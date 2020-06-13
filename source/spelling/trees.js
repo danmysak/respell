@@ -56,7 +56,7 @@ export function createTreeRule(correspondences, correctionType, description,
       return values[0](token, chain);
     }
     if (postprocess) {
-      values = postprocess(values, token, chain);
+      values = postprocess(values, token, chain, string);
       if (values === null) {
         return null;
       }
