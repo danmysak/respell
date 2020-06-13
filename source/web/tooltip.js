@@ -1,4 +1,5 @@
 import {tooltipTag} from "./common-tags.js";
+import {introduceNonBreakingSpaces} from "../spelling/typography.js";
 
 const correctionContainerTag = 'TOKEN-CORRECTION-CONTAINER';
 const replacementTag = 'TOKEN-REPLACEMENT';
@@ -16,9 +17,7 @@ let pageBottomPadding = 0;
 const tooltipMargin = parseFloat(window.getComputedStyle(document.body).getPropertyValue(tooltipMarginProperty));
 
 function formatDescription(text) {
-  return text
-    .replace(/(§) /g, '$1&nbsp;')
-    .replace(/ (—)/g, '&nbsp;$1')
+  return introduceNonBreakingSpaces(text)
     .replace(/«-[^»\s]+»/g, '<span class="no-break">$&</span>')
 }
 

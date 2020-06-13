@@ -71,3 +71,9 @@ export function setCase(string, letterCase) {
 export function normalizeCase(string, model) {
   return setCase(string, determineLetterCase(model));
 }
+
+export function introduceNonBreakingSpaces(text) {
+  return text
+    .replace(/(§) /g, '$1 ')
+    .replace(/ (—)/g, ' $1');
+}
