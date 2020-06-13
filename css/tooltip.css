@@ -20,6 +20,10 @@ token-tooltip {
     white-space: pre-wrap;
 }
 
+token-tooltip:not(:focus) ::selection {
+    background-color: transparent;
+}
+
 token-tooltip.animated {
     animation: token-tooltip-fade-in var(--correction-transition-duration) forwards;
 }
