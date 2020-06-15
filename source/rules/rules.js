@@ -93,3 +93,6 @@ import "./code/149.js";
 import "./code/151.js";
 import "./code/152.js";
 import "./code/153.js";
+import "./code/154a.js";
+import "./code/154b.js";
+import "./code/154c.js";
