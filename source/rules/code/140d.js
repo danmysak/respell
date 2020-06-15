@@ -11,11 +11,15 @@ import {
   nominalForms
 } from "../imports.js";
 
+const ignoredPatterns = [/^ван-/i, /-україн/i];
+// "ван" should be spelled as a separate word and is handled by other rules;
+// we would also like to ignore words like "Інтерфакс-Україна"
+
 function createRule(description, letterCase, generalDecliner, lastPartUndecliner) {
   return (token, chain) => {
     const parts = token.split('-');
-    if (parts.length < 2 || parts.some((part) => part.length <= 1) || parts[0].toLowerCase() === 'ван') {
-      // "ван" should be spelled as a separate word and is handled by other rules
+    if (parts.length < 2 || parts.some((part) => part.length <= 1)
+      || ignoredPatterns.some((pattern) => token.match(pattern))) {
       return null;
     }
     if (determineLetterCase(token) !== letterCase) {
