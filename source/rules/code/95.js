@@ -1,4 +1,4 @@
-import {correctionTypes, registerWordRule, createMaskRule} from "../imports.js";
+import {correctionTypes, registerWordRule, labels, createMaskRule} from "../imports.js";
 
 const prepositions = ["у", "в", "на", "по", "при"];
 
@@ -23,4 +23,4 @@ registerWordRule(createMaskRule({
   type: correctionTypes.UNCERTAIN,
   description: 'Відповідно до § 95 правопису, у родовому відмінку однини іменники на «-ть» після приголосного, а також '
     + 'слова «кров», «любов», «осінь», «сіль», «Русь», «Білорусь» можуть набувати як варіант закінчення «-и».'
-}));
+}), [labels.GENITIVE_Y]);

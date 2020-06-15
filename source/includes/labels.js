@@ -5,5 +5,6 @@
 export const labels = {
   FEMINITIVES: 'feminitives',
   LATIN_PROPER_NOUNS: 'latin-proper-nouns',
-  FOREIGN_NAMES: 'foreign-names'
+  FOREIGN_NAMES: 'foreign-names',
+  GENITIVE_Y: 'genitive-y'
 };
