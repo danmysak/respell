@@ -73,6 +73,8 @@ function test(tests) {
     }
     const expectedSections = sections.filter((section) => section > 0);
     const omitSections = sections.filter((section) => section < 0).map((section) => -section);
+    corrected = corrected ?? text;
+    types = types ?? [];
     extraChange = extraChange || false;
     processings = processings || 1;
     let current = text;
