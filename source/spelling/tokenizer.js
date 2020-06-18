@@ -10,7 +10,6 @@ const punctuation = {
 
 const whiteSpacePattern = new RegExp(whitespace);
 const sentenceBoundaryPattern = new RegExp(`[${punctuation.sentenceDelimiters}]`);
-const quotePattern = new RegExp(`[${punctuation.quotes}]`);
 
 const punctuationPlain = Object.values(punctuation).join('');
 
@@ -35,7 +34,11 @@ export function isWhitespace(token) {
 }
 
 export function isQuote(token) {
-  return token !== null && token.match(quotePattern);
+  return token !== null && token.length === 1 && punctuation.quotes.includes(token);
+}
+
+export function isSlash(token) {
+  return token !== null && token.length === 1 && punctuation.slashes.includes(token);
 }
 
 export function isPunctuation(token, canBeNull = false) {

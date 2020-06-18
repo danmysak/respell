@@ -2,7 +2,7 @@ import {labels} from "../includes/labels.js";
 import {cases, number, nominalForms, frequency, groups} from "../includes/grammar.js";
 import {letterCases} from "../includes/typography.js";
 import {Correction, correctionTypes} from "../spelling/correction.js";
-import {isWord, isWhitespace, isPunctuation, isQuote, canBeSentenceBoundary} from "../spelling/tokenizer.js";
+import {isWord, isWhitespace, isPunctuation, isQuote, isSlash, canBeSentenceBoundary} from "../spelling/tokenizer.js";
 import {registerWordRule, registerPunctuationRule, registerWhitespaceRule} from "../spelling/processor.js";
 import {createMaskRule} from "../spelling/masks.js";
 import {createTreeRule} from "../spelling/trees.js";
@@ -64,6 +64,7 @@ export {
   isWhitespace,
   isPunctuation,
   isQuote,
+  isSlash,
   canBeSentenceBoundary,
 
   isAfterSentenceBoundary,
