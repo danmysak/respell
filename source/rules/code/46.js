@@ -11,12 +11,13 @@ import {
   letterCases
 } from "../imports.js";
 
+const [leftBracket, rightBracket] = ["(", ")"];
 const maxLookupLevel = 3;
 
 function getNextWord(chain, maxLookupLevel) {
   for (let level = 1; level <= maxLookupLevel; level++) {
     const token = chain.getNextToken(level);
-    if (token === ')') {
+    if (token === rightBracket) {
       return null;
     }
     if (isWord(token)) {
@@ -28,7 +29,7 @@ function getNextWord(chain, maxLookupLevel) {
 
 registerWordRule((token, chain) => {
   const applicable =
-    chain.getPreviousToken() === '('
+    chain.getPreviousToken() === leftBracket
     && !isRomanNumeral(token)
     && !canBeSentenceBoundary(chain.getPreviousToken(2))
     && !(isPunctuation(chain.getPreviousToken(2)) && canBeSentenceBoundary(chain.getPreviousToken(3)))
