@@ -8,6 +8,7 @@ const punctuation = {
   brackets: '(){}[]'
 };
 
+const whiteSpacePattern = new RegExp(whitespace);
 const sentenceBoundaryPattern = new RegExp(`[${punctuation.sentenceDelimiters}]`);
 const quotePattern = new RegExp(`[${punctuation.quotes}]`);
 
@@ -18,10 +19,7 @@ const tokenizer = (() => {
     whitespace,
     `[${punctuation.sentenceDelimiters}]`,
     `[${punctuation.clauseDelimiters}]`
-  ].map((pattern) => {
-    const group = `(?:${pattern})*`;
-    return `(?:${group}${pattern}${group})`;
-  });
+  ].map((pattern) => `(?:${pattern})+`);
   const individual = [punctuation.quotes, punctuation.slashes, punctuation.brackets].join('').split('').map(
     (char) => ['[', ']', '(', ')', '{', '}', '\\'].includes(char) ? `\\${char}` : char
   );
@@ -33,7 +31,7 @@ export function tokenize(text) {
 }
 
 export function isWhitespace(token) {
-  return token !== null && token.match(/\s/);
+  return token !== null && token.match(whiteSpacePattern);
 }
 
 export function isQuote(token) {
