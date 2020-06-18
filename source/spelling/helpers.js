@@ -48,6 +48,10 @@ export function getCompatibleNominalForms(chain) {
     );
 }
 
+export function isArabicNumeral(string) {
+  return string.match(/^(\d[\d.,]*)?\d$/);
+}
+
 export function isRomanNumeral(string) {
   return string.match(/^[IVXLCDM]+$/);
 }

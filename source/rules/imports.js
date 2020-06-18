@@ -7,7 +7,12 @@ import {registerWordRule, registerPunctuationRule, registerWhitespaceRule} from 
 import {createMaskRule} from "../spelling/masks.js";
 import {createTreeRule} from "../spelling/trees.js";
 import {decliners} from "../spelling/decliners.js";
-import {isAfterSentenceBoundary, getCompatibleNominalForms, isRomanNumeral} from "../spelling/helpers.js";
+import {
+  isAfterSentenceBoundary,
+  getCompatibleNominalForms,
+  isArabicNumeral,
+  isRomanNumeral
+} from "../spelling/helpers.js";
 import {
   getGroup,
   getConsonants,
@@ -63,6 +68,7 @@ export {
 
   isAfterSentenceBoundary,
   getCompatibleNominalForms,
+  isArabicNumeral,
   isRomanNumeral,
 
   decliners,

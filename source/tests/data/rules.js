@@ -1377,4 +1377,17 @@ export const tests = [
   [_, 'Книга -- такий предмет, --що лежала на столі.'],
   [_, '—'],
   [_, ',—'],
+
+  [161, 'XVI — XVIII ст. На сторінках 2 --- 10', 'XVI—XVIII ст. На сторінках 2---10', [correctionTypes.MISTAKE, correctionTypes.MISTAKE]],
+  [161, 'у 1 - 4 томах', 'у 1-4 томах', correctionTypes.MISTAKE],
+  [[161, -54], 'Це справа I -- L століть.', 'Це справа I--L століть.', correctionTypes.MISTAKE],
+  [161, 'У MCXVIII – MM роках.', 'У MCXVIII–MM роках.', correctionTypes.MISTAKE],
+  [161, '5.5 — 7,783,426 л', '5.5—7,783,426 л', correctionTypes.MISTAKE],
+  [161, 'XX– XXI ст. Або XX –XXI.', 'XX–XXI ст. Або XX–XXI.', [correctionTypes.MISTAKE, correctionTypes.MISTAKE]],
+  [161, 'Частини 0—  2309. Або 84  —1200.', 'Частини 0—2309. Або 84—1200.', [correctionTypes.MISTAKE, correctionTypes.MISTAKE]],
+  [_, '-'],
+  [_, '2 --'],
+  [_, '— V'],
+  [_, 'у 1 - 4v томах / у x1 - 4 томах'],
+  [_, 'Мені — 3 роки. 4 — це два плюс два! Це - XX століття. L — це така літера. L – 50.'],
 ];
