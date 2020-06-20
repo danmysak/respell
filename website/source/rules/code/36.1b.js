@@ -1,9 +1,11 @@
 import {correctionTypes, registerWordRule, createMaskRule} from "../imports.js";
 
 const word = "пів";
+const minFollowingLength = 3;
 const separators = ["-", "'", ""];
 
 registerWordRule(createMaskRule({
+  callback: (token) => token.length >= word.length + minFollowingLength,
   matches: separators.map((separator) => `${word}(${separator})*`),
   antiMatches: [
     [word, [

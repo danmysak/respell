@@ -310,7 +310,10 @@ export const tests = [
   [36, 'З’їм-но пів’яблука.', 'З’їм-но пів яблука.', correctionTypes.UNCERTAIN],
   [36, 'Пів\'юшки теж вип\'ю. За півдня і півночі.', 'Пів юшки теж вип\'ю. За пів дня і пів ночі.', [correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN]],
   [36, 'Це півострова.', 'Це пів острова.', correctionTypes.UNCERTAIN],
+  [36, 'Півсну.', 'Пів сну.', correctionTypes.UNCERTAIN],
   [_, 'Пів- на пів.'],
+  [_, 'Півн.'],
+  [_, 'Півсу.'],
   [_, 'Узяв півтора півника.'],
   [_, 'Південне сонце, північні хмари'],
   [_, 'Святкуємо півріччя!'],
@@ -1439,6 +1442,7 @@ export const tests = [
 
   [165, 'Тут. Я/вона або ж вона/я.', 'Тут. Я / вона або ж вона / я.', [correctionTypes.MISTAKE, correctionTypes.MISTAKE]],
   [165, 'Столи/стільці, а також ручки/олівці', 'Столи / стільці, а також ручки / олівці', [correctionTypes.MISTAKE, correctionTypes.MISTAKE]],
+  [165, 'БАТІГ/ПРЯНИК', 'БАТІГ / ПРЯНИК', correctionTypes.MISTAKE],
   [_, 'Ти/я чи/або ти/він, або/чи ми.'],
   [_, '/'],
   [_, ' / '],
@@ -1451,4 +1455,6 @@ export const tests = [
   [_, 'Перенесення // рядка, Перенесення//рядка'],
   [_, 'Роки 2019/2020. Або і 2020/21'],
   [_, '2/3 + 3/5 = 7/8'],
+  [_, 'https://mon.gov.ua/storage/app/media/zagalna%20serednya/05062019-onovl-pravo.pdf'],
+  [_, '/home/user/Василь/downloads'],
 ];

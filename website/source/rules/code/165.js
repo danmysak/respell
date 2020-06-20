@@ -1,6 +1,10 @@
-import {Correction, correctionTypes, registerPunctuationRule, isWord, isSlash, isArabicNumeral} from "../imports.js";
+import {Correction, correctionTypes, registerPunctuationRule, isWord, isSlash} from "../imports.js";
 
 const maxShortWordLength = 3;
+
+function isCyrillicWord(token) {
+  return isWord(token) && token.match(/[а-яґєії]/i);
+}
 
 function isShortWord(token) {
   return isWord(token) && token.length <= maxShortWordLength;
@@ -14,7 +18,7 @@ registerPunctuationRule((token, chain) => {
   const previousToken = chain.getPreviousToken();
   const nextToken = chain.getNextToken();
   if (previousToken === null || nextToken === null
-    || (isArabicNumeral(previousToken) && isArabicNumeral(nextToken))
+    || !(isCyrillicWord(previousToken) && isCyrillicWord(nextToken))
     || (isShortWord(previousToken) && isShortWord(nextToken))) {
     return null;
   }
