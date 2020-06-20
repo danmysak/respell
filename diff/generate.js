@@ -5,7 +5,7 @@ const diffInput = 'diff.json';
 const output = 'diff.md';
 const sectionSign = '§';
 const noSectionSign = '∅';
-const sectionTemplate = `## {new}<span style="color: #999999"> ← {old}</span>`;
+const sectionTemplate = `## {new} ← {old}`;
 const sectionNewPlaceholder = '{new}';
 const sectionOldPlaceholder = '{old}';
 const compulsoryUpdateSign = '→';
