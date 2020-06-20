@@ -12,6 +12,7 @@ const compulsoryUpdateSign = '→';
 const optionalUpdateSign = '=';
 const lineDelimiter = '\n';
 const sectionDelimiter = '\n\n';
+const noWrappingLimit = 30;
 const encoding = 'utf-8';
 
 const preamble = fs.readFileSync(preambleInput, encoding);
@@ -31,6 +32,7 @@ for (const item of JSON.parse(json)) {
   }
   let major;
   if (item.major) {
+    const prepareExample = (text) => text.length > noWrappingLimit ? text : text.replace(/ /g, ' ');
     const changes = item.major.flatMap(({description, examples}) => {
       return examples.map(([type, source, target], index) => {
         let optional;
@@ -46,9 +48,9 @@ for (const item of JSON.parse(json)) {
         }
         return '<tr>'
           + (index === 0 ? `<td rowspan="${examples.length}">${description}</td>` : '')
-          + `<td>${source}</td>`
+          + `<td>${prepareExample(source)}</td>`
           + `<td>${optional ? optionalUpdateSign : compulsoryUpdateSign}</td>`
-          + `<td>${target}</td>`
+          + `<td>${prepareExample(target)}</td>`
           + '</tr>';
       });
     });
