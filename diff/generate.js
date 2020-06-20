@@ -5,7 +5,7 @@ const diffInput = 'diff.json';
 const output = 'diff.md';
 const sectionSign = '§';
 const noSectionSign = '∅';
-const sectionTemplate = `## {new}<span style="color: gray"> ← {old}</span>`;
+const sectionTemplate = `## {new}<span style="color: #999999"> ← {old}</span>`;
 const sectionNewPlaceholder = '{new}';
 const sectionOldPlaceholder = '{old}';
 const compulsoryUpdateSign = '→';
@@ -22,6 +22,13 @@ for (const item of JSON.parse(json)) {
   const heading = sectionTemplate
     .replace(sectionNewPlaceholder, item.new ? `${sectionSign} ${item.new}` : noSectionSign)
     .replace(sectionOldPlaceholder, item.old ? `${sectionSign} ${item.old.join(', ')}` : noSectionSign);
+  let minor;
+  if (item.minor) {
+    const changes = item.minor.map((change, index) => `${item.minor.length > 1 ? `${index + 1}.` : '*'} ${change}`);
+    minor = ['Додатково:', ...changes].join(lineDelimiter);
+  } else {
+    minor = null;
+  }
   let major;
   if (item.major) {
     const changes = item.major.flatMap(({description, examples}) => {
@@ -47,14 +54,7 @@ for (const item of JSON.parse(json)) {
     });
     major = ['Зміни по суті:', '<table>', ...changes, '</table>'].join(lineDelimiter);
   } else {
-    major = 'Зміни по суті відсутні.';
-  }
-  let minor;
-  if (item.minor) {
-    const changes = item.minor.map((change, index) => `${item.minor.length > 1 ? `${index + 1}.` : '*'} ${change}`);
-    minor = ['Додатково:', ...changes].join(lineDelimiter);
-  } else {
-    minor = null;
+    major = minor ? 'Зміни по суті відсутні.' : 'Зміни відсутні.';
   }
   sections.push([heading, major, minor].filter((subsection) => subsection).join(lineDelimiter + lineDelimiter));
 }
