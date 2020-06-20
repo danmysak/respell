@@ -22,7 +22,7 @@ function examine(chain, startingLevel) {
   let sawLowerCased = false;
   while (true) {
     const token = chain.getPreviousToken(level);
-    if (canBeSentenceBoundary(token) && !isInitialLetter(chain.getPreviousToken(level + 1))) {
+    if (canBeSentenceBoundary(token) && lastCapitalized && !isInitialLetter(chain.getPreviousToken(level + 1))) {
       return true; // There are multiple sentences inside the parentheses
     }
     if (isWord(token)) {

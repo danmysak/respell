@@ -14,8 +14,8 @@ registerWordRule(createMaskRule({
 }));
 
 registerWordRule(createMaskRule({
-  matches: ["(с)оборності"],
-  antiMatches: ["Соборності"],
+  matches: ["(с)оборности", "(с)оборності"],
+  antiMatches: ["Соборности", "Соборності"],
   previousMatches: days,
   replacement: "С",
   type: correctionTypes.MISTAKE,

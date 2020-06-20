@@ -1,12 +1,4 @@
-import {
-  Correction,
-  correctionTypes,
-  registerPunctuationRule,
-  isWhitespace,
-  isWord,
-  isSlash,
-  isArabicNumeral
-} from "../imports.js";
+import {Correction, correctionTypes, registerPunctuationRule, isWord, isSlash, isArabicNumeral} from "../imports.js";
 
 const maxShortWordLength = 3;
 
@@ -15,12 +7,8 @@ function isShortWord(token) {
 }
 
 registerPunctuationRule((token, chain) => {
-  if (!isSlash(token)) {
-    return null;
-  }
-  const previousSpace = isWhitespace(chain.getPreviousToken(1, false));
-  const nextSpace = isWhitespace(chain.getNextToken(1, false));
-  if (previousSpace && nextSpace) {
+  if (!isSlash(token) || isSlash(chain.getPreviousToken()) || isSlash(chain.getNextToken())
+    || !isWord(chain.getPreviousToken(1, false)) || !isWord(chain.getNextToken(1, false))) {
     return null;
   }
   const previousToken = chain.getPreviousToken();
@@ -30,7 +18,7 @@ registerPunctuationRule((token, chain) => {
     || (isShortWord(previousToken) && isShortWord(nextToken))) {
     return null;
   }
-  return new Correction(correctionTypes.MISTAKE, (previousSpace ? '' : ' ') + token + (nextSpace ? '' : ' '),
+  return new Correction(correctionTypes.MISTAKE, ' ' + token + ' ',
     'Відповідно до § 165 правопису, крім випадку розділення коротких слів або скорочень чи позначення років, навколо '
       + 'скісної риски потрібно ставити пробіли.'
   );

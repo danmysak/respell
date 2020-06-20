@@ -23,6 +23,7 @@ export const feminineNamesWithLOrLabial = [
   "Маріам",
   "Маріям",
   "Мар'ям",
+  "Мер'єм",
   "Меріем",
   "Міріам",
   "Мішель",
