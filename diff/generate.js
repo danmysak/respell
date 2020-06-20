@@ -32,7 +32,8 @@ for (const item of JSON.parse(json)) {
   }
   let major;
   if (item.major) {
-    const prepareExample = (text) => text.length > noWrappingLimit ? text : text.replace(/ /g, ' ');
+    const prepareExample = (text) =>
+      (text.length > noWrappingLimit ? text : text.replace(/ /g, ' ')).replace(/(?<=\d)-/, '‑');
     const changes = item.major.flatMap(({description, examples}) => {
       return examples.map(([type, source, target], index) => {
         let optional;
