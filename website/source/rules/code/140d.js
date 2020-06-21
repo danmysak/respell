@@ -11,7 +11,7 @@ import {
   nominalForms
 } from "../imports.js";
 
-const ignoredPatterns = [/^ван-/i, /^(вест|іст|сан|санкт|сен|сент|усть)-/i, /-україн/i];
+const ignoredPatterns = [/^(ван|мак)-/i, /^(вест|іст|лас|лос|ост|сан|санкт|сен|сент|усть)-/i, /-україн/i];
 // "ван" should be spelled as a separate word and is handled by other rules;
 // we would also like to ignore words like "Інтерфакс-Україна"
 
