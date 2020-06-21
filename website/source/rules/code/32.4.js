@@ -35,6 +35,7 @@ registerWordRule(createTreeRule(
         .some((adjacent) => adjacent !== null && normalizedOptions.includes(normalize(adjacent))) ? null : options;
     },
     wildcardCallback: (form) => form.length >= minWildcardLength,
+    recursive: true,
     requiresExtraChange: true,
     lowerCase: true,
     fixApostrophe: true

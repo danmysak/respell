@@ -25,9 +25,11 @@ function constructTree(correspondences, wildcardCallback = null) {
   return tree;
 }
 
-function followTree(tree, string) {
+function followTree(tree, string, recursive) {
+  const separator = '-';
   let level = tree;
   let lastWildcard = null;
+  let lastRecursive = null;
   const updateWildcard = (level, index) => {
     if (level.hasOwnProperty(wildcard)) {
       lastWildcard = {
@@ -36,29 +38,57 @@ function followTree(tree, string) {
       };
     }
   };
-  const applyWildcard = () => {
-    if (lastWildcard === null) {
-      return null;
+  const updateRecursive = (level, index) => {
+    if (recursive && (level.hasOwnProperty(leaf) || level.hasOwnProperty(wildcard)) && string[index] === separator) {
+      lastRecursive = {
+        value: level[leaf] || level[wildcard],
+        index
+      }
     }
-    const prefix = string.slice(0, lastWildcard.index);
+  };
+  const applyRecursive = () => {
+    const getPrefixes = () => {
+      const prefix = string.slice(0, lastRecursive.index);
+      const processed = followTree(tree, prefix, true);
+      return processed === null || processed.length === 0 ? [prefix] : processed;
+    };
+    const prefixes = getPrefixes();
+    return lastRecursive.value.flatMap((value) => prefixes.map((prefix) => prefix + separator + value));
+  };
+  const applyWildcard = () => {
+    const prefix = string.slice(0, lastWildcard.index + 1);
     return lastWildcard.value.map((string) => prefix + string);
   };
+  const end = () => {
+    if (lastRecursive) {
+      return applyRecursive();
+    } else if (lastWildcard) {
+      return applyWildcard();
+    } else {
+      return null;
+    }
+  };
   for (let i = string.length - 1; i >= 0; i--) {
+    updateRecursive(level, i);
+    updateWildcard(level, i);
     const char = string[i];
-    updateWildcard(level, i + 1);
     if (level.hasOwnProperty(char)) {
       level = level[char];
     } else {
-      return applyWildcard();
+      return end();
     }
   }
-  updateWildcard(level, 0);
-  return level.hasOwnProperty(leaf) ? level[leaf] : applyWildcard();
+  updateWildcard(level, -1);
+  if (level.hasOwnProperty(leaf)) {
+    return level[leaf];
+  } else {
+    return end();
+  }
 }
 
 export function createTreeRule(correspondences, correctionType, description,
                                {callback, postprocess, requiresExtraChange,
-                                lowerCase, fixApostrophe, wildcardCallback}) {
+                                lowerCase, fixApostrophe, wildcardCallback, recursive}) {
   const tree = constructTree(correspondences, wildcardCallback || null);
   return (token, chain) => {
     if (callback && !callback(token, chain)) {
@@ -71,7 +101,7 @@ export function createTreeRule(correspondences, correctionType, description,
     if (fixApostrophe) {
       string = simplifyApostrophe(string);
     }
-    let values = followTree(tree, string);
+    let values = followTree(tree, string, recursive || false);
     if (values === null || values.length === 0) {
       return null;
     }
