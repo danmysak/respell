@@ -12,6 +12,8 @@ import {
 } from "../imports.js";
 import {feminitives} from "../../data/feminitives.js";
 
+const minWildcardLength = 6;
+
 registerWordRule(createTreeRule(
   combineCorrespondences(
     feminitives.flatMap(
@@ -32,6 +34,7 @@ registerWordRule(createTreeRule(
       return [chain.getPreviousToken(2), chain.getNextToken(2)]
         .some((adjacent) => adjacent !== null && normalizedOptions.includes(normalize(adjacent))) ? null : options;
     },
+    wildcardCallback: (form) => form.length >= minWildcardLength,
     requiresExtraChange: true,
     lowerCase: true,
     fixApostrophe: true

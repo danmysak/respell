@@ -64,6 +64,8 @@ function processText(text, omitSections = []) {
 }
 
 function test(tests) {
+  const startTime = new Date();
+
   let succeeded = 0;
   let failed = 0;
 
@@ -125,7 +127,10 @@ function test(tests) {
     }
   });
 
-  console.log(`Done running ${tests.length} tests: ${succeeded} succeeded, ${failed} failed`);
+  const endTime = new Date();
+  const secondsElapsed = ((endTime - startTime) / 1000).toFixed(2);
+
+  console.log(`Done running ${tests.length} tests in ${secondsElapsed}s: ${succeeded} succeeded, ${failed} failed`);
 }
 
 test(tests);

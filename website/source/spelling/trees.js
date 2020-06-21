@@ -1,42 +1,65 @@
 import {simplifyApostrophe, normalizeApostrophe, normalizeCase} from "./typography.js";
 import {Correction, correctionTypes} from "./correction.js";
+import {arrayify} from "./data-manipulation.js";
 
 const leaf = Symbol('leaf');
+const wildcard = Symbol('wildcard');
 
-function constructTree(correspondences) {
+function constructTree(correspondences, wildcardCallback = null) {
   const tree = {};
-  for (const key of Object.keys(correspondences)) {
+  for (const [key, value] of Object.entries(correspondences)) {
     let level = tree;
-    for (const char of key) {
+    for (let i = key.length - 1; i >= 0; i--) {
+      const char = key[i];
       if (!level.hasOwnProperty(char)) {
         level[char] = {};
       }
       level = level[char];
     }
-    if (!level.hasOwnProperty(leaf)) {
-      level[leaf] = [];
+    const storageKey = wildcardCallback && wildcardCallback(key, value) ? wildcard : leaf;
+    if (!level.hasOwnProperty(storageKey)) {
+      level[storageKey] = [];
     }
-    const value = correspondences[key];
-    level[leaf].push(...(Array.isArray(value) ? value : [value]));
+    level[storageKey].push(...arrayify(value));
   }
   return tree;
 }
 
 function followTree(tree, string) {
   let level = tree;
-  for (const char of string) {
+  let lastWildcard = null;
+  const updateWildcard = (level, index) => {
+    if (level.hasOwnProperty(wildcard)) {
+      lastWildcard = {
+        value: level[wildcard],
+        index
+      };
+    }
+  };
+  const applyWildcard = () => {
+    if (lastWildcard === null) {
+      return null;
+    }
+    const prefix = string.slice(0, lastWildcard.index);
+    return lastWildcard.value.map((string) => prefix + string);
+  };
+  for (let i = string.length - 1; i >= 0; i--) {
+    const char = string[i];
+    updateWildcard(level, i + 1);
     if (level.hasOwnProperty(char)) {
       level = level[char];
     } else {
-      return null;
+      return applyWildcard();
     }
   }
-  return level.hasOwnProperty(leaf) ? level[leaf] : null;
+  updateWildcard(level, 0);
+  return level.hasOwnProperty(leaf) ? level[leaf] : applyWildcard();
 }
 
 export function createTreeRule(correspondences, correctionType, description,
-                               {callback, postprocess, requiresExtraChange, lowerCase, fixApostrophe}) {
-  const tree = constructTree(correspondences);
+                               {callback, postprocess, requiresExtraChange,
+                                lowerCase, fixApostrophe, wildcardCallback}) {
+  const tree = constructTree(correspondences, wildcardCallback || null);
   return (token, chain) => {
     if (callback && !callback(token, chain)) {
       return null;
