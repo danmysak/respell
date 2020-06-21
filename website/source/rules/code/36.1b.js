@@ -5,15 +5,13 @@ const prefix = "пів";
 const minRootLength = 3;
 const separators = ["-", "'", ""];
 
-const exceptions = halfExceptions.map((exception) => prefix + exception);
-
 registerWordRule(createMaskRule({
   callback: (token) => {
     if (token.length < prefix.length + minRootLength) {
       return false;
     }
     const lowerCased = token.toLowerCase();
-    return lowerCased.startsWith(prefix) && !exceptions.includes(lowerCased);
+    return lowerCased.startsWith(prefix) && !halfExceptions.includes(lowerCased.slice(prefix.length));
   },
   matches: separators.map((separator) => `${prefix}(${separator})*`),
   antiMatches: [ // As opposed to halfExceptions, here are listed words that don't exist without "пів"
