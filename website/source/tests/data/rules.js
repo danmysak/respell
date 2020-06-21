@@ -164,6 +164,7 @@ export const tests = [
   [32, 'Майстрів теж сюди.', 'Майстринь теж сюди.', correctionTypes.UNCERTAIN, true], /* майстер-майстриня */
   [32, 'Царі мудрі.', 'Цариці мудрі.', correctionTypes.UNCERTAIN, true], /* цар-цариця */
   [32, 'Віддамо все ченцям, так.', 'Віддамо все черницям, так.', correctionTypes.UNCERTAIN, true], /* чернець-черниця */
+  [32, 'Король королям, принц принцу, кронпринц кронпринца.', 'Королева королевам, принцеса принцесі, кронпринцеса кронпринцеси.', [correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN], true],
   [-95, 'на Україні. Білорусі', 'на Україні. Білорусці', correctionTypes.UNCERTAIN, true],
   [-95, 'в Україні та Білорусі'],
   [_, 'Дані, опубліковані Репортерами без кордонів. Дані, опубліковані «Репортерами без кордонів».'],
