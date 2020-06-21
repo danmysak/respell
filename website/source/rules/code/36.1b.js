@@ -1,21 +1,27 @@
 import {correctionTypes, registerWordRule, createMaskRule} from "../imports.js";
+import {halfExceptions} from "../../data/half-exceptions.js";
 
-const word = "пів";
-const minFollowingLength = 3;
+const prefix = "пів";
+const minRootLength = 3;
 const separators = ["-", "'", ""];
 
+const exceptions = halfExceptions.map((exception) => prefix + exception);
+
 registerWordRule(createMaskRule({
-  callback: (token) => token.length >= word.length + minFollowingLength,
-  matches: separators.map((separator) => `${word}(${separator})*`),
-  antiMatches: [
-    [word, [
-      ...separators, // So that the word by itself is not matched
+  callback: (token) => {
+    if (token.length < prefix.length + minRootLength) {
+      return false;
+    }
+    const lowerCased = token.toLowerCase();
+    return lowerCased.startsWith(prefix) && !exceptions.includes(lowerCased);
+  },
+  matches: separators.map((separator) => `${prefix}(${separator})*`),
+  antiMatches: [ // As opposed to halfExceptions, here are listed words that don't exist without "пів"
+    [prefix, [
+      ...separators, // So that the prefix by itself is not matched
       "тора*", "тори", "денн*", "нічн*", "річч*",
-      "день", "дневі", "днем", "дні", "днів", "дню", "дням", "днями", "днях",
-      "ніч", "ніччю", "ночам", "ночами", "ночах", "ноче", "ночей",
       "ень", "неві", "нем", "ням", "нями", "нях", "няч*", "нів", "нівс*", "ник*", "нич*",
-      "онія*", "онію", "оніє*", "онії",
-      "острів", "острова+", "острове", "острови", "острові*", "острово*", "острову"
+      "онія*", "онію", "оніє*", "онії"
     ]]
   ],
   replacement: " ",
