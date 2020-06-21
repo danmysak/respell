@@ -10,13 +10,20 @@ import {
 
 registerWordRule(createMaskRule([{
   matches: ["(З)"],
-  replacement: ["Із", "Зі"],
   type: correctionTypes.MISTAKE,
   previousCallback: canBeSentenceBoundary,
   canBeFirst: true,
-  nextMatches: [
-    [["з", "ц", "ч", "щ"], "*"]
-  ],
+  rules: [{
+    replacement: ["Із"],
+    nextMatches: [
+      [["з", "ц", "ч"], "*"]
+    ],
+  }, {
+    replacement: ["Зі", "Із"],
+    nextMatches: [
+      [["щ"], "*"]
+    ],
+  }],
   description: 'Відповідно до § 25 правопису, на початку речення перед літерами «з», «ц», «ч», «щ» замість '
     + 'прийменника «З» пишемо «Із» або (альтернативно і лише перед сполученням приголосних звуків) «Зі».'
 }, {
