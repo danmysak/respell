@@ -101,7 +101,7 @@ const minMasculineTitleLength = 4;
 
 export const masculine = {
   adjectivePattern: /[иії]й$/i,
-  vocativePattern: new RegExp('(е|ю|[гґжкхчшщ]у|([аеєиіїоуюя][гкх]|о(нь|ч)к|ин)о' + extraMasculineVocative.map(
+  vocativePattern: new RegExp('(е|[^єо]ю|[гґжкхчшщ]у|([аеєиіїоуюя][гкх]|о(нь|ч)к|ин)о' + extraMasculineVocative.map(
     ({wholeWord, ending, preceding}) => `|${wholeWord ? '^' : ''}(${preceding.join('|')})${ending}`
   ).join('') + ')$', 'i'),
   minTitleLength: minMasculineTitleLength,

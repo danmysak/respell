@@ -2,8 +2,8 @@ import {cases, number, nominalForms, frequency} from "../includes/grammar.js";
 import {canBeSentenceBoundary, isWord} from "./tokenizer.js";
 import {prepositions} from "../data/prepositions.js";
 
-export function isAfterSentenceBoundary(chain) {
-  let level = 1;
+export function isAfterSentenceBoundary(chain, startingLevel = 1) {
+  let level = startingLevel;
   while (true) {
     const token = chain.getPreviousToken(level);
     if (isWord(token)) {

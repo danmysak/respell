@@ -7,7 +7,8 @@ import {
   getLastLetter,
   simplifyApostrophe,
   isPunctuation,
-  canBeSentenceBoundary,
+  isQuote,
+  isAfterSentenceBoundary,
   arrayify
 } from "../imports.js";
 import {masculine, feminine} from "../../data/vocative.js";
@@ -25,11 +26,24 @@ function inspectPreceding(chain, minPreviousLength, shorterTitlesLowerCased, voc
   }
   const secondPrevious = chain.getPreviousToken(2);
   if (!(determineLetterCase(previous) === letterCases.LOWER
-    || (determineLetterCase(previous) === letterCases.CAPITALIZED && canBeSentenceBoundary(secondPrevious)))) {
+    || (determineLetterCase(previous) === letterCases.CAPITALIZED && isAfterSentenceBoundary(chain, 2)))) {
     return false;
   }
-  if (!(isPunctuation(secondPrevious, true)
-    || (secondPrevious.match(adjectivePattern) && isPunctuation(chain.getPreviousToken(3), true)))) {
+  if (isPunctuation(secondPrevious, true)) {
+    return secondPrevious;
+  }
+  const thirdPrevious = chain.getPreviousToken(3);
+  if (secondPrevious.match(adjectivePattern) && isPunctuation(thirdPrevious, true)) {
+    return thirdPrevious;
+  }
+  return false;
+}
+
+function inspectDelimiters(preceding, following) {
+  if (isQuote(preceding) && isQuote(following)) {
+    return false;
+  }
+  if (preceding === ')' || following === '(') {
     return false;
   }
   return true;
@@ -43,7 +57,8 @@ function registerRule({
   }) {
   const shorterTitlesLowerCased = shorterTitles.map((title) => title.toLowerCase());
   registerWordRule((token, chain) => {
-    if (!isPunctuation(chain.getNextToken())) {
+    const followingDelimiter = chain.getNextToken();
+    if (!isPunctuation(followingDelimiter)) {
       return null;
     }
     const lastLetter = getLastLetter(token);
@@ -53,7 +68,9 @@ function registerRule({
       || excludedEndings.some((ending) => token.endsWith(ending))) {
       return null;
     }
-    if (!inspectPreceding(chain, minPreviousLength, shorterTitlesLowerCased, vocativePattern, adjectivePattern)) {
+    const precedingDelimiter =
+      inspectPreceding(chain, minPreviousLength, shorterTitlesLowerCased, vocativePattern, adjectivePattern);
+    if (precedingDelimiter === false || !inspectDelimiters(precedingDelimiter, followingDelimiter)) {
       return null;
     }
     const replacements = arrayify(endings[lastLetter]).map((ending) => {
