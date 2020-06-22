@@ -21,6 +21,10 @@ function formatDescription(text) {
     .replace(/«-[^»\s]+»/g, '<span class="no-break">$&</span>')
 }
 
+function formatReplacement(text) {
+  return text.replace(/(^\s|\s$)/g, '␣');
+}
+
 export function fixTooltipPositioning(tooltip) {
   const boundingRect = tooltip.getBoundingClientRect();
   const heightNeeded = window.scrollY + boundingRect.top + tooltip.offsetHeight + tooltipMargin;
@@ -61,7 +65,7 @@ export function createTooltip(currentCorrections, performReplacement) {
         newToken.append(slash);
       }
       const button = document.createElement('button');
-      button.innerText = replacement;
+      button.innerText = formatReplacement(replacement);
       let byKeyboard = true;
       button.addEventListener('mouseup', () => {
         byKeyboard = false;
