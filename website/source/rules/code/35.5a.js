@@ -1,6 +1,39 @@
 import {Correction, correctionTypes, registerWordRule} from "../imports.js";
 
-const pattern = /^(\d+)(-?)([а-зґє])$/i;
+const pattern = /^([1-9]\d{0,2})(-?)([а-зґє])$/i;
+
+const mainDescription = 'Відповідно до § 35 правопису, найменування класів, будинків, корпусів, поштових відділень '
+  + 'тощо слід писати через дефіс у форматі «10-А».';
+const extraDescription = 'Натомість закінчення порядкових числівників мають починатися з приголосного (див. § 64).';
+
+function getOrdinalNumberSuffixes(number) {
+  const defaultSuffixes = ['та', 'те'];
+  const lastTwo = number % 100;
+  if (lastTwo > 10 && lastTwo < 20) {
+    return defaultSuffixes;
+  } else if (lastTwo === 40) {
+    return ['ва', 'ве'];
+  } else {
+    const last = lastTwo % 10;
+    switch (last) {
+      case 1:
+        return ['ша', 'ше'];
+      case 2:
+        return ['га', 'ге'];
+      case 3:
+        return ['тє'];
+      case 7:
+      case 8:
+        return ['ма', 'ме'];
+      default:
+        return defaultSuffixes;
+    }
+  }
+}
+
+function formatReplacement(number, suffix) {
+  return `${number}-${suffix}`;
+}
 
 registerWordRule((token) => {
   const match = token.match(pattern);
@@ -8,11 +41,18 @@ registerWordRule((token) => {
     return null;
   }
   const [_, number, hyphen, letter] = match;
-  const replacement = `${number}-${letter.toUpperCase()}`;
-  if (replacement === token) {
+  const mainReplacement = formatReplacement(number, letter.toUpperCase());
+  if (mainReplacement === token) {
     return null;
   }
-  return new Correction(correctionTypes.MISTAKE, replacement,
-    'Відповідно до § 35 правопису, найменування будинків, корпусів тощо слід писати через дефіс у форматі «10-А».'
-  );
+  const extraReplacements = [];
+  if (letter === letter.toLowerCase()) {
+    extraReplacements.push(
+      ...getOrdinalNumberSuffixes(+number)
+        .filter((suffix) => suffix.endsWith(letter))
+        .map((suffix) => formatReplacement(number, suffix))
+    );
+  }
+  const description = mainDescription + (extraReplacements.length === 0 ? '' : ' ' + extraDescription);
+  return new Correction(correctionTypes.MISTAKE, [mainReplacement, ...extraReplacements], description);
 });
