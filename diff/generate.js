@@ -5,9 +5,10 @@ const diffInput = 'diff.json';
 const output = 'diff.md';
 const sectionSign = '§';
 const noSectionSign = '∅';
-const sectionTemplate = `## {new} ← {old}`;
+const sectionTemplate = `## {new} ← {old}: {title}`;
 const sectionNewPlaceholder = '{new}';
 const sectionOldPlaceholder = '{old}';
+const sectionTitlePlaceholder = '{title}';
 const compulsoryUpdateSign = '→';
 const optionalUpdateSign = '=';
 const lineDelimiter = '\n';
@@ -22,7 +23,8 @@ const json = fs.readFileSync(diffInput, encoding);
 for (const item of JSON.parse(json)) {
   const heading = sectionTemplate
     .replace(sectionNewPlaceholder, item.new ? `${sectionSign} ${item.new}` : noSectionSign)
-    .replace(sectionOldPlaceholder, item.old ? `${sectionSign} ${item.old.join(', ')}` : noSectionSign);
+    .replace(sectionOldPlaceholder, item.old ? `${sectionSign} ${item.old.join(', ')}` : noSectionSign)
+    .replace(sectionTitlePlaceholder, item.title);
   let minor;
   if (item.minor) {
     const changes = item.minor.map((change, index) => `${item.minor.length > 1 ? `${index + 1}.` : '*'} ${change}`);
