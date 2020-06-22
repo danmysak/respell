@@ -4,8 +4,11 @@ import {
   registerPunctuationRule,
   registerWordRule,
   canBeSentenceBoundary,
+  isPunctuation,
   isWhitespace
 } from "../imports.js";
+
+const maxDefinitionLength = 6;
 
 const dashes = ["—", "–", "-", "--", "---"];
 const comma = ",";
@@ -18,8 +21,8 @@ function isCommaAndDash(token) {
   return token.startsWith(comma) && isDash(token.slice(comma.length));
 }
 
-function hasPriorDashes(chain) {
-  let level = 1;
+function hasPriorDashes(chain, startingLevel = 1) {
+  let level = startingLevel;
   while (true) {
     const token = chain.getPreviousToken(level);
     if (canBeSentenceBoundary(token)) {
@@ -27,6 +30,12 @@ function hasPriorDashes(chain) {
     }
     if (isDash(token) || isCommaAndDash(token)) {
       return !canBeSentenceBoundary(chain.getPreviousToken(level + 1));
+    }
+    if (isPunctuation(token)) {
+      return false;
+    }
+    if (level === maxDefinitionLength + startingLevel) {
+      return false;
     }
     level++;
   }
@@ -40,7 +49,7 @@ function process(token, chain) {
   const previousToken = chain.getPreviousToken(1, false);
   const nextToken = chain.getNextToken(1, false);
 
-  if (isDash(token) && chain.getPreviousToken() === comma && hasPriorDashes(chain)) {
+  if (isDash(token) && chain.getPreviousToken() === comma && hasPriorDashes(chain, 2)) {
     replacement = '';
     if (isWhitespace(previousToken)) { // Could be false if the dash is really a hyphen
       removePreviousToken = true;      // (which is counted as a word, not punctuation)

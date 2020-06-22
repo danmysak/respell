@@ -9,6 +9,8 @@ import {
   getFirstLetter
 } from "../imports.js";
 
+const maxLookupLevel = 40;
+
 const [leftBracket, rightBracket] = ["(", ")"];
 const period = ".";
 
@@ -24,6 +26,12 @@ function examine(chain, startingLevel) {
     const token = chain.getPreviousToken(level);
     if (canBeSentenceBoundary(token) && lastCapitalized && !isInitialLetter(chain.getPreviousToken(level + 1))) {
       return true; // There are multiple sentences inside the parentheses
+    }
+    if (token === null) {
+      return false;
+    }
+    if (level === maxLookupLevel) {
+      return true;
     }
     if (isWord(token)) {
       if (token.toLowerCase() === token) {

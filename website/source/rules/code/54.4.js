@@ -4,6 +4,7 @@ import {
   registerWordRule,
   labels,
   canBeSentenceBoundary,
+  isWord,
   isQuote,
   isRomanNumeral
 } from "../imports.js";
@@ -12,6 +13,10 @@ const maxLength = 3;
 
 function isLatin(token) {
   return token !== null && token.match(/^[^а-яґєії]*[a-z][а-яґєії]*$/i) && !isRomanNumeral(token);
+}
+
+function isCyrillic(token) {
+  return token !== null && token.match(/[а-яґєії]/);
 }
 
 function canBeInitialPart(token) {
@@ -23,15 +28,29 @@ function navigateUntilNonLatin(navigator, maxLength) {
   for (let level = 1; level <= maxLength; level++) {
     const nextToken = navigator(level);
     if (!isLatin(nextToken)) {
-      return [lastToken, nextToken];
+      return [lastToken, level];
     }
     lastToken = nextToken;
   }
   return [null, null];
 }
 
-function canBeSentence(precedingToken, followingToken) {
-  return canBeSentenceBoundary(precedingToken) && canBeSentenceBoundary(followingToken);
+function lookForCyrillic(navigator, startingLevel) {
+  let level = startingLevel;
+  while (true) {
+    const token = navigator(level);
+    if (canBeSentenceBoundary(token)) {
+      return false;
+    } else if (isWord(token)) {
+      return isCyrillic(token);
+    }
+    level++;
+  }
+}
+
+function hasCyrillic(chain, precedingLevel, followingLevel) {
+  return lookForCyrillic(chain.getPreviousToken.bind(chain), precedingLevel)
+    || lookForCyrillic(chain.getNextToken.bind(chain), followingLevel);
 }
 
 registerWordRule((token, chain) => {
@@ -47,8 +66,8 @@ registerWordRule((token, chain) => {
     if (!canBeInitialPart(token) || isQuote(chain.getPreviousToken(1, false))) {
       return null;
     }
-    const [last, following] = navigateUntilNonLatin(chain.getNextToken.bind(chain), maxLength);
-    if (last === null || canBeSentence(chain.getPreviousToken(), following)) {
+    const [last, followingLevel] = navigateUntilNonLatin(chain.getNextToken.bind(chain), maxLength);
+    if (last === null || !hasCyrillic(chain, 1, followingLevel)) {
       return null;
     }
   }
@@ -56,8 +75,8 @@ registerWordRule((token, chain) => {
     if (isQuote(chain.getNextToken(1, false))) {
       return null;
     }
-    const [first, preceding] = navigateUntilNonLatin(chain.getPreviousToken.bind(chain), maxLength);
-    if (first === null || !canBeInitialPart(first) || canBeSentence(preceding, chain.getNextToken())) {
+    const [first, precedingLevel] = navigateUntilNonLatin(chain.getPreviousToken.bind(chain), maxLength);
+    if (first === null || !canBeInitialPart(first) || !hasCyrillic(chain, precedingLevel, 1)) {
       return null;
     }
   }
