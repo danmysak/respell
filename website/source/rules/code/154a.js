@@ -9,11 +9,13 @@ registerWordRule(createMaskRule({
 }));
 
 registerWordRule(createMaskRule({
-  matches: ["гостролу(ц)ьк+"],
+  matches: [
+    [["гостро", "сухо"], "лу(ц)ьк+"]
+  ],
   replacement: "чанс",
   type: correctionTypes.MISTAKE,
   description: 'Як продемонстровано у § 154 правопису, прикметникову форму від назви «Гостролуччя» слід записувати '
-    + 'як «гостролучанський».'
+    + 'як «гостролучанський», а від «Сухолуччя» за аналогією — як «сухолучанський».'
 }));
 
 registerWordRule(createMaskRule({
