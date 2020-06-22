@@ -80,35 +80,27 @@ t-t.correction-uncertain:not(.correction-new) {
     --correction-color: var(--uncertain-color);
 }
 
-t-t {
-    --token-border-distance: 1px;
-}
-
-.input t-t {
-    --token-border-distance: 2px;
-}
-
 t-t::after {
     content: "";
     display: block;
     position: absolute;
     z-index: -1;
     background-color: var(--correction-color);
+    opacity: 0.15;
     transition-property: background-color, visibility;
     transition-duration: var(--correction-transition-duration);
 
-    --mask-image: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8' standalone='no'%3F%3E%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='60' viewBox='0 0 120 60'%3E%3Cpath stroke-width='15' stroke='%23000000' fill='none' d='M0,40 c24,0 36,-20 60,-20 c24,0 36,20 60,20'/%3E%3C/svg%3E");
+    --token-highlight-min-width: 12px;
 
-    left: 0;
-    height: 3px;
-    bottom: calc(0px - var(--token-border-distance));
-    width: 100%;
-    -webkit-mask-image: var(--mask-image);
-    mask-image: var(--mask-image);
-    -webkit-mask-size: contain;
-    mask-size: contain;
-    -webkit-mask-repeat: repeat-x;
-    mask-repeat: repeat-x;
+    margin: 0 auto;
+    left: calc(0px - var(--token-highlight-min-width));
+    right: calc(0px - var(--token-highlight-min-width));
+    width: calc(100% + 2px);
+    min-width: var(--token-highlight-min-width);
+    border-radius: 2px;
+    /* The following values give the perfect balance between Chrome, Firefox, and iOS: */
+    top: 1px;
+    bottom: -1px;
 }
 
 t-t.correction-none::after {
