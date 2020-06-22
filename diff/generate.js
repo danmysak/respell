@@ -13,7 +13,7 @@ const compulsoryUpdateSign = '→';
 const optionalUpdateSign = '=';
 const lineDelimiter = '\n';
 const sectionDelimiter = '\n\n';
-const noWrappingLimit = 30;
+const noWrappingLimit = 25;
 const encoding = 'utf-8';
 
 const preamble = fs.readFileSync(preambleInput, encoding);
