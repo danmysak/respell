@@ -16,6 +16,10 @@ const sectionDelimiter = '\n\n';
 const noWrappingLimit = 25;
 const encoding = 'utf-8';
 
+function fixTypography(text) {
+  return text.replace(/( (?=[—/])|(?<=§) )/g, ' ');
+}
+
 const preamble = fs.readFileSync(preambleInput, encoding);
 const sections = [preamble];
 const json = fs.readFileSync(diffInput, encoding);
@@ -64,4 +68,4 @@ for (const item of JSON.parse(json)) {
   sections.push([heading, major, minor].filter((subsection) => subsection).join(lineDelimiter + lineDelimiter));
 }
 
-fs.writeFileSync(output, sections.join(sectionDelimiter), encoding);
+fs.writeFileSync(output, fixTypography(sections.join(sectionDelimiter)), encoding);
