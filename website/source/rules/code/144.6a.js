@@ -15,7 +15,7 @@ function convert(root, suffix) {
 registerWordRule(createTreeRule(
   unpackSingleParadigmList(southSlavicNamesWithI, (form, group, root, suffix) => [form, convert(root, suffix)]),
   correctionTypes.UNCERTAIN,
-  'Відповідно до § 144 правопису, в болгарських, македонських, словенських та сербохорватських іменах кириличну літеру '
+  'Відповідно до § 144 правопису, у болгарських, македонських, словенських та сербохорватських іменах кириличну літеру '
     + '«и» або латинську «i» після приголосних українською мовою слід передавати через «и».',
   {
     callback: (token) => isCapitalized(token) && token.includes('і'), // Potential optimization

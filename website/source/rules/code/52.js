@@ -26,7 +26,7 @@ registerWordRule(createMaskRule({
 registerWordRule(createMaskRule({
   preserveReplacementCase: true,
   type: correctionTypes.MISTAKE,
-  description: 'Відповідно до § 52 правопису, словосполучення «8 березня» та «1 травня» немає підстав уважати назвами '
+  description: 'Відповідно до § 52 правопису, словосполучення «8 березня» та «1 травня» немає підстав уважати назвами '
     + 'свят і писати в них друге слово з великої літери.',
   rules: [{
     matches: ["(Б)ерезня"],
