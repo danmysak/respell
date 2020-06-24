@@ -8,7 +8,9 @@ import {
   simplifyApostrophe,
   isPunctuation,
   isQuote,
+  canBeSentenceBoundary,
   isAfterSentenceBoundary,
+  isDash,
   arrayify
 } from "../imports.js";
 import {masculine, feminine} from "../../data/vocative.js";
@@ -41,6 +43,9 @@ function inspectPreceding(chain, minPreviousLength, shorterTitlesLowerCased, voc
 
 function inspectDelimiters(preceding, following) {
   if (isQuote(preceding) && isQuote(following)) {
+    return false;
+  }
+  if (canBeSentenceBoundary(preceding) && isDash(following) || isDash(preceding) && canBeSentenceBoundary(following)) {
     return false;
   }
   if (preceding === ')' || following === '(') {

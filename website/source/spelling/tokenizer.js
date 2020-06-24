@@ -2,7 +2,8 @@ const whitespace = `\\s`;
 
 const punctuation = {
   sentenceDelimiters: '.…?!',
-  clauseDelimiters: ',:;–—',
+  clauseDelimiters: ',:;',
+  dashes: '–—',
   quotes: '"«»„“”',
   slashes: '/',
   brackets: '(){}[]'
@@ -17,7 +18,7 @@ const tokenizer = (() => {
   const grouped = [
     whitespace,
     `[${punctuation.sentenceDelimiters}]`,
-    `[${punctuation.clauseDelimiters}]`
+    `[${punctuation.clauseDelimiters}${punctuation.dashes}]`
   ].map((pattern) => `(?:${pattern})+`);
   const individual = [punctuation.quotes, punctuation.slashes, punctuation.brackets].join('').split('').map(
     (char) => ['[', ']', '(', ')', '{', '}', '\\'].includes(char) ? `\\${char}` : char
@@ -33,12 +34,20 @@ export function isWhitespace(token) {
   return token !== null && token.match(whiteSpacePattern);
 }
 
+function isSinglePunctuationMark(token, set) {
+  return token !== null && token.length === 1 && set.includes(token);
+}
+
 export function isQuote(token) {
-  return token !== null && token.length === 1 && punctuation.quotes.includes(token);
+  return isSinglePunctuationMark(token, punctuation.quotes);
 }
 
 export function isSlash(token) {
-  return token !== null && token.length === 1 && punctuation.slashes.includes(token);
+  return isSinglePunctuationMark(token, punctuation.slashes);
+}
+
+export function isDash(token) {
+  return isSinglePunctuationMark(token, punctuation.dashes);
 }
 
 export function isPunctuation(token, canBeNull = false) {
