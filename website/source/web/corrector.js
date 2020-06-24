@@ -1,8 +1,14 @@
 import {tooltipTag, expanderTag} from "./common-tags.js";
 import {getTokenCorrectionPresentations, accept} from "./spellchecker.js";
 import {startPlannedMutation, endPlannedMutation} from "./input-handler.js";
-import {createTooltip, fixTooltipPositioning, focusFirstOption} from "./tooltip.js";
 import {setCursorAdjacent} from "./cursor.js";
+import {
+  initializeTooltips,
+  createTooltip,
+  reportTooltipDisplayed,
+  reportTooltipRemoved,
+  focusFirstOption
+} from "./tooltip.js";
 
 const tokenCorrectingClassName = 'correction-current';
 const containerCorrectingClassName = 'input-correcting';
@@ -34,7 +40,7 @@ function displayTooltip() {
   currentToken.append(document.createElement(expanderTag));
   const tooltip = createTooltip(currentCorrections, performReplacement);
   currentToken.append(tooltip);
-  fixTooltipPositioning(tooltip);
+  reportTooltipDisplayed(tooltip);
   currentToken.tabIndex = -1; // This must be done irrespective of currentByKeyboard because we don't want the user
                               // to be able to focus on the token by shift-tabbing from a button
   if (currentByKeyboard) {
@@ -45,6 +51,7 @@ function displayTooltip() {
 function removeTooltip() {
   currentToken.tabIndex = 0;
   currentToken.querySelector(tooltipTag).remove();
+  reportTooltipRemoved();
   currentToken.querySelector(expanderTag).remove();
 }
 
@@ -178,6 +185,7 @@ function onGlobalTouchStart(event) {
 }
 
 export function attachCorrector(inputElement, navigationElement) {
+  initializeTooltips();
   container = inputElement;
   navigationContainer = navigationElement;
   inputElement.addEventListener('mouseover', (event) => considerCorrecting(event.target));

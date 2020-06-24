@@ -16,7 +16,8 @@ function initialize() {
   const navigationContainer = document.querySelector('.input-navigation');
   const navigationElements = [
     document.querySelector('.input-navigation-previous'),
-    document.querySelector('.input-navigation-next')
+    document.querySelector('.input-navigation-next'),
+    document.querySelector('.input-navigation')
   ];
   const settingCheckboxes = document.querySelectorAll('.settings-container input[type=checkbox][data-ignore-label]');
   if (!window.matchMedia("(pointer: coarse)").matches) {

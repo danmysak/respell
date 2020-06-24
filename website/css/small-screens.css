@@ -20,6 +20,10 @@ parameter between multiple CSS files.
         grid-area: 3 / 1 / 5 / 2;
     }
 
+    .input-navigation {
+        margin-bottom: 0; /* So that empty text does not make the input taller than it should be */
+    }
+
     .input-navigation-next::before {
         box-shadow: calc(0px - var(--input-navigation-spread-shift)) calc(0px - var(--input-navigation-spread-shift))
             calc(var(--input-navigation-blur-radius) - var(--input-navigation-spread-shift))

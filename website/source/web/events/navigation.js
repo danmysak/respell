@@ -8,12 +8,14 @@ const activeClassName = 'active';
 const hiddenClassName = 'hidden';
 
 let container = null;
+let navigationContainer = null;
 let previousContainer = null;
 let nextContainer = null;
 
 let textLineHeight = null;
 let previousHeight = null;
 let nextHeight = null;
+let bottomMargin = null;
 
 let visibilityUpdateScheduled = false;
 
@@ -24,7 +26,7 @@ function visibilityUpdate() {
   } else {
     previousContainer.classList.remove(hiddenClassName);
   }
-  if (rect.bottom < document.documentElement.clientHeight) {
+  if (rect.bottom < document.documentElement.clientHeight + bottomMargin) {
     nextContainer.classList.add(hiddenClassName);
   } else {
     nextContainer.classList.remove(hiddenClassName);
@@ -144,13 +146,20 @@ export function triggerNavigationEvents() {
   setTimeout(fullUpdate, 0);
 }
 
-export function attachNavigationEvents(inputElement, [previous, next]) {
+function updateBottomMargin() {
+  bottomMargin = parseFloat(window.getComputedStyle(navigationContainer).getPropertyValue('margin-bottom'));
+}
+
+export function attachNavigationEvents(inputElement, [previous, next, navigationElement]) {
   container = inputElement;
+  navigationContainer = navigationElement;
   previousContainer = previous;
   nextContainer = next;
   textLineHeight = parseFloat(window.getComputedStyle(inputElement).getPropertyValue('line-height'));
   previousHeight = parseFloat(window.getComputedStyle(previous).getPropertyValue('height'));
   nextHeight = parseFloat(window.getComputedStyle(next).getPropertyValue('height'));
+  updateBottomMargin();
+  window.addEventListener('resize', updateBottomMargin);
   let timer = setTimeout(fullUpdate, 0);
   const reset = () => {
     if (!visibilityUpdateScheduled) {

@@ -13,7 +13,9 @@ const defaultReplacementClassName = 'default-replacement';
 const tooltipHorizontalShiftProperty = '--tooltip-horizontal-shift';
 const tooltipMarginProperty = '--tooltip-margin';
 
+const pageElement = document.documentElement;
 let pageBottomPadding = 0;
+let tooltipDisplayed = false;
 const tooltipMargin = parseFloat(window.getComputedStyle(document.body).getPropertyValue(tooltipMarginProperty));
 
 function formatDescription(text) {
@@ -25,15 +27,19 @@ function formatReplacement(text) {
   return text.replace(/(^\s|\s$)/g, '␣');
 }
 
-export function fixTooltipPositioning(tooltip) {
+function setBottomPaddingDelta(paddingDelta) {
+  pageBottomPadding += paddingDelta;
+  pageElement.style.paddingBottom = `${pageBottomPadding}px`;
+}
+
+function fixTooltipPositioning(tooltip) {
   const boundingRect = tooltip.getBoundingClientRect();
   const heightNeeded = window.scrollY + boundingRect.top + tooltip.offsetHeight + tooltipMargin;
   const currentHeight = document.body.offsetHeight + pageBottomPadding; /* We can't just take the value of
           document.documentElement.scrollHeight because Firefox adds vertical space automatically to accommodate
           the absolutely positioned div, while Chrome doesn't. */
   if (heightNeeded > currentHeight) {
-    pageBottomPadding += Math.ceil(heightNeeded - currentHeight);
-    document.documentElement.style.paddingBottom = `${pageBottomPadding}px`;
+    setBottomPaddingDelta(Math.ceil(heightNeeded - currentHeight));
   }
   const leftShift = Math.round(tooltipMargin - boundingRect.left);
   const rightShift = Math.round((boundingRect.left + boundingRect.width + tooltipMargin) - document.body.offsetWidth);
@@ -44,6 +50,27 @@ export function fixTooltipPositioning(tooltip) {
   }
   tooltip.classList.add(animatedClassName); // We need this class, and must set it exactly now, because otherwise the
                                // fade-in animation would use an outdated value of the tooltipHorizontalShiftProperty
+}
+
+function updatePadding() {
+  if (tooltipDisplayed || pageBottomPadding === 0) {
+    return;
+  }
+  const rect = pageElement.getBoundingClientRect();
+  const delta = document.documentElement.clientHeight - rect.bottom;
+  if (delta < 0) {
+    setBottomPaddingDelta(Math.max(delta, -pageBottomPadding));
+  }
+}
+
+export function reportTooltipDisplayed(tooltip) {
+  fixTooltipPositioning(tooltip);
+  tooltipDisplayed = true;
+}
+
+export function reportTooltipRemoved() {
+  tooltipDisplayed = false;
+  updatePadding();
 }
 
 export function createTooltip(currentCorrections, performReplacement) {
@@ -97,4 +124,8 @@ export function focusFirstOption(tooltip) {
   if (defaultButton) { // Unless we have corrections without replacement options, should always be true
     defaultButton.focus();
   }
+}
+
+export function initializeTooltips() {
+  window.addEventListener('scroll', updatePadding);
 }

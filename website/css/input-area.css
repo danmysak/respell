@@ -28,7 +28,9 @@
     display: grid;
     grid-template-areas: "previous . next";
     grid-template-columns: max-content 1fr max-content;
-
+    margin-bottom: var(--input-navigation-control-height); /* This should be fine with regards to the functionality of
+                                                         the "next" button, but is necessary in order for the page not
+                                                         to expand taller than it should be to accommodate the button */
     --input-navigation-shadow-color: black;
     --input-navigation-blur-radius: 6px;
     --input-navigation-spread-radius: -3px;
