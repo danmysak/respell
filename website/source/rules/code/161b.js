@@ -10,6 +10,16 @@ import {
 
 const dashes = ["—", "–", "-", "--", "---"];
 
+function arePotentialDates(previous, next) {
+  const integerPattern = /^\d+$/;
+  if (!previous.match(integerPattern) || !next.match(integerPattern)) {
+    return false;
+  }
+  const previousNum = +previous;
+  const nextNum = +next;
+  return nextNum >= 1 && nextNum <= 31 && previousNum >= nextNum;
+}
+
 function process(token, chain) {
   if (!dashes.includes(token)) {
     return null;
@@ -17,7 +27,7 @@ function process(token, chain) {
   const previousToken = chain.getPreviousToken() || '';
   const nextToken = chain.getNextToken() || '';
   if (!(
-    (isArabicNumeral(previousToken) && isArabicNumeral(nextToken))
+    (isArabicNumeral(previousToken) && isArabicNumeral(nextToken) && !arePotentialDates(previousToken, nextToken))
     || (isRomanNumeral(previousToken) && isRomanNumeral(nextToken))
   )) {
     return null;
