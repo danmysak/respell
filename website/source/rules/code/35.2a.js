@@ -16,7 +16,7 @@ registerWordRule(createMaskRule({
   rules: rules.map(([match, replacement, antiMatches]) => ({
     matches: ["'", ""].map((postfix) => [prefixes, `${match.replace('|', '(')}${postfix})*`]),
     antiMatches: [
-      [match.replace('|', '')],
+      [[match.replace('|', ''), ["", "-"]]],
       (antiMatches || []).map((root) => [prefixes, `${match.split('|')[0]}${root}*`]),
       numeralRoots.map((root) => [prefixes, `${match.replace('|', '')}${root}*`])
     ].flat(),
