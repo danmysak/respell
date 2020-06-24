@@ -9,7 +9,7 @@ import {
   getFirstLetter
 } from "../imports.js";
 
-const maxLookupLevel = 40;
+const maxLookupLevel = 50;
 
 const [leftBracket, rightBracket] = ["(", ")"];
 const period = ".";
