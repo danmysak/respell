@@ -19,7 +19,7 @@ const minFeminineTitleLength = 4;
 
 export const feminine = {
   adjectivePattern: /[ая]$/i,
-  vocativePattern: new RegExp(`([еєо]|сю|^(${extraFeminineVocative.join('|')}))$`, 'i'),
+  vocativePattern: new RegExp(`([еє]|[^т]о|[^б]то|сю|^(${extraFeminineVocative.join('|')}))$`, 'i'),
   minTitleLength: minFeminineTitleLength,
   shorterTitles: extraFeminineVocative.filter((title) => title.length < minFeminineTitleLength),
   endings: {
