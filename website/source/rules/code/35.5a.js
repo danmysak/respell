@@ -35,9 +35,14 @@ function formatReplacement(number, suffix) {
   return `${number}-${suffix}`;
 }
 
-registerWordRule((token) => {
+function isInWrongContext(chain) {
+  return chain.getPreviousToken(1, false) === '.'
+    || (chain.getPreviousToken() === '.' && (chain.getPreviousToken(2) || '').toLowerCase() === 'п');
+}
+
+registerWordRule((token, chain) => {
   const match = token.match(pattern);
-  if (!match) {
+  if (!match || isInWrongContext(chain)) {
     return null;
   }
   const [_, number, hyphen, letter] = match;
