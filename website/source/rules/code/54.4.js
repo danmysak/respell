@@ -9,7 +9,7 @@ import {
   isRomanNumeral
 } from "../imports.js";
 
-const maxLength = 3;
+const maxWords = 3;
 
 function isLatin(token) {
   return token !== null
@@ -26,9 +26,9 @@ function canBeInitialPart(token) {
   return token.toLowerCase() !== token;
 }
 
-function navigateUntilNonLatin(navigator, maxLength) {
+function navigateUntilNonLatin(navigator, maxWords) {
   let lastToken = navigator(0);
-  for (let level = 1; level <= maxLength; level++) {
+  for (let level = 1; level <= maxWords; level++) {
     const nextToken = navigator(level);
     if (!isLatin(nextToken)) {
       return [lastToken, level];
@@ -69,7 +69,7 @@ registerWordRule((token, chain) => {
     if (!canBeInitialPart(token) || isQuote(chain.getPreviousToken(1, false))) {
       return null;
     }
-    const [last, followingLevel] = navigateUntilNonLatin(chain.getNextToken.bind(chain), maxLength);
+    const [last, followingLevel] = navigateUntilNonLatin(chain.getNextToken.bind(chain), maxWords);
     if (last === null || !hasCyrillic(chain, 1, followingLevel)) {
       return null;
     }
@@ -78,7 +78,7 @@ registerWordRule((token, chain) => {
     if (isQuote(chain.getNextToken(1, false))) {
       return null;
     }
-    const [first, precedingLevel] = navigateUntilNonLatin(chain.getPreviousToken.bind(chain), maxLength);
+    const [first, precedingLevel] = navigateUntilNonLatin(chain.getPreviousToken.bind(chain), maxWords);
     if (first === null || !canBeInitialPart(first) || !hasCyrillic(chain, precedingLevel, 1)) {
       return null;
     }

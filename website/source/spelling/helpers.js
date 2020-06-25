@@ -52,6 +52,20 @@ export function isArabicNumeral(string) {
   return string.match(/^(\d[\d.,]*)?\d$/);
 }
 
+function generateRomanNumeralPattern() {
+  const units = [['I', 'V'], ['X', 'L'], ['C', 'D'], ['M']];
+  return new RegExp(`^(?!$)${units.reverse().map(([one, five], index, all) => {
+    if (index === 0) {
+      return `${one}*`;
+    } else {
+      const lastOne = all[index - 1][0];
+      return `(${five}?${one}{0,3}|${one}[${five}${lastOne}])`;
+    }
+  }).join('')}$`);
+}
+
+const romanNumeralPattern = generateRomanNumeralPattern();
+
 export function isRomanNumeral(string) {
-  return string.match(/^[IVXLCDM]+$/);
+  return string.match(romanNumeralPattern);
 }
