@@ -110,7 +110,7 @@ export function createTreeRule(correspondences, correctionType, description,
     }
     if (postprocess) {
       values = postprocess(values, token, chain, string);
-      if (values === null) {
+      if (values === null || values.length === 0) {
         return null;
       }
     }
@@ -121,7 +121,9 @@ export function createTreeRule(correspondences, correctionType, description,
       values = values.map((value) => normalizeCase(value, token));
     }
     const differingValues = values.filter((value) => simplifyApostrophe(value) !== simplifyApostrophe(token));
-    const actualCorrectionType = differingValues.length === values.length ? correctionType : correctionTypes.UNCERTAIN;
+    const computedCorrectionType = typeof correctionType === 'function' ? correctionType(token) : correctionType;
+    const actualCorrectionType = differingValues.length === values.length ? computedCorrectionType
+                                                                          : correctionTypes.UNCERTAIN;
     return differingValues.length === 0 ? null : new Correction(actualCorrectionType, differingValues, description, {
       requiresExtraChange: requiresExtraChange || false
     });

@@ -7,7 +7,7 @@ import {data as _3} from './names-with-g/Агата.js';
 import {data as _4} from './names-with-g/Гузь.js';
 import {data as _5} from './names-with-g/Грей.js';
 import {data as _6} from './names-with-g/Аглая.js';
-import {data as _7} from './names-with-g/Дога.js';
+import {data as _7} from './names-with-g/Дега.js';
 import {data as _8} from './names-with-g/Герш.js';
 import {data as _9} from './names-with-g/Габсбург.js';
 import {data as _10} from './names-with-g/Гюль.js';
