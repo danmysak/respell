@@ -520,6 +520,8 @@ export const tests = [
   [54, 'Довідку шукайте на сайті Microsoft microsoft.com.', 'Довідку шукайте на сайті «Microsoft» microsoft.com.', correctionTypes.UNCERTAIN],
   [54, 'Підприємства CDC, IXXX та MIL', 'Підприємства «CDC», «IXXX» та «MIL»', [correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN]],
   [[54, -32], 'Світова мапа з зафіксованими та можливими випадками 2019-nCoV інфекцій. vs ВООЗ опублікувала протокол діагностичного тестування SARS-CoV-2, розроблений командою вірусологів із лікарні Шаріте.', 'Світова мапа з зафіксованими та можливими випадками «2019-nCoV» інфекцій. vs ВООЗ опублікувала протокол діагностичного тестування «SARS-CoV-2», розроблений командою вірусологів із лікарні Шаріте.', [correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN]],
+  [54, 'Представництво Status Quora', 'Представництво «Status Quora»', [correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN]],
+  [54, 'Фірма під назвою Ad hoc Scenario...', 'Фірма під назвою «Ad hoc Scenario»...', [correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN]],
   [_, 'Компанію з назвою Really Really Long Name система не пропонуватиме виділити лапками.'],
   [_, 'Так само, як і компанія з Name-мішаної-форми.'],
   [_, 'І назви companies та various Other Companies, що починаються з малої літери.'],
@@ -532,6 +534,8 @@ export const tests = [
   [_, 'I з’їзд, III подія, IV століття, V або VI (ну або VIII) роки, IX чи X олімпіада, XI з’їзд, XIII конференція, XLIV захід, MMMDCCCXLII рік'],
   [_, 'Covid-споріднені віруси.'],
   [_, '23 °C темпаратури, а рівень pH залишається старим. Ба більше, такі елементи, як Cl і Ka давно вже неактуальні. Нас цікавлять розміри порядку 3 TB і більше.'],
+  [_, 'In vitro ремдесивір виявив потужну противірусну активність щодо клінічного ізоляту (штаму). Alter ego цього персонажа зашкалює.'],
+  [_, 'STATUS QUO відновлено. Ad hoc правила застосовано. Тож Sic! Ви Persona Non Grata.'],
 
   [54, 'Європейський союз - величезне утворення.', 'Європейський Союз - величезне утворення.', correctionTypes.MISTAKE],
   [54, 'За даними Європейського союзу це все дуже погано.', 'За даними Європейського Союзу це все дуже погано.', correctionTypes.MISTAKE],

@@ -12,6 +12,20 @@ import {
 const maxWords = 3;
 const minSingleLength = 2;
 
+const commonPhrases = [
+  "ad hoc",
+  "alma mater",
+  "alter ego",
+  "a posteriori", "a priori",
+  "ave",
+  "de facto", "de iure",
+  "in situ", "in vitro", "in vivo",
+  "persona non grata",
+  "pro bono",
+  "sic",
+  "status quo"
+];
+
 function isLatin(token) {
   return token !== null
     && token.match(/^[^а-яґєії]*[a-z][^а-яґєії]*$/i)
@@ -57,6 +71,14 @@ function hasCyrillic(chain, precedingLevel, followingLevel) {
     || lookForCyrillic(chain.getNextToken.bind(chain), followingLevel);
 }
 
+function isCommonPhrase(chain, fromLevel, toLevel) {
+  const phrase = [];
+  for (let level = fromLevel; level <= toLevel; level++) {
+    phrase.push(chain.getAdjacentToken(level, true));
+  }
+  return commonPhrases.includes(phrase.join(' ').toLowerCase());
+}
+
 registerWordRule((token, chain) => {
   if (!isLatin(token)) {
     return null;
@@ -71,7 +93,8 @@ registerWordRule((token, chain) => {
       return null;
     }
     const [last, followingLevel] = navigateUntilNonLatin(chain.getNextToken.bind(chain), maxWords);
-    if (last === null || !hasCyrillic(chain, 1, followingLevel)) {
+    if (last === null || !hasCyrillic(chain, 1, followingLevel)
+      || isCommonPhrase(chain, 0, followingLevel - 1)) {
       return null;
     }
   }
@@ -80,7 +103,8 @@ registerWordRule((token, chain) => {
       return null;
     }
     const [first, precedingLevel] = navigateUntilNonLatin(chain.getPreviousToken.bind(chain), maxWords);
-    if (first === null || !canBeInitialPart(first) || !hasCyrillic(chain, precedingLevel, 1)) {
+    if (first === null || !canBeInitialPart(first) || !hasCyrillic(chain, precedingLevel, 1)
+      || isCommonPhrase(chain, -(precedingLevel - 1), 0)) {
       return null;
     }
   }
