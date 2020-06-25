@@ -9,6 +9,8 @@ import {
 } from "../imports.js";
 import {towns} from "../../data/towns.js";
 
+const minCapsLength = 5;
+
 Object.entries({
   [correctionTypes.IMPROVEMENT]: towns.certain,
   [correctionTypes.UNCERTAIN]: towns.uncertain
@@ -28,8 +30,11 @@ Object.entries({
       + 'території чи мають суфікси «-ськ», «-цьк», «-ець», суфікси присвійності «-ів», «-їв», «-ев», «-єв», «-ов», '
       + '«-ин», «-ін», «-ач», «-ич», «-яч» або частинки «-бург», «-град», «-город», «-піль», «-поль», «-мир», «-слав».',
     {
-      callback: (token) =>
-        [letterCases.CAPITALIZED, letterCases.CAMEL, letterCases.UPPER].includes(determineLetterCase(token)),
+      callback: (token) => {
+        const letterCase = determineLetterCase(token);
+        return letterCase === letterCases.CAPITALIZED || letterCase === letterCases.CAMEL
+          || (letterCase === letterCases.UPPER && token.length >= minCapsLength);
+      },
       lowerCase: true,
       fixApostrophe: true
     })
