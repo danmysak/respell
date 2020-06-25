@@ -1,7 +1,7 @@
 /* Paradigms are listed roughly in the order from the most numerous to the least numerous: */
 
-import {data as _0} from './feminitives/банник-банниця.js';
-import {data as _1} from './feminitives/ант-антка.js';
+import {data as _0} from './feminitives/ант-антка.js';
+import {data as _1} from './feminitives/банник-банниця.js';
 import {data as _2} from './feminitives/бранець-бранка.js';
 import {data as _3} from './feminitives/читач-читачка.js';
 import {data as _4} from './feminitives/біолог-біологиня.js';
