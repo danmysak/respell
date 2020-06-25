@@ -10,6 +10,7 @@ import {
 } from "../imports.js";
 
 const maxWords = 3;
+const minSingleLength = 2;
 
 function isLatin(token) {
   return token !== null
@@ -83,7 +84,7 @@ registerWordRule((token, chain) => {
       return null;
     }
   }
-  if (isFirst && isLast && token.replace(/[^a-z]/ig, '').length <= 1) {
+  if (isFirst && isLast && token.replace(/[^a-z]/ig, '').length <= minSingleLength) {
     return null;
   }
   return new Correction(correctionTypes.UNCERTAIN, `${isFirst ? '«' : ''}${token}${isLast ? '»' : ''}`,
