@@ -51,6 +51,7 @@ import {data as _47} from './feminitives/монах-монахиня.js';
 import {data as _48} from './feminitives/цар-цариця.js';
 import {data as _49} from './feminitives/чернець-черниця.js';
 import {data as _50} from './feminitives/король-королева.js';
+import {data as _51} from './feminitives/абат-абатиса.js';
 
 export const feminitives = [
   _0,
@@ -103,5 +104,6 @@ export const feminitives = [
   _47,
   _48,
   _49,
-  _50
+  _50,
+  _51
 ];
