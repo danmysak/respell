@@ -1,7 +1,8 @@
 const whitespace = `\\s`;
 
 const punctuation = {
-  sentenceDelimiters: '.…?!',
+  dot: '.',
+  sentenceDelimiters: '…?!',
   clauseDelimiters: ',:;',
   dashes: '–—',
   quotes: '"«»„“”',
@@ -10,14 +11,14 @@ const punctuation = {
 };
 
 const whiteSpacePattern = new RegExp(whitespace);
-const sentenceBoundaryPattern = new RegExp(`[${punctuation.sentenceDelimiters}]`);
+const sentenceBoundaryPattern = new RegExp(`^[${punctuation.dot}${punctuation.sentenceDelimiters}]+$`);
 
 const punctuationPlain = Object.values(punctuation).join('');
 
 const tokenizer = (() => {
   const grouped = [
     whitespace,
-    `[${punctuation.sentenceDelimiters}]`,
+    `(?:[${punctuation.dot}](?![a-zA-Z0-9])|[${punctuation.sentenceDelimiters}])`,
     `[${punctuation.clauseDelimiters}${punctuation.dashes}]`
   ].map((pattern) => `(?:${pattern})+`);
   const individual = [punctuation.quotes, punctuation.slashes, punctuation.brackets].join('').split('').map(
@@ -31,7 +32,7 @@ export function tokenize(text) {
 }
 
 export function isWhitespace(token) {
-  return token !== null && token.match(whiteSpacePattern);
+  return token !== null && !!token.match(whiteSpacePattern);
 }
 
 function isSinglePunctuationMark(token, set) {
@@ -59,5 +60,5 @@ export function isWord(token) {
 }
 
 export function canBeSentenceBoundary(token) {
-  return token === null || token.match(sentenceBoundaryPattern);
+  return token === null || !!token.match(sentenceBoundaryPattern);
 }
