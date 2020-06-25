@@ -519,6 +519,7 @@ export const tests = [
   [54, 'Що ж, до нас завітали вони,– Super Duper, super-duper компанія.', 'Що ж, до нас завітали вони,– «Super Duper», super-duper компанія.', [correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN]],
   [54, 'Довідку шукайте на сайті Microsoft microsoft.com.', 'Довідку шукайте на сайті «Microsoft» microsoft.com.', correctionTypes.UNCERTAIN],
   [54, 'Підприємства CDC, IXXX та MIL', 'Підприємства «CDC», «IXXX» та «MIL»', [correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN]],
+  [[54, -32], 'Світова мапа з зафіксованими та можливими випадками 2019-nCoV інфекцій. vs ВООЗ опублікувала протокол діагностичного тестування SARS-CoV-2, розроблений командою вірусологів із лікарні Шаріте.', 'Світова мапа з зафіксованими та можливими випадками «2019-nCoV» інфекцій. vs ВООЗ опублікувала протокол діагностичного тестування «SARS-CoV-2», розроблений командою вірусологів із лікарні Шаріте.', [correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN]],
   [_, 'Компанію з назвою Really Really Long Name система не пропонуватиме виділити лапками.'],
   [_, 'Так само, як і компанія з Name-мішаної-форми.'],
   [_, 'І назви companies та various Other Companies, що починаються з малої літери.'],
@@ -529,6 +530,7 @@ export const tests = [
   [_, 'Що ж, до нас завітали them,– Super Duper, super-duper компанія.'],
   [_, 'На сайтах youtube.com, Respell.org, а також google.com.ua є багато цікавого контенту. Wikipedia.org — також чудовий сайт.'],
   [_, 'I з’їзд, III подія, IV століття, V або VI (ну або VIII) роки, IX чи X олімпіада, XI з’їзд, XIII конференція, XLIV захід, MMMDCCCXLII рік'],
+  [_, 'Covid-споріднені віруси.'],
 
   [54, 'Європейський союз - величезне утворення.', 'Європейський Союз - величезне утворення.', correctionTypes.MISTAKE],
   [54, 'За даними Європейського союзу це все дуже погано.', 'За даними Європейського Союзу це все дуже погано.', correctionTypes.MISTAKE],
