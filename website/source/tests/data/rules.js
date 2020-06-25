@@ -168,6 +168,8 @@ export const tests = [
   [32, 'Король королям, принц принцу, кронпринц кронпринца.', 'Королева королевам, принцеса принцесі, кронпринцеса кронпринцеси.', [correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN], true], /* король-королева */
   [32, 'Усі абати мають пам’ятати кілька простих істин.', 'Усі абатиси мають пам’ятати кілька простих істин.', correctionTypes.UNCERTAIN, true], /* абат-абатиса */
   [32, 'Князям корисно читати.', 'Княгиням корисно читати.', correctionTypes.UNCERTAIN, true], /* князь-княгиня */
+  [32, 'У кімнаті — мистець.', 'У кімнаті — мисткиня.', correctionTypes.UNCERTAIN, true], /* мистець-мисткиня */
+  [32, 'Перо митця не знає меж.', 'Перо мисткині не знає меж.', correctionTypes.UNCERTAIN, true], /* митець-мисткиня */
   [32, 'Фронтенд-розробник, веброзробника, рок-музикантові, фолкмузиканти, фітнес-тренерам і фотоаеробіологу.', 'Фронтенд-розробниця, веброзробниці, рок-музикантці, фолкмузикантки, фітнес-тренеркам і фотоаеробіологині.', [correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN], true],
   [32, 'супертренер, ант, але гідрант; бойко, але обойко', 'супертренерка, антка, але гідрант; бойкиня, але обойко', [correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN], true],
   [32, 'кар’єрист, кар\'єрист, недокар’єрист, перекар\'єрист', 'кар’єристка, кар\'єристка, недокар’єристка, перекар\'єристка', [correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN], true],
