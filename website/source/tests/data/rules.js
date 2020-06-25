@@ -608,6 +608,7 @@ export const tests = [
   [[82, -140], 'Поїду до Ель-Аб\'яда або до Жер’ява, Ель-Аб’яда чи М\'єя', 'Поїду до Ель-Аб\'яду або до Жер’яву, Ель-Аб’яду чи М\'єю', [correctionTypes.IMPROVEMENT, correctionTypes.IMPROVEMENT, correctionTypes.IMPROVEMENT, correctionTypes.IMPROVEMENT]],
   [82, 'Немає нічого кращого від Ястшембе-Здруя?', 'Немає нічого кращого від Ястшембе-Здрую?', correctionTypes.IMPROVEMENT],
   [82, 'ЕЛЬ-АБ’ЯДА, ЕЛЬ-АБ\'ЯДА, ХУСТА', 'ЕЛЬ-АБ’ЯДУ, ЕЛЬ-АБ\'ЯДУ, ХУСТУ', [correctionTypes.IMPROVEMENT, correctionTypes.IMPROVEMENT, correctionTypes.UNCERTAIN]],
+  [82, 'Із Франкфурта до Мумбая з приводу міста Гамільтона.', 'Із Франкфурту до Мумбаю з приводу міста Гамільтону.', [correctionTypes.IMPROVEMENT, correctionTypes.IMPROVEMENT, correctionTypes.UNCERTAIN]],
   [82, 'Від Джека Лондона до Лондона', 'Від Джека Лондону до Лондону', [correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN]],
   [82, 'З Марселя когось бачив?', 'З Марселю когось бачив?', correctionTypes.UNCERTAIN],
   [82, 'Від назви БОМБЕЯ походить назва породи котів.', 'Від назви БОМБЕЮ походить назва породи котів.', correctionTypes.UNCERTAIN],
