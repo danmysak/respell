@@ -12,7 +12,10 @@ import {
 const maxLength = 3;
 
 function isLatin(token) {
-  return token !== null && token.match(/^[^а-яґєії]*[a-z][а-яґєії]*$/i) && !isRomanNumeral(token);
+  return token !== null
+    && token.match(/^[^а-яґєії]*[a-z][а-яґєії]*$/i)
+    && !token.includes('.')
+    && !isRomanNumeral(token);
 }
 
 function isCyrillic(token) {

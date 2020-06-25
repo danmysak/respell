@@ -517,6 +517,7 @@ export const tests = [
   [54, 'Що ж, до нас завітали вони,– Super Duper, супер-дупер компанія.', 'Що ж, до нас завітали вони,– «Super Duper», супер-дупер компанія.', [correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN]],
   [54, 'Що ж, до нас завітали them,– Super Duper, супер-дупер компанія.', 'Що ж, до нас завітали them,– «Super Duper», супер-дупер компанія.', [correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN]],
   [54, 'Що ж, до нас завітали вони,– Super Duper, super-duper компанія.', 'Що ж, до нас завітали вони,– «Super Duper», super-duper компанія.', [correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN]],
+  [54, 'Довідку шукайте на сайті Microsoft microsoft.com.', 'Довідку шукайте на сайті «Microsoft» microsoft.com.', correctionTypes.UNCERTAIN],
   [_, 'Компанію з назвою Really Really Long Name система не пропонуватиме виділити лапками.'],
   [_, 'Так само, як і компанія з Name-мішаної-форми.'],
   [_, 'І назви companies та various Other Companies, що починаються з малої літери.'],
@@ -525,6 +526,7 @@ export const tests = [
   [_, 'Hello. Hello? Hello! Hello... Hello'],
   [_, 'This – Microsoft – is the name of a company in English (так, англійською).'],
   [_, 'Що ж, до нас завітали them,– Super Duper, super-duper компанія.'],
+  [_, 'На сайтах youtube.com, Respell.org, а також google.com.ua є багато цікавого контенту. Wikipedia.org — також чудовий сайт.'],
 
   [54, 'Європейський союз - величезне утворення.', 'Європейський Союз - величезне утворення.', correctionTypes.MISTAKE],
   [54, 'За даними Європейського союзу це все дуже погано.', 'За даними Європейського Союзу це все дуже погано.', correctionTypes.MISTAKE],
