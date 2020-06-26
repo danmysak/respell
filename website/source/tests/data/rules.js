@@ -636,6 +636,7 @@ export const tests = [
   [82, 'З Марселя когось бачив?', 'З Марселю когось бачив?', correctionTypes.UNCERTAIN],
   [82, 'Від назви БОМБЕЯ походить назва породи котів.', 'Від назви БОМБЕЮ походить назва породи котів.', correctionTypes.UNCERTAIN],
   [82, 'Родом із Троїцько-Харцизька!', 'Родом із Троїцько-Харцизьку!', correctionTypes.UNCERTAIN],
+  [82, 'А тепер щодо Болтона.', 'А тепер щодо Болтону.', correctionTypes.UNCERTAIN],
   [82, 'БАДЕНА, Бадена, БЕРНА, Берна, БІЧА, Біча, ОША, Оша', 'БАДЕНУ, Бадену, БЕРНУ, Берну, БІЧА, Бічу, ОША, Ошу', [correctionTypes.IMPROVEMENT, correctionTypes.IMPROVEMENT, correctionTypes.IMPROVEMENT, correctionTypes.IMPROVEMENT, correctionTypes.IMPROVEMENT, correctionTypes.IMPROVEMENT]],
   [_, 'Не зустрів на вулиці Богдана.'],
   [_, 'На підлозі хуста лежала, а то й ПАрИжА.'],
