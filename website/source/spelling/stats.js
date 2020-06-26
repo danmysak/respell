@@ -97,21 +97,27 @@ export function computeSpellingStats(tokens) {
   let characters = 0;
   let wordCharacters = 0;
   let lastNonSpace = null;
+  let lastWord = null;
   let lastSentenceHasCapitalizedWords = false;
   tokens.forEach((token) => {
     if (isWord(token)) {
-      if (!token.match(/^\d+$/)) {
+      if (!token.match(/^(\d|\.)+$/)) {
         words++;
         wordCharacters += token.length;
       }
       const isCapitalized = token.match(/^[А-ЯҐЄІЇA-Z]/);
-      if (lastNonSpace !== null && lastSentenceHasCapitalizedWords &&
-        (lastNonSpace.includes('?') || lastNonSpace.includes('!') ||
-          (lastNonSpace.includes('.') && token.length > 0 && !token[0].match(/[0-9а-яґєіїa-z]/)))) {
+      if (lastNonSpace !== null && lastWord !== null && lastSentenceHasCapitalizedWords
+        && (lastNonSpace.includes('?') || lastNonSpace.includes('!')
+          || (lastNonSpace.includes('.')
+            && token.length > 0 && !token[0].match(/[0-9а-яґєіїa-z]/)
+            && !lastWord.match(/^[А-ЯҐЄІЇ]$/) // This is likely to be part of initials
+          )
+        )) {
         sentences++;
         lastSentenceHasCapitalizedWords = false;
       }
       lastSentenceHasCapitalizedWords = lastSentenceHasCapitalizedWords || isCapitalized;
+      lastWord = token;
     }
     if (isWhitespace(token)) {
       characters++;
