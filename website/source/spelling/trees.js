@@ -46,18 +46,28 @@ function followTree(tree, string, recursive) {
       }
     }
   };
+  const combineParts = (prefixes, infix, suffixes) => {
+    return suffixes.flatMap((suffix) => prefixes.map((prefix) => prefix + infix + suffix));
+  };
+  const goRecursive = (prefix) => {
+    const list = followTree(tree, prefix, true);
+    return list === null || list.length === 0 ? [prefix] : list;
+  };
   const applyRecursive = () => {
-    const getPrefixes = () => {
-      const prefix = string.slice(0, lastRecursive.index);
-      const processed = followTree(tree, prefix, true);
-      return processed === null || processed.length === 0 ? [prefix] : processed;
-    };
-    const prefixes = getPrefixes();
-    return lastRecursive.value.flatMap((value) => prefixes.map((prefix) => prefix + separator + value));
+    return combineParts(goRecursive(string.slice(0, lastRecursive.index)), separator, lastRecursive.value);
   };
   const applyWildcard = () => {
     const prefix = string.slice(0, lastWildcard.index + 1);
-    return lastWildcard.value.map((string) => prefix + string);
+    let prefixes, infix;
+    if (recursive && prefix.includes(separator)) {
+      const separatorPosition = prefix.lastIndexOf(separator);
+      prefixes = goRecursive(prefix.slice(0, separatorPosition));
+      infix = prefix.slice(separatorPosition);
+    } else {
+      prefixes = [prefix];
+      infix = '';
+    }
+    return combineParts(prefixes, infix, lastWildcard.value);
   };
   const end = () => {
     if (lastRecursive) {
