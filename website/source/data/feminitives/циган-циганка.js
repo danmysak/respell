@@ -23,7 +23,7 @@ export const data = {
   },
   roots: [
     "партизан",
-    "тат",
+    // "тат" is homonymic with a much more frequently used word
     "хозар",
     "циган"
   ]
