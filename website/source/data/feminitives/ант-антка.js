@@ -1076,7 +1076,7 @@ export const data = {
     "чемпіон",
     "червонорос",
     "черемис",
-    "черкас",
+    // "черкас" would give frequent false positives because of the city name "Черкаси"
     "черкес",
     "чечен",
     "шабліст",
