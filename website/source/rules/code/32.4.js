@@ -3,6 +3,7 @@ import {
   registerWordRule,
   labels,
   createTreeRule,
+  treeWildcardCharacter,
   unpackDoubleParadigm,
   combineCorrespondences,
   determineLetterCase,
@@ -12,13 +13,21 @@ import {
 } from "../imports.js";
 import {feminitives} from "../../data/feminitives.js";
 
-const minWildcardLength = 6;
+const minWildcardStemLength = 5;
+
+function applyWildcard(stem) {
+  return stem.length < minWildcardStemLength ? stem : treeWildcardCharacter + stem;
+}
 
 registerWordRule(createTreeRule(
   combineCorrespondences(
     feminitives.flatMap(
       (group) => group.roots.map(
-        (root) => unpackDoubleParadigm(group.paradigm, root + group.masculineSuffix, root + group.feminineSuffix)
+        (root) => unpackDoubleParadigm(
+          group.paradigm,
+          applyWildcard(root + group.masculineSuffix),
+          root + group.feminineSuffix
+        )
       )
     )
   ),
@@ -34,7 +43,6 @@ registerWordRule(createTreeRule(
       return [chain.getPreviousToken(2), chain.getNextToken(2)]
         .some((adjacent) => adjacent !== null && normalizedOptions.includes(normalize(adjacent))) ? null : options;
     },
-    wildcardCallback: (form) => form.length >= minWildcardLength,
     recursive: true,
     requiresExtraChange: true,
     lowerCase: true,

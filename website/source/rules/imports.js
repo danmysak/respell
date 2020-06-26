@@ -13,7 +13,7 @@ import {
 } from "../spelling/tokenizer.js";
 import {registerWordRule, registerPunctuationRule, registerWhitespaceRule} from "../spelling/processor.js";
 import {createMaskRule} from "../spelling/masks.js";
-import {createTreeRule} from "../spelling/trees.js";
+import {createTreeRule, treeWildcardCharacter} from "../spelling/trees.js";
 import {decliners} from "../spelling/decliners.js";
 import {
   isAfterSentenceBoundary,
@@ -68,6 +68,7 @@ export {
   registerWhitespaceRule,
   createMaskRule,
   createTreeRule,
+  treeWildcardCharacter,
   isWord,
   isWhitespace,
   isPunctuation,

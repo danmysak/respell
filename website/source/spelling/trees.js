@@ -2,21 +2,23 @@ import {simplifyApostrophe, normalizeApostrophe, normalizeCase} from "./typograp
 import {Correction, correctionTypes} from "./correction.js";
 import {arrayify} from "./data-manipulation.js";
 
+export const treeWildcardCharacter = '*';
 const leaf = Symbol('leaf');
 const wildcard = Symbol('wildcard');
 
-function constructTree(correspondences, wildcardCallback = null) {
+function constructTree(correspondences) {
   const tree = {};
   for (const [key, value] of Object.entries(correspondences)) {
     let level = tree;
-    for (let i = key.length - 1; i >= 0; i--) {
+    const [isWildcard, minIndex] = key.length > 0 && key[0] === treeWildcardCharacter ? [true, 1] : [false, 0];
+    for (let i = key.length - 1; i >= minIndex; i--) {
       const char = key[i];
       if (!level.hasOwnProperty(char)) {
         level[char] = {};
       }
       level = level[char];
     }
-    const storageKey = wildcardCallback && wildcardCallback(key, value) ? wildcard : leaf;
+    const storageKey = isWildcard ? wildcard : leaf;
     if (!level.hasOwnProperty(storageKey)) {
       level[storageKey] = [];
     }
@@ -98,8 +100,8 @@ function followTree(tree, string, recursive) {
 
 export function createTreeRule(correspondences, correctionType, description,
                                {callback, postprocess, requiresExtraChange,
-                                lowerCase, fixApostrophe, wildcardCallback, recursive}) {
-  const tree = constructTree(correspondences, wildcardCallback || null);
+                                lowerCase, fixApostrophe, recursive}) {
+  const tree = constructTree(correspondences);
   return (token, chain) => {
     if (callback && !callback(token, chain)) {
       return null;
