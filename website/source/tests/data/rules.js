@@ -145,6 +145,7 @@ export const tests = [
   [32, 'Це патронів?!', 'Це патронес?!', correctionTypes.UNCERTAIN, true], /* поет-поетеса */
   [32, 'Віддам партизанові.', 'Віддам партизанці.', correctionTypes.UNCERTAIN, true], /* циган-циганка */
   [32, 'належить шефові', 'належить шефині', correctionTypes.UNCERTAIN, true], /* раб-рабиня */
+  [32, 'Хто ті сліпці?', 'Хто ті сліпачки?', correctionTypes.UNCERTAIN, true], /* сліпець-сліпачка */
   [32, 'багатирях', 'багатирках', correctionTypes.UNCERTAIN, true], /* багатир-багатирка */
   [32, 'Зараз лях - це поляк.', 'Зараз ляшка - це полячка.', [correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN], true], /* монах-монашка+ */
   [32, 'казаха тут не бачив', 'казашки тут не бачив', correctionTypes.UNCERTAIN, true], /* чех-чешка */
@@ -173,6 +174,8 @@ export const tests = [
   [32, 'Князям корисно читати.', 'Княгиням корисно читати.', correctionTypes.UNCERTAIN, true], /* князь-княгиня */
   [32, 'У кімнаті — мистець.', 'У кімнаті — мисткиня.', correctionTypes.UNCERTAIN, true], /* мистець-мисткиня */
   [32, 'Перо митця не знає меж.', 'Перо мисткині не знає меж.', correctionTypes.UNCERTAIN, true], /* митець-мисткиня */
+  [32, 'У далині видніється жнець.', 'У далині видніється жниця.', correctionTypes.UNCERTAIN, true], /* жнець-жниця */
+  [32, 'У шевця нема пальця.', 'У швачки нема пальця.', correctionTypes.UNCERTAIN, true], /* швець-швачка */
   [32, 'Фронтенд-розробник, веброзробника, рок-музикантові, фолкмузиканти, фітнес-тренерам і фотоаеробіологу.', 'Фронтенд-розробниця, веброзробниці, рок-музикантці, фолкмузикантки, фітнес-тренеркам і фотоаеробіологині.', [correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN], true],
   [32, 'супертренер, ант, але гідрант; бойко, але обойко', 'супертренерка, антка, але гідрант; бойкиня, але обойко', [correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN], true],
   [32, 'кар’єрист, кар\'єрист, недокар’єрист, перекар\'єрист', 'кар’єристка, кар\'єристка, недокар’єристка, перекар\'єристка', [correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN], true],
