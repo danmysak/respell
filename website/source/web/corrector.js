@@ -19,6 +19,7 @@ let navigationContainer = null;
 let currentToken = null;
 let currentCorrections = null;
 let currentByKeyboard = null;
+let mouseLeaveTimeout = null;
 
 function normalizeTarget(element) {
   return element !== null && element.tagName === expanderTag ? element.parentElement : element;
@@ -137,12 +138,15 @@ function attachEvents() {
   document.addEventListener('keydown', onKeyDown, true); // This event must fire as early as possible, in particular
                                                          // before the tab listener of the text input
   currentToken.addEventListener('mousedown', onMouseDown);
-  currentToken.addEventListener('mouseleave', stopCorrecting);
+  mouseLeaveTimeout = setTimeout(() => currentToken.addEventListener('mouseleave', stopCorrecting), 0);
+  // The timeout is for when mouseleave happens right after mouseover: this is the case when upon displaying of the
+  // tooltip, scrollbar immediately shows up and displaces the content
   currentToken.addEventListener('focusout', onFocusOut);
 }
 
 function detachEvents() {
   currentToken.removeEventListener('focusout', onFocusOut);
+  clearTimeout(mouseLeaveTimeout);
   currentToken.removeEventListener('mouseleave', stopCorrecting);
   currentToken.removeEventListener('mousedown', onMouseDown);
   document.removeEventListener('keydown', onKeyDown, true);
