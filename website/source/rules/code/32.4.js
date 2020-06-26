@@ -13,7 +13,7 @@ import {
 } from "../imports.js";
 import {feminitives} from "../../data/feminitives.js";
 
-const minWildcardStemLength = 5;
+const minWildcardStemLength = 6;
 
 function applyWildcard(stem) {
   return stem.length < minWildcardStemLength ? stem : treeWildcardCharacter + stem;

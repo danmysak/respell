@@ -186,7 +186,7 @@ export const tests = [
   [32, 'фолкмузикант-учень-веброзробник веде мову щодо болгарина-фолкмузиканта-учня-веброзробника', 'фолкмузикантка-учениця-веброзробниця веде мову щодо болгарки-фолкмузикантки-учениці-веброзробниці', [correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN], true],
   [32, 'мова-сприймач', 'мова-сприймачка', correctionTypes.UNCERTAIN, true],
   [32, '-сприймач, -приймач, -ч, -веброзробник, а-веброзробник', '-сприймачка, -приймачка, -ч, -веброзробниця, а-веброзробниця', [correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN], true],
-  [32, 'ант, граф, графам, антами, хлопами, холопами, псевдохолопами', 'антка, графиня, графиням, антками, хлопками, холопками, псевдохолопками', [correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN], true],
+  [32, 'ант, граф, графам, антами, хлопами, акторами, тракторами, байкерами, мотобайкерами', 'антка, графиня, графиням, антками, хлопками, акторками, тракторами, байкерками, мотобайкерками', [correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN, correctionTypes.UNCERTAIN], true],
   [[32, -95], 'на Україні. Білорусі', 'на Україні. Білорусці', correctionTypes.UNCERTAIN, true],
   [-95, 'в Україні та Білорусі'],
   [_, 'Дані, опубліковані Репортерами без кордонів. Дані, опубліковані «Репортерами без кордонів».'],
