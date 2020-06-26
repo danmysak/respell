@@ -11,6 +11,7 @@ import {
 } from "../imports.js";
 
 const period = ".";
+const followingBracket = "(";
 
 function examineNext(chain) {
   let level = 1;
@@ -18,6 +19,9 @@ function examineNext(chain) {
     const token = chain.getNextToken(level);
     if (token === null) {
       return true;
+    }
+    if (token === followingBracket) { // Likely the author's name follows
+      return false;
     }
     if (isWord(token)) {
       return isCapitalized(getFirstLetter(token));
